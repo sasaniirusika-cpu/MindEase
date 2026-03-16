@@ -54,7 +54,7 @@ if user_input:
                     all_messages = [{"role": "system", "content": SYSTEM_PROMPT}]
                     for m in st.session_state.messages:
                         all_messages.append({"role": m["role"], "content": m["content"]})
-                    response = client.chat.completions.create(model="llama3-8b-8192", messages=all_messages)
+                    response = client.chat.completions.create(model="llama-3.3-70b-versatile", messages=all_messages)
                     reply = response.choices[0].message.content
                     st.markdown(reply)
                     st.session_state.messages.append({"role": "assistant", "content": reply})
