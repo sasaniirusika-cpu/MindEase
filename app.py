@@ -58,7 +58,7 @@ if user_input:
             with st.spinner("MindEase is listening..."):
                 try:
                     genai.configure(api_key=api_key)
-                    model = genai.GenerativeModel(model_name="gemini-1.5-flash", system_instruction=SYSTEM_PROMPT)
+                    model = genai.GenerativeModel(model_name="gemini-2.0-flash", system_instruction=SYSTEM_PROMPT)
                     history = []
                     for m in st.session_state.messages[:-1]:
                         role = "user" if m["role"] == "user" else "model"
