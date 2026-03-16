@@ -1,5 +1,5 @@
 import streamlit as st
-import google.generativeai as genai
+from groq import Groq
 
 st.set_page_config(page_title="MindEase", page_icon="🌿", layout="centered")
 
@@ -17,8 +17,8 @@ st.divider()
 
 with st.sidebar:
     st.markdown("### ⚙️ Settings")
-    api_key = st.text_input("Enter your Gemini API Key", type="password", placeholder="AIza...")
-    st.caption("Get your free API key at aistudio.google.com")
+    api_key = st.text_input("Enter your Groq API Key", type="password", placeholder="gsk_...")
+    st.caption("Get your free API key at console.groq.com")
     st.divider()
     if st.button("🗑️ Clear Chat"):
         st.session_state.messages = []
@@ -49,7 +49,7 @@ user_input = st.chat_input("Share how you are feeling...")
 
 if user_input:
     if not api_key:
-        st.warning("Please enter your Gemini API key in the sidebar to start chatting.")
+        st.warning("Please enter your Groq API key in the sidebar to start chatting.")
     else:
         with st.chat_message("user", avatar="🧑"):
             st.markdown(user_input)
@@ -57,16 +57,28 @@ if user_input:
         with st.chat_message("assistant", avatar="🌿"):
             with st.spinner("MindEase is listening..."):
                 try:
-                    genai.configure(api_key=api_key)
-                    model = genai.GenerativeModel(model_name="gemini-2.0-flash", system_instruction=SYSTEM_PROMPT)
-                    history = []
-                    for m in st.session_state.messages[:-1]:
-                        role = "user" if m["role"] == "user" else "model"
-                        history.append({"role": role, "parts": [m["content"]]})
-                    chat = model.start_chat(history=history)
-                    response = chat.send_message(user_input)
-                    reply = response.text
+                    client = Groq(api_key=api_key)
+                    response = client.chat.completions.create(
+                        model="llama3-8b-8192",
+                        messages=[
+                            {"role": "system", "content": SYSTEM_PROMPT}
+                        ] + [
+                            {"role": m["role"], "content": m["content"]}
+                            for m in st.session_state.messages
+                        ]
+                    )
+                    reply = response.choices[0].message.content
                     st.markdown(reply)
                     st.session_state.messages.append({"role": "assistant", "content": reply})
                 except Exception as e:
                     st.error(f"Something went wrong: {str(e)}")
+```
+
+Then scroll down and click **"Commit changes"**!
+
+---
+
+Also update your `requirements.txt` file. Click on it, edit it and replace everything with:
+```
+streamlit
+groq
