@@ -20,25 +20,25 @@ with st.sidebar:
     api_key = st.text_input("Enter your Groq API Key", type="password", placeholder="gsk_...")
     st.caption("Get your free API key at console.groq.com")
     st.divider()
-    if st.button("🗑️ Clear Chat"):
+    if st.button("Clear Chat"):
         st.session_state.messages = []
         st.rerun()
 
 SYSTEM_PROMPT = """You are MindEase, a warm, empathetic, and caring AI mental health companion.
-- Listen carefully and respond with kindness and understanding
-- Validate the user feelings without judgment
-- Ask gentle follow-up questions to help them feel heard
-- Suggest simple coping activities like breathing exercises, journaling, or mindfulness when helpful
-- Always respond in simple, easy-to-understand language
-- If the user mentions self-harm or crisis, share this helpline: https://www.iasp.info/resources/Crisis_Centres/
-- Never diagnose or replace professional therapy"""
+Listen carefully and respond with kindness and understanding.
+Validate the user feelings without judgment.
+Ask gentle follow-up questions to help them feel heard.
+Suggest simple coping activities like breathing exercises, journaling, or mindfulness when helpful.
+Always respond in simple, easy-to-understand language.
+If the user mentions self-harm or crisis, share this helpline: https://www.iasp.info/resources/Crisis_Centres/
+Never diagnose or replace professional therapy."""
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
 if len(st.session_state.messages) == 0:
     with st.chat_message("assistant", avatar="🌿"):
-        st.markdown("Hi there! I am MindEase, your personal wellness companion. 😊 How are you feeling today?")
+        st.markdown("Hi there! I am MindEase, your personal wellness companion. How are you feeling today?")
 
 for message in st.session_state.messages:
     avatar = "🌿" if message["role"] == "assistant" else "🧑"
@@ -60,25 +60,9 @@ if user_input:
                     client = Groq(api_key=api_key)
                     response = client.chat.completions.create(
                         model="llama3-8b-8192",
-                        messages=[
-                            {"role": "system", "content": SYSTEM_PROMPT}
-                        ] + [
+                        messages=[{"role": "system", "content": SYSTEM_PROMPT}] + [
                             {"role": m["role"], "content": m["content"]}
                             for m in st.session_state.messages
                         ]
                     )
-                    reply = response.choices[0].message.content
-                    st.markdown(reply)
-                    st.session_state.messages.append({"role": "assistant", "content": reply})
-                except Exception as e:
-                    st.error(f"Something went wrong: {str(e)}")
-```
-
-Then scroll down and click **"Commit changes"**!
-
----
-
-Also update your `requirements.txt` file. Click on it, edit it and replace everything with:
-```
-streamlit
-groq
+                    reply = response.choices[0].message.conte
