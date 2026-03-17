@@ -4,6 +4,8 @@ import csv
 import os
 from datetime import datetime
 import pandas as pd
+import random
+import time
 
 st.set_page_config(page_title="MindEase", page_icon="🌿", layout="centered")
 
@@ -12,6 +14,19 @@ st.markdown("""
 .stApp { background-color: #1A1A2E; }
 .main-title { text-align: center; color: #02C39A; font-size: 2.8rem; font-weight: bold; }
 .subtitle { text-align: center; color: #8FA3B1; font-size: 1rem; margin-bottom: 2rem; }
+.breathe-circle {
+    width: 200px; height: 200px; border-radius: 50%;
+    background: radial-gradient(circle, #02C39A, #028090);
+    display: flex; align-items: center; justify-content: center;
+    margin: auto; color: white; font-size: 1.5rem; font-weight: bold;
+}
+.affirmation-box {
+    background-color: #16213E;
+    border-left: 5px solid #02C39A;
+    padding: 20px; border-radius: 10px;
+    font-size: 1.3rem; color: #F0F4F8;
+    text-align: center; margin: 20px 0;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -29,24 +44,37 @@ with st.sidebar:
 
 SYSTEM_PROMPT = "You are MindEase, a warm and caring AI mental health companion. Listen with kindness. Validate feelings. Ask gentle follow-up questions. Suggest breathing exercises or journaling when helpful. Use simple language. If user mentions self-harm share this: https://www.iasp.info/resources/Crisis_Centres/ Never diagnose or replace therapy."
 
-tab1, tab2, tab3, tab4 = st.tabs(["💬 Chat", "😊 Mood Tracker", "😴 Sleep Tracker", "📝 Journal"])
+AFFIRMATIONS = [
+    "You are stronger than you think. 💪",
+    "Every day is a new beginning. 🌅",
+    "You are worthy of love and happiness. 💚",
+    "It is okay to not be okay. Take it one step at a time. 🌿",
+    "You have survived every difficult day so far. You are doing great! ⭐",
+    "Your feelings are valid. You matter. 🌸",
+    "Small steps still move you forward. Keep going! 👣",
+    "You are not alone. Better days are coming. 🌈",
+    "Be kind to yourself today. You deserve it. 💙",
+    "You are capable of amazing things. Believe in yourself! 🌟",
+    "Today is a good day to try again. 🌻",
+    "Your mental health matters. Taking care of yourself is brave. 🦋",
+]
+
+tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+    "💬 Chat", "😊 Mood", "😴 Sleep", "📝 Journal", "🌬️ Breathe", "🎯 Affirmations"
+])
 
 with tab1:
     st.divider()
     if "messages" not in st.session_state:
         st.session_state.messages = []
-
     if len(st.session_state.messages) == 0:
         with st.chat_message("assistant", avatar="🌿"):
             st.markdown("Hi there! I am MindEase. How are you feeling today?")
-
     for message in st.session_state.messages:
         avatar = "🌿" if message["role"] == "assistant" else "🧑"
         with st.chat_message(message["role"], avatar=avatar):
             st.markdown(message["content"])
-
     user_input = st.chat_input("Share how you are feeling...")
-
     if user_input:
         with st.chat_message("user", avatar="🧑"):
             st.markdown(user_input)
@@ -68,11 +96,7 @@ with tab1:
 with tab2:
     st.divider()
     st.markdown("### How are you feeling today?")
-    mood = st.radio(
-        "Select your mood:",
-        ["😊 Happy", "😐 Okay", "😔 Sad", "😰 Stressed", "😡 Angry"],
-        horizontal=True
-    )
+    mood = st.radio("Select your mood:", ["😊 Happy", "😐 Okay", "😔 Sad", "😰 Stressed", "😡 Angry"], horizontal=True)
     note = st.text_input("Add a note (optional)", placeholder="What is making you feel this way?")
     if st.button("Save My Mood"):
         now = datetime.now().strftime("%Y-%m-%d %H:%M")
@@ -96,11 +120,7 @@ with tab3:
     st.divider()
     st.markdown("### How many hours did you sleep last night?")
     sleep_hours = st.slider("Sleep hours", 0, 12, 7)
-    sleep_quality = st.radio(
-        "How was your sleep quality?",
-        ["😴 Very Good", "🙂 Good", "😐 Okay", "😔 Poor", "😫 Very Poor"],
-        horizontal=True
-    )
+    sleep_quality = st.radio("How was your sleep quality?", ["😴 Very Good", "🙂 Good", "😐 Okay", "😔 Poor", "😫 Very Poor"], horizontal=True)
     sleep_note = st.text_input("Any notes about your sleep?", placeholder="Had bad dreams, woke up early...")
     if st.button("Save Sleep Log"):
         now = datetime.now().strftime("%Y-%m-%d %H:%M")
@@ -148,3 +168,78 @@ with tab4:
                     st.write(row["Entry"])
     else:
         st.info("No journal entries yet. Write your first one above!")
+
+with tab5:
+    st.divider()
+    st.markdown("### Guided Breathing Exercise")
+    st.caption("This exercise will help you calm down and relax. Follow the instructions below.")
+    st.divider()
+
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        breathe_placeholder = st.empty()
+
+    st.divider()
+    rounds = st.slider("How many rounds?", 1, 5, 3)
+
+    if st.button("Start Breathing Exercise 🌬️"):
+        for i in range(rounds):
+            st.markdown(f"**Round {i+1} of {rounds}**")
+            breathe_placeholder.markdown("""
+            <div class="breathe-circle">Breathe In</div>
+            """, unsafe_allow_html=True)
+            st.toast("Breathe IN... 🌬️")
+            time.sleep(4)
+
+            breathe_placeholder.markdown("""
+            <div style="width:200px; height:200px; border-radius:50%;
+            background: radial-gradient(circle, #9B72CF, #028090);
+            display:flex; align-items:center; justify-content:center;
+            margin:auto; color:white; font-size:1.5rem; font-weight:bold;">
+            Hold</div>
+            """, unsafe_allow_html=True)
+            st.toast("HOLD... ⏸️")
+            time.sleep(4)
+
+            breathe_placeholder.markdown("""
+            <div style="width:200px; height:200px; border-radius:50%;
+            background: radial-gradient(circle, #028090, #1A1A2E);
+            display:flex; align-items:center; justify-content:center;
+            margin:auto; color:white; font-size:1.5rem; font-weight:bold;">
+            Breathe Out</div>
+            """, unsafe_allow_html=True)
+            st.toast("Breathe OUT... 😮‍💨")
+            time.sleep(6)
+
+        breathe_placeholder.markdown("""
+        <div style="width:200px; height:200px; border-radius:50%;
+        background: radial-gradient(circle, #02C39A, #028090);
+        display:flex; align-items:center; justify-content:center;
+        margin:auto; color:white; font-size:1.2rem; font-weight:bold;">
+        Done! 🌿</div>
+        """, unsafe_allow_html=True)
+        st.success("Great job! You completed the breathing exercise. Feel better? 🌿")
+
+with tab6:
+    st.divider()
+    st.markdown("### Your Daily Affirmation 🎯")
+    st.caption("A positive message just for you today.")
+
+    if "affirmation" not in st.session_state:
+        st.session_state.affirmation = random.choice(AFFIRMATIONS)
+
+    st.markdown(f"""
+    <div class="affirmation-box">
+        {st.session_state.affirmation}
+    </div>
+    """, unsafe_allow_html=True)
+
+    if st.button("Give me a new affirmation 🔄"):
+        st.session_state.affirmation = random.choice(AFFIRMATIONS)
+        st.rerun()
+
+    st.divider()
+    st.markdown("### All Affirmations 🌟")
+    st.caption("Read these whenever you need encouragement.")
+    for affirmation in AFFIRMATIONS:
+        st.markdown(f"🌿 {affirmation}")
