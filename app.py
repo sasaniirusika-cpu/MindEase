@@ -40,11 +40,15 @@ api_key = st.secrets["GROQ_API_KEY"]
 with st.sidebar:
     st.markdown("### Settings")
     st.divider()
+    user_name = st.text_input("Your Name", placeholder="Enter your name...")
+    st.divider()
     if st.button("Clear Chat"):
         st.session_state.messages = []
         st.rerun()
 
-SYSTEM_PROMPT = "You are MindEase, a warm and caring AI mental health companion. Listen with kindness. Validate feelings. Ask gentle follow-up questions. Suggest breathing exercises or journaling when helpful. Use simple language. If user mentions self-harm share this: https://www.iasp.info/resources/Crisis_Centres/ Never diagnose or replace therapy."
+name = user_name if user_name else "friend"
+
+SYSTEM_PROMPT = f"You are MindEase, a warm and caring AI mental health companion. The user's name is {name}. Always call them by their name to make them feel special and heard. Listen with kindness. Validate feelings. Ask gentle follow-up questions. Suggest breathing exercises or journaling when helpful. Use simple language. If user mentions self-harm share this: https://www.iasp.info/resources/Crisis_Centres/ Never diagnose or replace therapy."
 
 AFFIRMATIONS = [
     "You are stronger than you think. 💪",
@@ -69,8 +73,8 @@ HAPPY_VIDEOS = [
     ("Uplifting Morning Music ☀️", "https://www.youtube.com/embed/inpok4MKVLM"),
 ]
 
-tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11 = st.tabs([
-    "💬 Chat", "😊 Mood", "😴 Sleep", "📝 Journal",
+tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12 = st.tabs([
+    "💬 Chat", "🕐 History", "😊 Mood", "😴 Sleep", "📝 Journal",
     "🌬️ Breathe", "🎯 Affirmations", "📊 Weekly Report",
     "🧠 Assessment", "🎵 Music", "📅 Streak", "🏆 Wellness"
 ])
@@ -81,7 +85,8 @@ with tab1:
         st.session_state.messages = []
     if len(st.session_state.messages) == 0:
         with st.chat_message("assistant", avatar="🌿"):
-            st.markdown("Hi there! I am MindEase. How are you feeling today?")
+            welcome = f"Hi {name}! I am MindEase. How are you feeling today? 😊" if user_name else "Hi there! I am MindEase. What is your name? 😊"
+            st.markdown(welcome)
     for message in st.session_state.messages:
         avatar = "🌿" if message["role"] == "assistant" else "🧑"
         with st.chat_message(message["role"], avatar=avatar):
@@ -102,10 +107,34 @@ with tab1:
                     reply = response.choices[0].message.content
                     st.markdown(reply)
                     st.session_state.messages.append({"role": "assistant", "content": reply})
+                    now = datetime.now().strftime("%Y-%m-%d %H:%M")
+                    with open("chat_history.csv", "a", newline="", encoding="utf-8") as f:
+                        writer = csv.writer(f)
+                        writer.writerow([now, name, user_input, reply])
                 except Exception as e:
                     st.error(f"Something went wrong: {str(e)}")
 
 with tab2:
+    st.divider()
+    st.markdown("### 🕐 Chat History")
+    st.caption("Your past conversations with MindEase.")
+    if os.path.exists("chat_history.csv"):
+        df_chat = pd.read_csv("chat_history.csv", names=["Date", "Name", "You", "MindEase"])
+        if not df_chat.empty:
+            if st.button("🗑️ Delete All Chat History"):
+                os.remove("chat_history.csv")
+                st.success("Chat history deleted!")
+                st.rerun()
+            for _, row in df_chat.iloc[::-1].iterrows():
+                with st.expander(f"💬 {row['Date']} — {row['Name']}"):
+                    st.markdown(f"**You:** {row['You']}")
+                    st.markdown(f"**MindEase:** {row['MindEase']}")
+        else:
+            st.info("No chat history yet. Start chatting in the Chat tab!")
+    else:
+        st.info("No chat history yet. Start chatting in the Chat tab!")
+
+with tab3:
     st.divider()
     st.markdown("### How are you feeling today?")
     mood = st.radio("Select your mood:", ["😊 Happy", "😐 Okay", "😔 Sad", "😰 Stressed", "😡 Angry"], horizontal=True)
@@ -121,6 +150,10 @@ with tab2:
     if os.path.exists("mood_log.csv"):
         df = pd.read_csv("mood_log.csv", names=["Date", "Mood", "Note"])
         if not df.empty:
+            if st.button("🗑️ Delete All Mood Logs"):
+                os.remove("mood_log.csv")
+                st.success("Mood logs deleted!")
+                st.rerun()
             st.dataframe(df, use_container_width=True)
             mood_counts = df["Mood"].value_counts().reset_index()
             mood_counts.columns = ["Mood", "Count"]
@@ -128,7 +161,7 @@ with tab2:
     else:
         st.info("No mood logs yet. Save your first mood above!")
 
-with tab3:
+with tab4:
     st.divider()
     st.markdown("### How many hours did you sleep last night?")
     sleep_hours = st.slider("Sleep hours", 0, 12, 7)
@@ -150,12 +183,16 @@ with tab3:
     if os.path.exists("sleep_log.csv"):
         df_sleep = pd.read_csv("sleep_log.csv", names=["Date", "Hours", "Quality", "Note"])
         if not df_sleep.empty:
+            if st.button("🗑️ Delete All Sleep Logs"):
+                os.remove("sleep_log.csv")
+                st.success("Sleep logs deleted!")
+                st.rerun()
             st.dataframe(df_sleep, use_container_width=True)
             st.line_chart(df_sleep.set_index("Date")["Hours"])
     else:
         st.info("No sleep logs yet. Save your first sleep log above!")
 
-with tab4:
+with tab5:
     st.divider()
     st.markdown("### Write your thoughts today")
     st.caption("This is your private space. Write anything you feel.")
@@ -175,13 +212,19 @@ with tab4:
     if os.path.exists("journal_log.csv"):
         df_journal = pd.read_csv("journal_log.csv", names=["Date", "Title", "Entry"])
         if not df_journal.empty:
-            for _, row in df_journal.iterrows():
+            if st.button("🗑️ Delete All Journal Entries"):
+                os.remove("journal_log.csv")
+                st.success("Journal entries deleted!")
+                st.rerun()
+            for i, row in df_journal.iterrows():
                 with st.expander(f"📝 {row['Date']} — {row['Title']}"):
                     st.write(row["Entry"])
+        else:
+            st.info("No journal entries yet. Write your first one above!")
     else:
         st.info("No journal entries yet. Write your first one above!")
 
-with tab5:
+with tab6:
     st.divider()
     st.markdown("### Guided Breathing Exercise")
     st.caption("This exercise will help you calm down and relax.")
@@ -230,7 +273,7 @@ with tab5:
         """, unsafe_allow_html=True)
         st.success("Great job! You completed the breathing exercise. Feel better? 🌿")
 
-with tab6:
+with tab7:
     st.divider()
     st.markdown("### Your Daily Affirmation 🎯")
     st.caption("A positive message just for you today.")
@@ -249,7 +292,7 @@ with tab6:
     for affirmation in AFFIRMATIONS:
         st.markdown(f"🌿 {affirmation}")
 
-with tab7:
+with tab8:
     st.divider()
     st.markdown("### 📊 Your Weekly Mood Report")
     st.caption("Summary of how you felt this week.")
@@ -293,7 +336,7 @@ with tab7:
     else:
         st.info("No mood logs yet. Start logging your mood in the Mood tab!")
 
-with tab8:
+with tab9:
     st.divider()
     st.markdown("### 🧠 Mental Health Assessment")
     st.caption("Answer these simple questions honestly. This is not a medical diagnosis. It is just a self check tool to help you understand your feelings better.")
@@ -326,41 +369,21 @@ with tab8:
             color = "#02C39A"
             emoji = "😊"
             reason = "Your answers show that you are generally feeling well. You have good emotional balance and are managing your feelings in a healthy way."
-            suggestions = [
-                "Keep doing what you are doing! 🌿",
-                "Try to maintain a regular sleep schedule.",
-                "Stay connected with friends and family.",
-                "Keep exercising and eating well.",
-                "Practice daily affirmations to stay positive.",
-            ]
+            suggestions = ["Keep doing what you are doing! 🌿", "Try to maintain a regular sleep schedule.", "Stay connected with friends and family.", "Keep exercising and eating well.", "Practice daily affirmations to stay positive."]
             videos = HAPPY_VIDEOS[:2]
         elif total_score <= 14:
             level = "Moderate"
             color = "#F4A261"
             emoji = "😐"
             reason = "Your answers show that you are experiencing some stress or emotional difficulty. This is completely normal and many people feel this way. With some self care you can feel much better."
-            suggestions = [
-                "Try the breathing exercise in the Breathe tab. 🌬️",
-                "Write in your journal every day to release your feelings. 📝",
-                "Log your mood daily to track your progress. 😊",
-                "Take short breaks during the day.",
-                "Talk to a friend or family member about how you feel.",
-                "Try to get at least 7 to 8 hours of sleep every night.",
-            ]
+            suggestions = ["Try the breathing exercise in the Breathe tab. 🌬️", "Write in your journal every day to release your feelings. 📝", "Log your mood daily to track your progress. 😊", "Take short breaks during the day.", "Talk to a friend or family member about how you feel.", "Try to get at least 7 to 8 hours of sleep every night."]
             videos = HAPPY_VIDEOS[:3]
         else:
             level = "High"
             color = "#E63946"
             emoji = "😔"
             reason = "Your answers show that you may be going through a really difficult time. Your feelings are valid and you are not alone. It is very important to reach out for help and support."
-            suggestions = [
-                "Please talk to someone you trust right away. 💙",
-                "Use the Chat tab to talk to MindEase anytime. 💬",
-                "Contact a mental health helpline: https://www.iasp.info/resources/Crisis_Centres/",
-                "Try the breathing exercise when you feel overwhelmed. 🌬️",
-                "Consider speaking to a professional counselor or doctor.",
-                "Be kind to yourself. You deserve support and care. 🌿",
-            ]
+            suggestions = ["Please talk to someone you trust right away. 💙", "Use the Chat tab to talk to MindEase anytime. 💬", "Contact a mental health helpline: https://www.iasp.info/resources/Crisis_Centres/", "Try the breathing exercise when you feel overwhelmed. 🌬️", "Consider speaking to a professional counselor or doctor.", "Be kind to yourself. You deserve support and care. 🌿"]
             videos = HAPPY_VIDEOS
         st.markdown(f"""
         <div class="result-box" style="background-color: {color}20; border: 2px solid {color};">
@@ -376,14 +399,13 @@ with tab8:
             st.markdown(f"🌿 {suggestion}")
         st.divider()
         st.markdown("#### Videos to help you feel better 🎥")
-        st.caption("Watch these to relax, smile, and feel calm.")
         for title, url in videos:
             st.markdown(f"**{title}**")
             st.markdown(f'<iframe width="100%" height="250" src="{url}" frameborder="0" allowfullscreen></iframe>', unsafe_allow_html=True)
             st.divider()
         st.caption("Remember: This is not a medical diagnosis. If you are struggling, please speak to a doctor or mental health professional.")
 
-with tab9:
+with tab10:
     st.divider()
     st.markdown("### 🎵 Calming Music Player")
     st.caption("Listen to relaxing sounds to help you feel calm and peaceful.")
@@ -420,7 +442,7 @@ with tab9:
             </iframe>
             """, unsafe_allow_html=True)
 
-with tab10:
+with tab11:
     st.divider()
     st.markdown("### 📅 Mood Streak Counter")
     st.caption("How many days in a row have you logged your mood?")
@@ -466,7 +488,7 @@ with tab10:
     else:
         st.info("No mood logs yet. Start logging your mood to build your streak!")
 
-with tab11:
+with tab12:
     st.divider()
     st.markdown("### 🏆 Your Wellness Score")
     st.caption("This score shows your overall mental wellness based on your logs.")
@@ -489,12 +511,7 @@ with tab11:
         df_sleep = pd.read_csv("sleep_log.csv", names=["Date", "Hours", "Quality", "Note"])
         if not df_sleep.empty:
             avg_sleep = df_sleep["Hours"].mean()
-            if avg_sleep >= 8:
-                sleep_score = 25
-            elif avg_sleep >= 6:
-                sleep_score = 15
-            else:
-                sleep_score = 5
+            sleep_score = 25 if avg_sleep >= 8 else 15 if avg_sleep >= 6 else 5
             score += sleep_score
             breakdown.append(("😴 Sleep Score", sleep_score, 25))
         else:
