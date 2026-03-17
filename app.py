@@ -43,10 +43,17 @@ div[data-testid="stChatInput"] textarea {
 div[data-testid="stChatInput"] textarea::placeholder {
     color: #8FA3B1 !important;
 }
-div[data-testid="stChatInput"] button {
-    background-color: #02C39A !important;
-    border-radius: 50% !important;
-    color: white !important;
+.stChatFloatingInputContainer {
+    position: fixed !important;
+    bottom: 20px !important;
+    left: 50% !important;
+    transform: translateX(-25%) !important;
+    width: 50% !important;
+    z-index: 999 !important;
+    background-color: #1A1A2E !important;
+    padding: 10px !important;
+    border-radius: 24px !important;
+}
 }
 </style>
 """, unsafe_allow_html=True)
