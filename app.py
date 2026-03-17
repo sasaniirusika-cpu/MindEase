@@ -29,6 +29,25 @@ st.markdown("""
     font-weight: bold;
     margin: 10px 0;
 }
+div[data-testid="stChatInput"] {
+    border-radius: 24px !important;
+    border: 1.5px solid #02C39A !important;
+    background-color: #16213E !important;
+    padding: 6px 16px !important;
+}
+div[data-testid="stChatInput"] textarea {
+    background-color: #16213E !important;
+    color: #F0F4F8 !important;
+    font-size: 1rem !important;
+}
+div[data-testid="stChatInput"] textarea::placeholder {
+    color: #8FA3B1 !important;
+}
+div[data-testid="stChatInput"] button {
+    background-color: #02C39A !important;
+    border-radius: 50% !important;
+    color: white !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -40,7 +59,7 @@ api_key = st.secrets["GROQ_API_KEY"]
 with st.sidebar:
     st.markdown("### 🌿 MindEase")
     st.divider()
-   if st.button("➕ New Chat"):
+    if st.button("➕ New Chat"):
         st.session_state.messages = []
         st.rerun()
     st.divider()
@@ -60,7 +79,7 @@ with st.sidebar:
 
 name = "friend"
 
-SYSTEM_PROMPT = f"You are MindEase, a warm and caring AI mental health companion. The user's name is {name}. Always call them by their name to make them feel special and heard. Listen with kindness. Validate feelings. Ask gentle follow-up questions. Suggest breathing exercises or journaling when helpful. Use simple language. If user mentions self-harm share this: https://www.iasp.info/resources/Crisis_Centres/ Never diagnose or replace therapy."
+SYSTEM_PROMPT = "You are MindEase, a warm and caring AI mental health companion. Listen with kindness. Validate feelings. Ask gentle follow-up questions. Suggest breathing exercises or journaling when helpful. Use simple language. If user mentions self-harm share this: https://www.iasp.info/resources/Crisis_Centres/ Never diagnose or replace therapy."
 
 AFFIRMATIONS = [
     "You are stronger than you think. 💪",
@@ -97,8 +116,7 @@ with tab1:
         st.session_state.messages = []
     if len(st.session_state.messages) == 0:
         with st.chat_message("assistant", avatar="🌿"):
-            welcome = f"Hi {name}! I am MindEase. How are you feeling today? 😊" if user_name else "Hi there! I am MindEase. What is your name? 😊"
-            st.markdown(welcome)
+            st.markdown("Hi there! I am MindEase. How are you feeling today? 😊")
     for message in st.session_state.messages:
         avatar = "🌿" if message["role"] == "assistant" else "🧑"
         with st.chat_message(message["role"], avatar=avatar):
