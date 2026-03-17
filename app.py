@@ -21,16 +21,39 @@ st.markdown("""
     font-size: 1.3rem; color: #F0F4F8;
     text-align: center; margin: 20px 0;
 }
-.stChatFloatingInputContainer {
+[data-testid="stChatInput"] {
     position: fixed !important;
-    bottom: 0 !important;
-    width: 100% !important;
-    background-color: #1A1A2E !important;
-    padding: 10px !important;
-    z-index: 999 !important;
+    bottom: 20px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 60% !important;
+    background-color: #16213E !important;
+    border-radius: 25px !important;
+    padding: 10px 20px !important;
+    z-index: 9999 !important;
+    border: 2px solid #02C39A !important;
 }
-.stChatMessageContainer {
-    padding-bottom: 80px !important;
+[data-testid="stChatInputTextArea"] {
+    background-color: #16213E !important;
+    color: #F0F4F8 !important;
+    border-radius: 25px !important;
+}
+[data-testid="stChatMessage"] {
+    border-radius: 18px !important;
+    padding: 10px 15px !important;
+    margin-bottom: 8px !important;
+}
+[data-testid="stChatMessageContent"] p {
+    font-size: 14px !important;
+}
+.stChatMessage:nth-child(odd) {
+    background-color: #16213E !important;
+}
+.stChatMessage:nth-child(even) {
+    background-color: #0D1B2A !important;
+}
+section.main > div {
+    padding-bottom: 100px !important;
 }
 </style>
 """, unsafe_allow_html=True)
