@@ -18,9 +18,10 @@ st.markdown("""
 st.markdown('<div class="main-title">🌿 MindEase</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitle">Your personal AI companion for mental wellness</div>', unsafe_allow_html=True)
 
+api_key = st.secrets["GROQ_API_KEY"]
+
 with st.sidebar:
     st.markdown("### Settings")
-   api_key = st.secrets["GROQ_API_KEY"]
     st.divider()
     if st.button("Clear Chat"):
         st.session_state.messages = []
@@ -47,25 +48,22 @@ with tab1:
     user_input = st.chat_input("Share how you are feeling...")
 
     if user_input:
-        if not api_key:
-            st.warning("Please enter your Groq API key in the sidebar.")
-        else:
-            with st.chat_message("user", avatar="🧑"):
-                st.markdown(user_input)
-            st.session_state.messages.append({"role": "user", "content": user_input})
-            with st.chat_message("assistant", avatar="🌿"):
-                with st.spinner("MindEase is listening..."):
-                    try:
-                        client = Groq(api_key=api_key)
-                        all_messages = [{"role": "system", "content": SYSTEM_PROMPT}]
-                        for m in st.session_state.messages:
-                            all_messages.append({"role": m["role"], "content": m["content"]})
-                        response = client.chat.completions.create(model="llama-3.3-70b-versatile", messages=all_messages)
-                        reply = response.choices[0].message.content
-                        st.markdown(reply)
-                        st.session_state.messages.append({"role": "assistant", "content": reply})
-                    except Exception as e:
-                        st.error(f"Something went wrong: {str(e)}")
+        with st.chat_message("user", avatar="🧑"):
+            st.markdown(user_input)
+        st.session_state.messages.append({"role": "user", "content": user_input})
+        with st.chat_message("assistant", avatar="🌿"):
+            with st.spinner("MindEase is listening..."):
+                try:
+                    client = Groq(api_key=api_key)
+                    all_messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+                    for m in st.session_state.messages:
+                        all_messages.append({"role": m["role"], "content": m["content"]})
+                    response = client.chat.completions.create(model="llama-3.3-70b-versatile", messages=all_messages)
+                    reply = response.choices[0].message.content
+                    st.markdown(reply)
+                    st.session_state.messages.append({"role": "assistant", "content": reply})
+                except Exception as e:
+                    st.error(f"Something went wrong: {str(e)}")
 
 with tab2:
     st.divider()
@@ -85,7 +83,7 @@ with tab2:
         with open(mood_file, "a", newline="") as f:
             writer = csv.writer(f)
             writer.writerow([now, mood, note])
-        st.success("Mood saved! Keep going Sasani, you are doing great! 🌿")
+        st.success("Mood saved! Keep going, you are doing great! 🌿")
 
     st.divider()
     st.markdown("### Your Mood History")
@@ -98,7 +96,5 @@ with tab2:
             mood_counts = df["Mood"].value_counts().reset_index()
             mood_counts.columns = ["Mood", "Count"]
             st.bar_chart(mood_counts.set_index("Mood"))
-        else:
-            st.info("No mood logs yet. Save your first mood above!")
     else:
         st.info("No mood logs yet. Save your first mood above!")
