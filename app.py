@@ -38,11 +38,11 @@ st.markdown('<div class="subtitle">Your personal AI companion for mental wellnes
 api_key = st.secrets["GROQ_API_KEY"]
 
 with st.sidebar:
-    st.markdown("### Settings")
+    st.markdown("### 🌿 MindEase")
     st.divider()
     user_name = st.text_input("Your Name", placeholder="Enter your name...")
     st.divider()
-    if st.button("🗑️ Clear Chat"):
+    if st.button("🗑️ New Chat"):
         st.session_state.messages = []
         st.rerun()
     st.divider()
