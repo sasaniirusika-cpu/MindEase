@@ -42,9 +42,22 @@ with st.sidebar:
     st.divider()
     user_name = st.text_input("Your Name", placeholder="Enter your name...")
     st.divider()
-    if st.button("Clear Chat"):
+    if st.button("🗑️ Clear Chat"):
         st.session_state.messages = []
         st.rerun()
+    st.divider()
+    st.markdown("### 🕐 Chat History")
+    if os.path.exists("chat_history.csv"):
+        df_side = pd.read_csv("chat_history.csv", names=["Date", "Name", "You", "MindEase"])
+        if not df_side.empty:
+            for _, row in df_side.iloc[::-1].iterrows():
+                with st.expander(f"💬 {row['Date']}"):
+                    st.markdown(f"**You:** {row['You']}")
+                    st.markdown(f"**MindEase:** {row['MindEase']}")
+        else:
+            st.caption("No history yet. Start chatting!")
+    else:
+        st.caption("No history yet. Start chatting!")
 
 name = user_name if user_name else "friend"
 
