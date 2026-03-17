@@ -32,17 +32,8 @@ st.markdown("""
 .stChatMessageContainer {
     padding-bottom: 80px !important;
 }
-.result-box {
-    padding: 20px;
-    border-radius: 12px;
-    text-align: center;
-    font-size: 1.2rem;
-    font-weight: bold;
-    margin: 10px 0;
-}
 </style>
 """, unsafe_allow_html=True)
-
 st.markdown('<div class="main-title">🌿 MindEase</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitle">Your personal AI companion for mental wellness</div>', unsafe_allow_html=True)
 
