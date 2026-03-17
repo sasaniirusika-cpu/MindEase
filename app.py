@@ -21,6 +21,17 @@ st.markdown("""
     font-size: 1.3rem; color: #F0F4F8;
     text-align: center; margin: 20px 0;
 }
+.stChatFloatingInputContainer {
+    position: fixed !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    background-color: #1A1A2E !important;
+    padding: 10px !important;
+    z-index: 999 !important;
+}
+.stChatMessageContainer {
+    padding-bottom: 80px !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
