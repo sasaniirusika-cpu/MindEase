@@ -21,6 +21,14 @@ st.markdown("""
     font-size: 1.3rem; color: #F0F4F8;
     text-align: center; margin: 20px 0;
 }
+.result-box {
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin: 10px 0;
+}
 .stChatFloatingInputContainer {
     position: fixed !important;
     bottom: 0 !important;
@@ -32,10 +40,29 @@ st.markdown("""
 .stChatMessageContainer {
     padding-bottom: 80px !important;
 }
+[data-testid="stChatMessageContent"] {
+    border-radius: 18px !important;
+    padding: 10px 15px !important;
+    max-width: 75% !important;
+    font-size: 0.95rem !important;
+}
+[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarAssistant"]) [data-testid="stChatMessageContent"] {
+    background-color: #16213E !important;
+    color: #F0F4F8 !important;
+    border-bottom-left-radius: 4px !important;
+    margin-left: 0 !important;
+}
+[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) {
+    flex-direction: row-reverse !important;
+}
+[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) [data-testid="stChatMessageContent"] {
+    background-color: #02C39A !important;
+    color: #1A1A2E !important;
+    border-bottom-right-radius: 4px !important;
+    margin-right: 0 !important;
+}
 </style>
 """, unsafe_allow_html=True)
-st.markdown('<div class="main-title">🌿 MindEase</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">Your personal AI companion for mental wellness</div>', unsafe_allow_html=True)
 
 api_key = st.secrets["GROQ_API_KEY"]
 
