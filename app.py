@@ -14,12 +14,6 @@ st.markdown("""
 .stApp { background-color: #1A1A2E; }
 .main-title { text-align: center; color: #02C39A; font-size: 2.8rem; font-weight: bold; }
 .subtitle { text-align: center; color: #8FA3B1; font-size: 1rem; margin-bottom: 2rem; }
-.breathe-circle {
-    width: 200px; height: 200px; border-radius: 50%;
-    background: radial-gradient(circle, #02C39A, #028090);
-    display: flex; align-items: center; justify-content: center;
-    margin: auto; color: white; font-size: 1.5rem; font-weight: bold;
-}
 .affirmation-box {
     background-color: #16213E;
     border-left: 5px solid #02C39A;
@@ -59,8 +53,8 @@ AFFIRMATIONS = [
     "Your mental health matters. Taking care of yourself is brave. 🦋",
 ]
 
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
-    "💬 Chat", "😊 Mood", "😴 Sleep", "📝 Journal", "🌬️ Breathe", "🎯 Affirmations"
+tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
+    "💬 Chat", "😊 Mood", "😴 Sleep", "📝 Journal", "🌬️ Breathe", "🎯 Affirmations", "📊 Weekly Report"
 ])
 
 with tab1:
@@ -172,25 +166,25 @@ with tab4:
 with tab5:
     st.divider()
     st.markdown("### Guided Breathing Exercise")
-    st.caption("This exercise will help you calm down and relax. Follow the instructions below.")
+    st.caption("This exercise will help you calm down and relax.")
     st.divider()
-
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         breathe_placeholder = st.empty()
-
     st.divider()
     rounds = st.slider("How many rounds?", 1, 5, 3)
-
     if st.button("Start Breathing Exercise 🌬️"):
         for i in range(rounds):
             st.markdown(f"**Round {i+1} of {rounds}**")
             breathe_placeholder.markdown("""
-            <div class="breathe-circle">Breathe In</div>
+            <div style="width:200px; height:200px; border-radius:50%;
+            background: radial-gradient(circle, #02C39A, #028090);
+            display:flex; align-items:center; justify-content:center;
+            margin:auto; color:white; font-size:1.5rem; font-weight:bold;">
+            Breathe In</div>
             """, unsafe_allow_html=True)
             st.toast("Breathe IN... 🌬️")
             time.sleep(4)
-
             breathe_placeholder.markdown("""
             <div style="width:200px; height:200px; border-radius:50%;
             background: radial-gradient(circle, #9B72CF, #028090);
@@ -200,7 +194,6 @@ with tab5:
             """, unsafe_allow_html=True)
             st.toast("HOLD... ⏸️")
             time.sleep(4)
-
             breathe_placeholder.markdown("""
             <div style="width:200px; height:200px; border-radius:50%;
             background: radial-gradient(circle, #028090, #1A1A2E);
@@ -210,7 +203,6 @@ with tab5:
             """, unsafe_allow_html=True)
             st.toast("Breathe OUT... 😮‍💨")
             time.sleep(6)
-
         breathe_placeholder.markdown("""
         <div style="width:200px; height:200px; border-radius:50%;
         background: radial-gradient(circle, #02C39A, #028090);
@@ -224,22 +216,62 @@ with tab6:
     st.divider()
     st.markdown("### Your Daily Affirmation 🎯")
     st.caption("A positive message just for you today.")
-
     if "affirmation" not in st.session_state:
         st.session_state.affirmation = random.choice(AFFIRMATIONS)
-
     st.markdown(f"""
     <div class="affirmation-box">
         {st.session_state.affirmation}
     </div>
     """, unsafe_allow_html=True)
-
     if st.button("Give me a new affirmation 🔄"):
         st.session_state.affirmation = random.choice(AFFIRMATIONS)
         st.rerun()
-
     st.divider()
     st.markdown("### All Affirmations 🌟")
-    st.caption("Read these whenever you need encouragement.")
     for affirmation in AFFIRMATIONS:
         st.markdown(f"🌿 {affirmation}")
+
+with tab7:
+    st.divider()
+    st.markdown("### 📊 Your Weekly Mood Report")
+    st.caption("Summary of how you felt this week.")
+    if os.path.exists("mood_log.csv"):
+        df = pd.read_csv("mood_log.csv", names=["Date", "Mood", "Note"])
+        if not df.empty:
+            df["Date"] = pd.to_datetime(df["Date"])
+            last_7 = df[df["Date"] >= pd.Timestamp.now() - pd.Timedelta(days=7)]
+            if last_7.empty:
+                st.info("No mood logs in the last 7 days. Start logging your mood!")
+            else:
+                st.markdown("#### Mood Count This Week")
+                mood_counts = last_7["Mood"].value_counts().reset_index()
+                mood_counts.columns = ["Mood", "Count"]
+                st.bar_chart(mood_counts.set_index("Mood"))
+                most_common = last_7["Mood"].value_counts().idxmax()
+                st.divider()
+                st.markdown("#### Weekly Summary")
+                total = len(last_7)
+                happy = len(last_7[last_7["Mood"] == "😊 Happy"])
+                sad = len(last_7[last_7["Mood"] == "😔 Sad"])
+                stressed = len(last_7[last_7["Mood"] == "😰 Stressed"])
+                col1, col2, col3 = st.columns(3)
+                with col1:
+                    st.metric("Total Logs", total)
+                with col2:
+                    st.metric("Happy Days", happy)
+                with col3:
+                    st.metric("Stressed Days", stressed)
+                st.divider()
+                st.markdown("#### AI says...")
+                if happy > stressed and happy > sad:
+                    st.success("You had a mostly happy week! Keep doing what makes you feel good! 🌿😊")
+                elif stressed > happy:
+                    st.warning("You felt stressed a lot this week. Remember to take breaks and breathe! 🌬️")
+                elif sad > happy:
+                    st.warning("You felt sad quite a bit this week. Talk to someone you trust or use the chat! 💙")
+                else:
+                    st.info("You had a mixed week. That is completely normal! Keep going! 🌿")
+        else:
+            st.info("No mood logs yet. Start logging your mood in the Mood tab!")
+    else:
+        st.info("No mood logs yet. Start logging your mood in the Mood tab!")
