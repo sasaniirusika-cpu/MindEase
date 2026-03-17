@@ -40,8 +40,7 @@ api_key = st.secrets["GROQ_API_KEY"]
 with st.sidebar:
     st.markdown("### 🌿 MindEase")
     st.divider()
-    st.divider()
-    if st.button("➕ New Chat"):
+   if st.button("➕ New Chat"):
         st.session_state.messages = []
         st.rerun()
     st.divider()
