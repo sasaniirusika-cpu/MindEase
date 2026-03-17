@@ -74,11 +74,10 @@ HAPPY_VIDEOS = [
     ("Uplifting Morning Music ☀️", "https://www.youtube.com/embed/inpok4MKVLM"),
 ]
 
-tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs([
+tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11 = st.tabs([
     "💬 Chat", "😊 Mood", "😴 Sleep", "📝 Journal",
-    "🌬️ Breathe", "🎯 Affirmations", "📊 Weekly Report", "🧠 Assessment"
+    "🌬️ Breathe", "🎯 Affirmations", "📊 Weekly Report", "🧠 Assessment", "🎵 Music", "📅 Streak", "🏆 Wellness"
 ])
-
 with tab1:
     st.divider()
     if "messages" not in st.session_state:
@@ -396,3 +395,155 @@ with tab8:
             st.divider()
 
         st.caption("Remember: This is not a medical diagnosis. If you are struggling, please speak to a doctor or mental health professional.")
+        with tab10:
+    st.divider()
+    st.markdown("### 📅 Mood Streak Counter")
+    st.caption("How many days in a row have you logged your mood?")
+    st.divider()
+
+    if os.path.exists("mood_log.csv"):
+        df = pd.read_csv("mood_log.csv", names=["Date", "Mood", "Note"])
+        if not df.empty:
+            df["Date"] = pd.to_datetime(df["Date"]).dt.date
+            unique_days = sorted(df["Date"].unique(), reverse=True)
+
+            streak = 0
+            today = datetime.now().date()
+            for i, day in enumerate(unique_days):
+                expected = today - pd.Timedelta(days=i)
+                if day == expected:
+                    streak += 1
+                else:
+                    break
+
+            if streak == 0:
+                st.info("No streak yet. Log your mood today to start your streak! 😊")
+            elif streak == 1:
+                st.success("🔥 1 day streak! Great start! Keep going tomorrow!")
+            elif streak < 7:
+                st.success(f"🔥 {streak} day streak! You are building a great habit! Keep it up!")
+            elif streak < 30:
+                st.success(f"🔥🔥 {streak} day streak! Amazing! You are so consistent!")
+            else:
+                st.success(f"🔥🔥🔥 {streak} day streak! You are a MindEase champion! Incredible!")
+
+            st.markdown(f"""
+            <div style="text-align:center; background-color:#16213E;
+            border-radius:20px; padding:40px; margin:20px 0;">
+                <div style="font-size:5rem;">🔥</div>
+                <div style="font-size:3rem; font-weight:bold; color:#02C39A;">{streak}</div>
+                <div style="font-size:1.2rem; color:#8FA3B1;">Day Streak</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+            st.divider()
+            st.markdown("### Your Logging History")
+            st.caption(f"You have logged your mood on {len(unique_days)} different days!")
+            for day in unique_days[:10]:
+                st.markdown(f"✅ {day}")
+        else:
+            st.info("No mood logs yet. Start logging your mood to build your streak!")
+    else:
+        st.info("No mood logs yet. Start logging your mood to build your streak!")
+
+with tab11:
+    st.divider()
+    st.markdown("### 🏆 Your Wellness Score")
+    st.caption("This score shows your overall mental wellness based on your logs.")
+    st.divider()
+
+    score = 0
+    max_score = 100
+    breakdown = []
+
+    if os.path.exists("mood_log.csv"):
+        df_mood = pd.read_csv("mood_log.csv", names=["Date", "Mood", "Note"])
+        if not df_mood.empty:
+            happy_count = len(df_mood[df_mood["Mood"] == "😊 Happy"])
+            total_mood = len(df_mood)
+            mood_score = min(int((happy_count / total_mood) * 30), 30)
+            score += mood_score
+            breakdown.append(("😊 Mood Score", mood_score, 30))
+        else:
+            breakdown.append(("😊 Mood Score", 0, 30))
+    else:
+        breakdown.append(("😊 Mood Score", 0, 30))
+
+    if os.path.exists("sleep_log.csv"):
+        df_sleep = pd.read_csv("sleep_log.csv", names=["Date", "Hours", "Quality", "Note"])
+        if not df_sleep.empty:
+            avg_sleep = df_sleep["Hours"].mean()
+            if avg_sleep >= 8:
+                sleep_score = 25
+            elif avg_sleep >= 6:
+                sleep_score = 15
+            else:
+                sleep_score = 5
+            score += sleep_score
+            breakdown.append(("😴 Sleep Score", sleep_score, 25))
+        else:
+            breakdown.append(("😴 Sleep Score", 0, 25))
+    else:
+        breakdown.append(("😴 Sleep Score", 0, 25))
+
+    if os.path.exists("journal_log.csv"):
+        df_journal = pd.read_csv("journal_log.csv", names=["Date", "Title", "Entry"])
+        journal_score = min(len(df_journal) * 5, 25)
+        score += journal_score
+        breakdown.append(("📝 Journal Score", journal_score, 25))
+    else:
+        breakdown.append(("📝 Journal Score", 0, 25))
+
+    if os.path.exists("mood_log.csv"):
+        df_streak = pd.read_csv("mood_log.csv", names=["Date", "Mood", "Note"])
+        if not df_streak.empty:
+            df_streak["Date"] = pd.to_datetime(df_streak["Date"]).dt.date
+            unique_days = sorted(df_streak["Date"].unique(), reverse=True)
+            streak = 0
+            today = datetime.now().date()
+            for i, day in enumerate(unique_days):
+                expected = today - pd.Timedelta(days=i)
+                if day == expected:
+                    streak += 1
+                else:
+                    break
+            streak_score = min(streak * 2, 20)
+            score += streak_score
+            breakdown.append(("📅 Streak Score", streak_score, 20))
+        else:
+            breakdown.append(("📅 Streak Score", 0, 20))
+    else:
+        breakdown.append(("📅 Streak Score", 0, 20))
+
+    if score >= 80:
+        color = "#02C39A"
+        emoji = "🏆"
+        message = "Excellent! You are taking amazing care of your mental health!"
+    elif score >= 60:
+        color = "#F4A261"
+        emoji = "😊"
+        message = "Good job! You are doing well. Keep building your healthy habits!"
+    elif score >= 40:
+        color = "#E9C46A"
+        emoji = "😐"
+        message = "Not bad! Try logging your mood and sleeping better to improve your score!"
+    else:
+        color = "#E63946"
+        emoji = "💙"
+        message = "You are just getting started! Log your mood daily to improve your wellness score!"
+
+    st.markdown(f"""
+    <div style="text-align:center; background-color:#16213E;
+    border-radius:20px; padding:40px; margin:20px 0;">
+        <div style="font-size:4rem;">{emoji}</div>
+        <div style="font-size:4rem; font-weight:bold; color:{color};">{score}</div>
+        <div style="font-size:1.2rem; color:#8FA3B1;">out of 100</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown(f"**{message}**")
+    st.divider()
+    st.markdown("### Score Breakdown")
+    for label, s, max_s in breakdown:
+        st.markdown(f"**{label}:** {s} out of {max_s}")
+        st.progress(s / max_s)
