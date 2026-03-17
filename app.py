@@ -20,8 +20,7 @@ st.markdown('<div class="subtitle">Your personal AI companion for mental wellnes
 
 with st.sidebar:
     st.markdown("### Settings")
-    api_key = st.text_input("Enter your Groq API Key", type="password", placeholder="gsk_...")
-    st.caption("Get your free API key at console.groq.com")
+   api_key = st.secrets["GROQ_API_KEY"]
     st.divider()
     if st.button("Clear Chat"):
         st.session_state.messages = []
