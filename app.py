@@ -29,37 +29,13 @@ st.markdown("""
     font-weight: bold;
     margin: 10px 0;
 }
-.stChatFloatingInputContainer {
-    position: fixed !important;
+.stChatInputContainer > div {
     bottom: 0 !important;
-    width: 100% !important;
+    position: fixed !important;
+    width: 60% !important;
     background-color: #1A1A2E !important;
-    padding: 10px !important;
+    padding-bottom: 15px !important;
     z-index: 999 !important;
-}
-.stChatMessageContainer {
-    padding-bottom: 80px !important;
-}
-[data-testid="stChatMessageContent"] {
-    border-radius: 18px !important;
-    padding: 10px 15px !important;
-    max-width: 75% !important;
-    font-size: 0.95rem !important;
-}
-[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarAssistant"]) [data-testid="stChatMessageContent"] {
-    background-color: #16213E !important;
-    color: #F0F4F8 !important;
-    border-bottom-left-radius: 4px !important;
-    margin-left: 0 !important;
-}
-[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) {
-    flex-direction: row-reverse !important;
-}
-[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) [data-testid="stChatMessageContent"] {
-    background-color: #02C39A !important;
-    color: #1A1A2E !important;
-    border-bottom-right-radius: 4px !important;
-    margin-right: 0 !important;
 }
 </style>
 """, unsafe_allow_html=True)
