@@ -42,7 +42,7 @@ with st.sidebar:
     st.divider()
     user_name = st.text_input("Your Name", placeholder="Enter your name...")
     st.divider()
-    if st.button("🗑️ New Chat"):
+    if st.button("➕ New Chat"):
         st.session_state.messages = []
         st.rerun()
     st.divider()
@@ -51,7 +51,8 @@ with st.sidebar:
         df_side = pd.read_csv("chat_history.csv", names=["Date", "Name", "You", "MindEase"])
         if not df_side.empty:
             for _, row in df_side.iloc[::-1].iterrows():
-                with st.expander(f"💬 {row['Date']}"):
+                with st.expander(f"💬 {str(row['You'])[:30]}..."):
+                    st.caption(row['Date'])
                     st.markdown(f"**You:** {row['You']}")
                     st.markdown(f"**MindEase:** {row['MindEase']}")
         else:
@@ -86,8 +87,8 @@ HAPPY_VIDEOS = [
     ("Uplifting Morning Music ☀️", "https://www.youtube.com/embed/inpok4MKVLM"),
 ]
 
-tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12 = st.tabs([
-    "💬 Chat", "🕐 History", "😊 Mood", "😴 Sleep", "📝 Journal",
+tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11 = st.tabs([
+    "💬 Chat", "😊 Mood", "😴 Sleep", "📝 Journal",
     "🌬️ Breathe", "🎯 Affirmations", "📊 Weekly Report",
     "🧠 Assessment", "🎵 Music", "📅 Streak", "🏆 Wellness"
 ])
@@ -129,26 +130,6 @@ with tab1:
 
 with tab2:
     st.divider()
-    st.markdown("### 🕐 Chat History")
-    st.caption("Your past conversations with MindEase.")
-    if os.path.exists("chat_history.csv"):
-        df_chat = pd.read_csv("chat_history.csv", names=["Date", "Name", "You", "MindEase"])
-        if not df_chat.empty:
-            if st.button("🗑️ Delete All Chat History"):
-                os.remove("chat_history.csv")
-                st.success("Chat history deleted!")
-                st.rerun()
-            for _, row in df_chat.iloc[::-1].iterrows():
-                with st.expander(f"💬 {row['Date']} — {row['Name']}"):
-                    st.markdown(f"**You:** {row['You']}")
-                    st.markdown(f"**MindEase:** {row['MindEase']}")
-        else:
-            st.info("No chat history yet. Start chatting in the Chat tab!")
-    else:
-        st.info("No chat history yet. Start chatting in the Chat tab!")
-
-with tab3:
-    st.divider()
     st.markdown("### How are you feeling today?")
     mood = st.radio("Select your mood:", ["😊 Happy", "😐 Okay", "😔 Sad", "😰 Stressed", "😡 Angry"], horizontal=True)
     note = st.text_input("Add a note (optional)", placeholder="What is making you feel this way?")
@@ -174,7 +155,7 @@ with tab3:
     else:
         st.info("No mood logs yet. Save your first mood above!")
 
-with tab4:
+with tab3:
     st.divider()
     st.markdown("### How many hours did you sleep last night?")
     sleep_hours = st.slider("Sleep hours", 0, 12, 7)
@@ -205,7 +186,7 @@ with tab4:
     else:
         st.info("No sleep logs yet. Save your first sleep log above!")
 
-with tab5:
+with tab4:
     st.divider()
     st.markdown("### Write your thoughts today")
     st.caption("This is your private space. Write anything you feel.")
@@ -237,7 +218,7 @@ with tab5:
     else:
         st.info("No journal entries yet. Write your first one above!")
 
-with tab6:
+with tab5:
     st.divider()
     st.markdown("### Guided Breathing Exercise")
     st.caption("This exercise will help you calm down and relax.")
@@ -286,7 +267,7 @@ with tab6:
         """, unsafe_allow_html=True)
         st.success("Great job! You completed the breathing exercise. Feel better? 🌿")
 
-with tab7:
+with tab6:
     st.divider()
     st.markdown("### Your Daily Affirmation 🎯")
     st.caption("A positive message just for you today.")
@@ -305,7 +286,7 @@ with tab7:
     for affirmation in AFFIRMATIONS:
         st.markdown(f"🌿 {affirmation}")
 
-with tab8:
+with tab7:
     st.divider()
     st.markdown("### 📊 Your Weekly Mood Report")
     st.caption("Summary of how you felt this week.")
@@ -349,7 +330,7 @@ with tab8:
     else:
         st.info("No mood logs yet. Start logging your mood in the Mood tab!")
 
-with tab9:
+with tab8:
     st.divider()
     st.markdown("### 🧠 Mental Health Assessment")
     st.caption("Answer these simple questions honestly. This is not a medical diagnosis. It is just a self check tool to help you understand your feelings better.")
@@ -418,7 +399,7 @@ with tab9:
             st.divider()
         st.caption("Remember: This is not a medical diagnosis. If you are struggling, please speak to a doctor or mental health professional.")
 
-with tab10:
+with tab9:
     st.divider()
     st.markdown("### 🎵 Calming Music Player")
     st.caption("Listen to relaxing sounds to help you feel calm and peaceful.")
@@ -455,7 +436,7 @@ with tab10:
             </iframe>
             """, unsafe_allow_html=True)
 
-with tab11:
+with tab10:
     st.divider()
     st.markdown("### 📅 Mood Streak Counter")
     st.caption("How many days in a row have you logged your mood?")
@@ -501,7 +482,7 @@ with tab11:
     else:
         st.info("No mood logs yet. Start logging your mood to build your streak!")
 
-with tab12:
+with tab11:
     st.divider()
     st.markdown("### 🏆 Your Wellness Score")
     st.caption("This score shows your overall mental wellness based on your logs.")
