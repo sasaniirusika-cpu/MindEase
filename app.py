@@ -40,7 +40,6 @@ api_key = st.secrets["GROQ_API_KEY"]
 with st.sidebar:
     st.markdown("### 🌿 MindEase")
     st.divider()
-    user_name = st.text_input("Your Name", placeholder="Enter your name...")
     st.divider()
     if st.button("➕ New Chat"):
         st.session_state.messages = []
@@ -60,7 +59,7 @@ with st.sidebar:
     else:
         st.caption("No history yet. Start chatting!")
 
-name = user_name if user_name else "friend"
+name = "friend"
 
 SYSTEM_PROMPT = f"You are MindEase, a warm and caring AI mental health companion. The user's name is {name}. Always call them by their name to make them feel special and heard. Listen with kindness. Validate feelings. Ask gentle follow-up questions. Suggest breathing exercises or journaling when helpful. Use simple language. If user mentions self-harm share this: https://www.iasp.info/resources/Crisis_Centres/ Never diagnose or replace therapy."
 
