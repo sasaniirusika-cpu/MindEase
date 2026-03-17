@@ -29,16 +29,11 @@ st.markdown("""
     font-weight: bold;
     margin: 10px 0;
 }
-.stChatInputContainer > div {
-    bottom: 0 !important;
-    position: fixed !important;
-    width: 60% !important;
-    background-color: #1A1A2E !important;
-    padding-bottom: 15px !important;
-    z-index: 999 !important;
-}
 </style>
 """, unsafe_allow_html=True)
+
+st.markdown('<div class="main-title">🌿 MindEase</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle">Your personal AI companion for mental wellness</div>', unsafe_allow_html=True)
 
 api_key = st.secrets["GROQ_API_KEY"]
 
@@ -76,8 +71,10 @@ HAPPY_VIDEOS = [
 
 tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11 = st.tabs([
     "💬 Chat", "😊 Mood", "😴 Sleep", "📝 Journal",
-    "🌬️ Breathe", "🎯 Affirmations", "📊 Weekly Report", "🧠 Assessment", "🎵 Music", "📅 Streak", "🏆 Wellness"
+    "🌬️ Breathe", "🎯 Affirmations", "📊 Weekly Report",
+    "🧠 Assessment", "🎵 Music", "📅 Streak", "🏆 Wellness"
 ])
+
 with tab1:
     st.divider()
     if "messages" not in st.session_state:
@@ -301,7 +298,6 @@ with tab8:
     st.markdown("### 🧠 Mental Health Assessment")
     st.caption("Answer these simple questions honestly. This is not a medical diagnosis. It is just a self check tool to help you understand your feelings better.")
     st.divider()
-
     q1 = st.selectbox("1. How often do you feel sad or hopeless?", ["Never", "Sometimes", "Often", "Always"])
     q2 = st.selectbox("2. How often do you feel worried or anxious?", ["Never", "Sometimes", "Often", "Always"])
     q3 = st.selectbox("3. How well are you sleeping?", ["Very Well", "Okay", "Poorly", "Very Poorly"])
@@ -323,10 +319,8 @@ with tab8:
 
     if st.button("See My Results 🧠"):
         total_score = score_answer(q1) + score_answer(q2) + score_answer(q3) + score_answer(q4) + score_answer(q5) + score_answer(q6) + score_answer(q7) + score_answer(q8)
-
         st.divider()
         st.markdown("### Your Results")
-
         if total_score <= 6:
             level = "Low"
             color = "#02C39A"
@@ -340,7 +334,6 @@ with tab8:
                 "Practice daily affirmations to stay positive.",
             ]
             videos = HAPPY_VIDEOS[:2]
-
         elif total_score <= 14:
             level = "Moderate"
             color = "#F4A261"
@@ -355,7 +348,6 @@ with tab8:
                 "Try to get at least 7 to 8 hours of sleep every night.",
             ]
             videos = HAPPY_VIDEOS[:3]
-
         else:
             level = "High"
             color = "#E63946"
@@ -370,22 +362,18 @@ with tab8:
                 "Be kind to yourself. You deserve support and care. 🌿",
             ]
             videos = HAPPY_VIDEOS
-
         st.markdown(f"""
         <div class="result-box" style="background-color: {color}20; border: 2px solid {color};">
             {emoji} Your mental wellness level is <strong>{level}</strong>
         </div>
         """, unsafe_allow_html=True)
-
         st.divider()
         st.markdown("#### Why did you get this result?")
         st.write(reason)
-
         st.divider()
         st.markdown("#### What you can do now")
         for suggestion in suggestions:
             st.markdown(f"🌿 {suggestion}")
-
         st.divider()
         st.markdown("#### Videos to help you feel better 🎥")
         st.caption("Watch these to relax, smile, and feel calm.")
@@ -393,20 +381,55 @@ with tab8:
             st.markdown(f"**{title}**")
             st.markdown(f'<iframe width="100%" height="250" src="{url}" frameborder="0" allowfullscreen></iframe>', unsafe_allow_html=True)
             st.divider()
-
         st.caption("Remember: This is not a medical diagnosis. If you are struggling, please speak to a doctor or mental health professional.")
-        with tab10:
+
+with tab9:
+    st.divider()
+    st.markdown("### 🎵 Calming Music Player")
+    st.caption("Listen to relaxing sounds to help you feel calm and peaceful.")
+    st.divider()
+    music_options = {
+        "🌿 Relaxing Nature Sounds": "https://www.youtube.com/embed/1ZYbU82GVz4",
+        "🎹 Calm Piano Music": "https://www.youtube.com/embed/lFcSrYw-ARY",
+        "🌊 Peaceful Ocean Waves": "https://www.youtube.com/embed/bn9F19Hi1Lk",
+        "☀️ Uplifting Morning Music": "https://www.youtube.com/embed/inpok4MKVLM",
+        "🌙 Sleep Music for Deep Rest": "https://www.youtube.com/embed/1vx8iUvfyCY",
+        "🌧️ Soft Rain Sounds": "https://www.youtube.com/embed/mPZkdNFkNps",
+        "🔥 Fireplace Crackling Sounds": "https://www.youtube.com/embed/UgHKb_7884o",
+        "🎵 Lofi Hip Hop to Relax": "https://www.youtube.com/embed/jfKfPfyJRdk",
+    }
+    selected = st.selectbox("Choose your music", list(music_options.keys()))
+    st.markdown(f"""
+    <iframe width="100%" height="300"
+    src="{music_options[selected]}?autoplay=1"
+    frameborder="0"
+    allow="autoplay; encrypted-media"
+    allowfullscreen>
+    </iframe>
+    """, unsafe_allow_html=True)
+    st.divider()
+    st.markdown("### All Music 🎵")
+    for title, url in music_options.items():
+        with st.expander(title):
+            st.markdown(f"""
+            <iframe width="100%" height="200"
+            src="{url}"
+            frameborder="0"
+            allow="autoplay; encrypted-media"
+            allowfullscreen>
+            </iframe>
+            """, unsafe_allow_html=True)
+
+with tab10:
     st.divider()
     st.markdown("### 📅 Mood Streak Counter")
     st.caption("How many days in a row have you logged your mood?")
     st.divider()
-
     if os.path.exists("mood_log.csv"):
         df = pd.read_csv("mood_log.csv", names=["Date", "Mood", "Note"])
         if not df.empty:
             df["Date"] = pd.to_datetime(df["Date"]).dt.date
             unique_days = sorted(df["Date"].unique(), reverse=True)
-
             streak = 0
             today = datetime.now().date()
             for i, day in enumerate(unique_days):
@@ -415,18 +438,16 @@ with tab8:
                     streak += 1
                 else:
                     break
-
             if streak == 0:
                 st.info("No streak yet. Log your mood today to start your streak! 😊")
             elif streak == 1:
                 st.success("🔥 1 day streak! Great start! Keep going tomorrow!")
             elif streak < 7:
-                st.success(f"🔥 {streak} day streak! You are building a great habit! Keep it up!")
+                st.success(f"🔥 {streak} day streak! You are building a great habit!")
             elif streak < 30:
                 st.success(f"🔥🔥 {streak} day streak! Amazing! You are so consistent!")
             else:
-                st.success(f"🔥🔥🔥 {streak} day streak! You are a MindEase champion! Incredible!")
-
+                st.success(f"🔥🔥🔥 {streak} day streak! You are a MindEase champion!")
             st.markdown(f"""
             <div style="text-align:center; background-color:#16213E;
             border-radius:20px; padding:40px; margin:20px 0;">
@@ -435,7 +456,6 @@ with tab8:
                 <div style="font-size:1.2rem; color:#8FA3B1;">Day Streak</div>
             </div>
             """, unsafe_allow_html=True)
-
             st.divider()
             st.markdown("### Your Logging History")
             st.caption(f"You have logged your mood on {len(unique_days)} different days!")
@@ -451,11 +471,8 @@ with tab11:
     st.markdown("### 🏆 Your Wellness Score")
     st.caption("This score shows your overall mental wellness based on your logs.")
     st.divider()
-
     score = 0
-    max_score = 100
     breakdown = []
-
     if os.path.exists("mood_log.csv"):
         df_mood = pd.read_csv("mood_log.csv", names=["Date", "Mood", "Note"])
         if not df_mood.empty:
@@ -468,7 +485,6 @@ with tab11:
             breakdown.append(("😊 Mood Score", 0, 30))
     else:
         breakdown.append(("😊 Mood Score", 0, 30))
-
     if os.path.exists("sleep_log.csv"):
         df_sleep = pd.read_csv("sleep_log.csv", names=["Date", "Hours", "Quality", "Note"])
         if not df_sleep.empty:
@@ -485,7 +501,6 @@ with tab11:
             breakdown.append(("😴 Sleep Score", 0, 25))
     else:
         breakdown.append(("😴 Sleep Score", 0, 25))
-
     if os.path.exists("journal_log.csv"):
         df_journal = pd.read_csv("journal_log.csv", names=["Date", "Title", "Entry"])
         journal_score = min(len(df_journal) * 5, 25)
@@ -493,7 +508,6 @@ with tab11:
         breakdown.append(("📝 Journal Score", journal_score, 25))
     else:
         breakdown.append(("📝 Journal Score", 0, 25))
-
     if os.path.exists("mood_log.csv"):
         df_streak = pd.read_csv("mood_log.csv", names=["Date", "Mood", "Note"])
         if not df_streak.empty:
@@ -514,7 +528,6 @@ with tab11:
             breakdown.append(("📅 Streak Score", 0, 20))
     else:
         breakdown.append(("📅 Streak Score", 0, 20))
-
     if score >= 80:
         color = "#02C39A"
         emoji = "🏆"
@@ -531,7 +544,6 @@ with tab11:
         color = "#E63946"
         emoji = "💙"
         message = "You are just getting started! Log your mood daily to improve your wellness score!"
-
     st.markdown(f"""
     <div style="text-align:center; background-color:#16213E;
     border-radius:20px; padding:40px; margin:20px 0;">
@@ -540,7 +552,6 @@ with tab11:
         <div style="font-size:1.2rem; color:#8FA3B1;">out of 100</div>
     </div>
     """, unsafe_allow_html=True)
-
     st.markdown(f"**{message}**")
     st.divider()
     st.markdown("### Score Breakdown")
