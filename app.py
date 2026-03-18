@@ -146,35 +146,43 @@ with tab1:
     st.divider()
     if "messages" not in st.session_state:
         st.session_state.messages = []
-    if len(st.session_state.messages) == 0:
-        with st.chat_message("assistant", avatar="🌿"):
-            st.markdown("Hi there! I am MindEase. How are you feeling today? 😊")
-    for message in st.session_state.messages:
-        avatar = "🌿" if message["role"] == "assistant" else "🧑"
-        with st.chat_message(message["role"], avatar=avatar):
-            st.markdown(message["content"])
+
+    chat_container = st.container(height=450)
+
+    with chat_container:
+        if len(st.session_state.messages) == 0:
+            with st.chat_message("assistant", avatar="🌿"):
+                st.markdown("Hi there! I am MindEase. How are you feeling today? 😊")
+        for message in st.session_state.messages:
+            avatar = "🌿" if message["role"] == "assistant" else "🧑"
+            with st.chat_message(message["role"], avatar=avatar):
+                st.markdown(message["content"])
+
     user_input = st.chat_input("Share how you are feeling...")
     if user_input:
-        with st.chat_message("user", avatar="🧑"):
-            st.markdown(user_input)
+        with chat_container:
+            with st.chat_message("user", avatar="🧑"):
+                st.markdown(user_input)
         st.session_state.messages.append({"role": "user", "content": user_input})
-        with st.chat_message("assistant", avatar="🌿"):
-            with st.spinner("MindEase is listening..."):
-                try:
-                    client = Groq(api_key=api_key)
-                    all_messages = [{"role": "system", "content": SYSTEM_PROMPT}]
-                    for m in st.session_state.messages:
-                        all_messages.append({"role": m["role"], "content": m["content"]})
-                    response = client.chat.completions.create(model="llama-3.3-70b-versatile", messages=all_messages)
-                    reply = response.choices[0].message.content
-                    st.markdown(reply)
-                    st.session_state.messages.append({"role": "assistant", "content": reply})
-                    now = datetime.now().strftime("%Y-%m-%d %H:%M")
-                    with open("chat_history.csv", "a", newline="", encoding="utf-8") as f:
-                        writer = csv.writer(f)
-                        writer.writerow([now, name, user_input, reply])
-                except Exception as e:
-                    st.error(f"Something went wrong: {str(e)}")
+        with chat_container:
+            with st.chat_message("assistant", avatar="🌿"):
+                with st.spinner("MindEase is listening..."):
+                    try:
+                        client = Groq(api_key=api_key)
+                        all_messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+                        for m in st.session_state.messages:
+                            all_messages.append({"role": m["role"], "content": m["content"]})
+                        response = client.chat.completions.create(model="llama-3.3-70b-versatile", messages=all_messages)
+                        reply = response.choices[0].message.content
+                        st.markdown(reply)
+                        st.session_state.messages.append({"role": "assistant", "content": reply})
+                        now = datetime.now().strftime("%Y-%m-%d %H:%M")
+                        with open("chat_history.csv", "a", newline="", encoding="utf-8") as f:
+                            writer = csv.writer(f)
+                            writer.writerow([now, name, user_input, reply])
+                    except Exception as e:
+                        st.error(f"Something went wrong: {str(e)}")
+        st.rerun()
 
 with tab2:
     st.divider()
