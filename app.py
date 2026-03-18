@@ -43,17 +43,10 @@ div[data-testid="stChatInput"] textarea {
 div[data-testid="stChatInput"] textarea::placeholder {
     color: #8FA3B1 !important;
 }
-.stChatFloatingInputContainer {
-    position: fixed !important;
-    bottom: 20px !important;
-    left: 50% !important;
-    transform: translateX(-25%) !important;
-    width: 50% !important;
-    z-index: 999 !important;
-    background-color: #1A1A2E !important;
-    padding: 10px !important;
-    border-radius: 24px !important;
-}
+div[data-testid="stChatInput"] button {
+    background-color: #02C39A !important;
+    border-radius: 50% !important;
+    color: white !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -101,18 +94,19 @@ How you respond:
 - Always acknowledge how the person feels first before saying anything else
 - Make them feel truly heard and understood
 - Ask one gentle follow up question at a time — never ask many questions at once
-- Share small relatable thoughts like a friend would — for example "I can understand why that would feel so heavy"
+- Share small relatable thoughts like a friend would
 - If they are sad, sit with them in their sadness first before suggesting anything
 - If they are happy, celebrate with them genuinely
 - If they are stressed, be calm and grounding for them
 - Never rush to give advice — listen first, advise later only if they ask
-- Keep responses short and warm — like a text message from a close friend, not a long essay
+- Keep responses short and warm — like a text message from a close friend
 
 Important rules:
 - If the user mentions self-harm, suicide, or crisis — respond with deep care and share this helpline gently: https://www.iasp.info/resources/Crisis_Centres/
 - Never diagnose anyone
 - Never replace professional therapy but always encourage it gently when needed
 - Never say you are an AI unless directly asked"""
+
 AFFIRMATIONS = [
     "You are stronger than you think. 💪",
     "Every day is a new beginning. 🌅",
@@ -128,6 +122,21 @@ AFFIRMATIONS = [
     "Your mental health matters. Taking care of yourself is brave. 🦋",
 ]
 
+QUOTES = [
+    ("You don't have to be positive all the time. It's perfectly okay to feel sad, angry, annoyed, frustrated, scared or anxious.", "Lori Deschene"),
+    ("Self-care is not self-indulgence, it is self-preservation.", "Audre Lorde"),
+    ("You are allowed to be both a masterpiece and a work in progress simultaneously.", "Sophia Bush"),
+    ("Healing is not linear.", "Unknown"),
+    ("Be gentle with yourself. You are a child of the universe.", "Max Ehrmann"),
+    ("Your present circumstances don't determine where you can go.", "Nido Qubein"),
+    ("Every day may not be good, but there is something good in every day.", "Unknown"),
+    ("You are braver than you believe, stronger than you seem.", "A.A. Milne"),
+    ("It's okay to not be okay, as long as you are not giving up.", "Unknown"),
+    ("The strongest people are not those who show strength in front of us, but those who win battles we know nothing about.", "Unknown"),
+    ("You matter. You are enough. You are loved.", "Unknown"),
+    ("Taking care of yourself is the most powerful way to begin to take care of others.", "Bryant McGill"),
+]
+
 HAPPY_VIDEOS = [
     ("Relaxing Nature Sounds 🌿", "https://www.youtube.com/embed/1ZYbU82GVz4"),
     ("Calm Piano Music 🎵", "https://www.youtube.com/embed/lFcSrYw-ARY"),
@@ -136,19 +145,38 @@ HAPPY_VIDEOS = [
     ("Uplifting Morning Music ☀️", "https://www.youtube.com/embed/inpok4MKVLM"),
 ]
 
-tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11 = st.tabs([
+MOOD_COLORS = {
+    "😊 Happy": {"color": "#FFD700", "bg": "#FFD70020", "label": "Golden Joy", "message": "You are glowing today! Keep that beautiful energy! 🌟"},
+    "😐 Okay": {"color": "#87CEEB", "bg": "#87CEEB20", "label": "Calm Blue", "message": "A steady calm day. That is perfectly fine! 🌤️"},
+    "😔 Sad": {"color": "#6495ED", "bg": "#6495ED20", "label": "Deep Blue", "message": "It is okay to feel sad. Be gentle with yourself today. 💙"},
+    "😰 Stressed": {"color": "#FF6B6B", "bg": "#FF6B6B20", "label": "Warm Red", "message": "Take a deep breath. You can get through this! 🌬️"},
+    "😡 Angry": {"color": "#FF4500", "bg": "#FF450020", "label": "Fiery Orange", "message": "Your feelings are valid. Try the breathing exercise to cool down. 🌿"},
+}
+
+BADGES = [
+    {"id": "first_mood", "name": "First Step 🌱", "desc": "Logged your first mood", "condition": lambda mood, sleep, journal, streak: mood >= 1},
+    {"id": "mood_5", "name": "Mood Tracker 😊", "desc": "Logged mood 5 times", "condition": lambda mood, sleep, journal, streak: mood >= 5},
+    {"id": "mood_10", "name": "Consistent Soul 🌟", "desc": "Logged mood 10 times", "condition": lambda mood, sleep, journal, streak: mood >= 10},
+    {"id": "first_sleep", "name": "Sleep Logger 😴", "desc": "Logged your first sleep", "condition": lambda mood, sleep, journal, streak: sleep >= 1},
+    {"id": "first_journal", "name": "Dear Diary 📝", "desc": "Wrote your first journal entry", "condition": lambda mood, sleep, journal, streak: journal >= 1},
+    {"id": "journal_5", "name": "Storyteller ✍️", "desc": "Wrote 5 journal entries", "condition": lambda mood, sleep, journal, streak: journal >= 5},
+    {"id": "streak_3", "name": "3 Day Streak 🔥", "desc": "Logged mood 3 days in a row", "condition": lambda mood, sleep, journal, streak: streak >= 3},
+    {"id": "streak_7", "name": "Week Warrior 🏆", "desc": "Logged mood 7 days in a row", "condition": lambda mood, sleep, journal, streak: streak >= 7},
+    {"id": "streak_30", "name": "MindEase Champion 👑", "desc": "Logged mood 30 days in a row", "condition": lambda mood, sleep, journal, streak: streak >= 30},
+]
+
+tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12, tab13, tab14 = st.tabs([
     "💬 Chat", "😊 Mood", "😴 Sleep", "📝 Journal",
     "🌬️ Breathe", "🎯 Affirmations", "📊 Weekly Report",
-    "🧠 Assessment", "🎵 Music", "📅 Streak", "🏆 Wellness"
+    "🧠 Assessment", "🎵 Music", "📅 Streak", "🏆 Wellness",
+    "🎨 Mood Color", "🌍 Quotes", "🏅 Badges"
 ])
 
 with tab1:
     st.divider()
     if "messages" not in st.session_state:
         st.session_state.messages = []
-
     chat_container = st.container(height=450)
-
     with chat_container:
         if len(st.session_state.messages) == 0:
             with st.chat_message("assistant", avatar="🌿"):
@@ -157,7 +185,6 @@ with tab1:
             avatar = "🌿" if message["role"] == "assistant" else "🧑"
             with st.chat_message(message["role"], avatar=avatar):
                 st.markdown(message["content"])
-
     user_input = st.chat_input("Share how you are feeling...")
     if user_input:
         with chat_container:
@@ -389,7 +416,7 @@ with tab7:
 with tab8:
     st.divider()
     st.markdown("### 🧠 Mental Health Assessment")
-    st.caption("Answer these simple questions honestly. This is not a medical diagnosis. It is just a self check tool to help you understand your feelings better.")
+    st.caption("Answer these simple questions honestly. This is not a medical diagnosis.")
     st.divider()
     q1 = st.selectbox("1. How often do you feel sad or hopeless?", ["Never", "Sometimes", "Often", "Always"])
     q2 = st.selectbox("2. How often do you feel worried or anxious?", ["Never", "Sometimes", "Often", "Always"])
@@ -413,27 +440,26 @@ with tab8:
     if st.button("See My Results 🧠"):
         total_score = score_answer(q1) + score_answer(q2) + score_answer(q3) + score_answer(q4) + score_answer(q5) + score_answer(q6) + score_answer(q7) + score_answer(q8)
         st.divider()
-        st.markdown("### Your Results")
         if total_score <= 6:
             level = "Low"
             color = "#02C39A"
             emoji = "😊"
-            reason = "Your answers show that you are generally feeling well. You have good emotional balance and are managing your feelings in a healthy way."
-            suggestions = ["Keep doing what you are doing! 🌿", "Try to maintain a regular sleep schedule.", "Stay connected with friends and family.", "Keep exercising and eating well.", "Practice daily affirmations to stay positive."]
+            reason = "Your answers show that you are generally feeling well. You have good emotional balance."
+            suggestions = ["Keep doing what you are doing! 🌿", "Maintain a regular sleep schedule.", "Stay connected with friends and family.", "Practice daily affirmations to stay positive."]
             videos = HAPPY_VIDEOS[:2]
         elif total_score <= 14:
             level = "Moderate"
             color = "#F4A261"
             emoji = "😐"
-            reason = "Your answers show that you are experiencing some stress or emotional difficulty. This is completely normal and many people feel this way. With some self care you can feel much better."
-            suggestions = ["Try the breathing exercise in the Breathe tab. 🌬️", "Write in your journal every day to release your feelings. 📝", "Log your mood daily to track your progress. 😊", "Take short breaks during the day.", "Talk to a friend or family member about how you feel.", "Try to get at least 7 to 8 hours of sleep every night."]
+            reason = "You are experiencing some stress or emotional difficulty. This is completely normal. With some self care you can feel much better."
+            suggestions = ["Try the breathing exercise. 🌬️", "Write in your journal every day. 📝", "Log your mood daily. 😊", "Talk to a friend or family member.", "Try to get at least 7 to 8 hours of sleep."]
             videos = HAPPY_VIDEOS[:3]
         else:
             level = "High"
             color = "#E63946"
             emoji = "😔"
-            reason = "Your answers show that you may be going through a really difficult time. Your feelings are valid and you are not alone. It is very important to reach out for help and support."
-            suggestions = ["Please talk to someone you trust right away. 💙", "Use the Chat tab to talk to MindEase anytime. 💬", "Contact a mental health helpline: https://www.iasp.info/resources/Crisis_Centres/", "Try the breathing exercise when you feel overwhelmed. 🌬️", "Consider speaking to a professional counselor or doctor.", "Be kind to yourself. You deserve support and care. 🌿"]
+            reason = "You may be going through a really difficult time. Your feelings are valid and you are not alone."
+            suggestions = ["Please talk to someone you trust. 💙", "Use the Chat tab to talk to MindEase. 💬", "Contact a helpline: https://www.iasp.info/resources/Crisis_Centres/", "Try the breathing exercise. 🌬️", "Consider speaking to a professional."]
             videos = HAPPY_VIDEOS
         st.markdown(f"""
         <div class="result-box" style="background-color: {color}20; border: 2px solid {color};">
@@ -453,7 +479,7 @@ with tab8:
             st.markdown(f"**{title}**")
             st.markdown(f'<iframe width="100%" height="250" src="{url}" frameborder="0" allowfullscreen></iframe>', unsafe_allow_html=True)
             st.divider()
-        st.caption("Remember: This is not a medical diagnosis. If you are struggling, please speak to a doctor or mental health professional.")
+        st.caption("This is not a medical diagnosis. Please speak to a doctor if you are struggling.")
 
 with tab9:
     st.divider()
@@ -484,11 +510,8 @@ with tab9:
     for title, url in music_options.items():
         with st.expander(title):
             st.markdown(f"""
-            <iframe width="100%" height="200"
-            src="{url}"
-            frameborder="0"
-            allow="autoplay; encrypted-media"
-            allowfullscreen>
+            <iframe width="100%" height="200" src="{url}"
+            frameborder="0" allow="autoplay; encrypted-media" allowfullscreen>
             </iframe>
             """, unsafe_allow_html=True)
 
@@ -511,15 +534,15 @@ with tab10:
                 else:
                     break
             if streak == 0:
-                st.info("No streak yet. Log your mood today to start your streak! 😊")
+                st.info("No streak yet. Log your mood today to start! 😊")
             elif streak == 1:
-                st.success("🔥 1 day streak! Great start! Keep going tomorrow!")
+                st.success("🔥 1 day streak! Great start!")
             elif streak < 7:
-                st.success(f"🔥 {streak} day streak! You are building a great habit!")
+                st.success(f"🔥 {streak} day streak! Keep going!")
             elif streak < 30:
-                st.success(f"🔥🔥 {streak} day streak! Amazing! You are so consistent!")
+                st.success(f"🔥🔥 {streak} day streak! Amazing!")
             else:
-                st.success(f"🔥🔥🔥 {streak} day streak! You are a MindEase champion!")
+                st.success(f"🔥🔥🔥 {streak} day streak! You are a champion!")
             st.markdown(f"""
             <div style="text-align:center; background-color:#16213E;
             border-radius:20px; padding:40px; margin:20px 0;">
@@ -529,19 +552,18 @@ with tab10:
             </div>
             """, unsafe_allow_html=True)
             st.divider()
-            st.markdown("### Your Logging History")
-            st.caption(f"You have logged your mood on {len(unique_days)} different days!")
+            st.markdown("### Logging History")
             for day in unique_days[:10]:
                 st.markdown(f"✅ {day}")
         else:
-            st.info("No mood logs yet. Start logging your mood to build your streak!")
+            st.info("No mood logs yet!")
     else:
-        st.info("No mood logs yet. Start logging your mood to build your streak!")
+        st.info("No mood logs yet!")
 
 with tab11:
     st.divider()
     st.markdown("### 🏆 Your Wellness Score")
-    st.caption("This score shows your overall mental wellness based on your logs.")
+    st.caption("Your overall mental wellness based on all your logs.")
     st.divider()
     score = 0
     breakdown = []
@@ -602,15 +624,15 @@ with tab11:
     elif score >= 60:
         color = "#F4A261"
         emoji = "😊"
-        message = "Good job! You are doing well. Keep building your healthy habits!"
+        message = "Good job! Keep building your healthy habits!"
     elif score >= 40:
         color = "#E9C46A"
         emoji = "😐"
-        message = "Not bad! Try logging your mood and sleeping better to improve your score!"
+        message = "Not bad! Try logging your mood and sleeping better!"
     else:
         color = "#E63946"
         emoji = "💙"
-        message = "You are just getting started! Log your mood daily to improve your wellness score!"
+        message = "You are just getting started! Log your mood daily!"
     st.markdown(f"""
     <div style="text-align:center; background-color:#16213E;
     border-radius:20px; padding:40px; margin:20px 0;">
@@ -625,3 +647,123 @@ with tab11:
     for label, s, max_s in breakdown:
         st.markdown(f"**{label}:** {s} out of {max_s}")
         st.progress(s / max_s)
+
+with tab12:
+    st.divider()
+    st.markdown("### 🎨 Your Mood Color Palette")
+    st.caption("See what color represents how you feel today!")
+    st.divider()
+    mood_choice = st.radio("How are you feeling right now?", list(MOOD_COLORS.keys()), horizontal=True)
+    mood_data = MOOD_COLORS[mood_choice]
+    st.markdown(f"""
+    <div style="text-align:center; background-color:{mood_data['bg']};
+    border: 3px solid {mood_data['color']};
+    border-radius:20px; padding:40px; margin:20px 0;">
+        <div style="font-size:4rem;">{mood_choice}</div>
+        <div style="font-size:2rem; font-weight:bold; color:{mood_data['color']};">
+            {mood_data['label']}
+        </div>
+        <div style="width:100px; height:100px; border-radius:50%;
+        background-color:{mood_data['color']}; margin:20px auto;"></div>
+        <div style="font-size:1rem; color:#F0F4F8; margin-top:10px;">
+            {mood_data['message']}
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    st.divider()
+    st.markdown("### All Mood Colors 🎨")
+    cols = st.columns(5)
+    for i, (mood_key, data) in enumerate(MOOD_COLORS.items()):
+        with cols[i]:
+            st.markdown(f"""
+            <div style="text-align:center; padding:10px;">
+                <div style="width:50px; height:50px; border-radius:50%;
+                background-color:{data['color']}; margin:auto;"></div>
+                <div style="font-size:0.8rem; color:#8FA3B1; margin-top:5px;">{data['label']}</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+with tab13:
+    st.divider()
+    st.markdown("### 🌍 Inspirational Quotes")
+    st.caption("A new quote every time to inspire and uplift you.")
+    st.divider()
+    if "quote" not in st.session_state:
+        st.session_state.quote = random.choice(QUOTES)
+    quote_text, quote_author = st.session_state.quote
+    st.markdown(f"""
+    <div style="background-color:#16213E; border-left:5px solid #02C39A;
+    padding:30px; border-radius:12px; margin:20px 0;">
+        <div style="font-size:1.4rem; color:#F0F4F8; font-style:italic; line-height:1.6;">
+            "{quote_text}"
+        </div>
+        <div style="font-size:1rem; color:#02C39A; margin-top:15px; font-weight:bold;">
+            — {quote_author}
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    if st.button("Give me a new quote 🔄"):
+        st.session_state.quote = random.choice(QUOTES)
+        st.rerun()
+    st.divider()
+    st.markdown("### All Quotes 🌟")
+    for q, a in QUOTES:
+        with st.expander(f"💬 {q[:50]}..."):
+            st.markdown(f"*\"{q}\"*")
+            st.markdown(f"**— {a}**")
+
+with tab14:
+    st.divider()
+    st.markdown("### 🏅 Your Badges")
+    st.caption("Earn badges by using MindEase every day!")
+    st.divider()
+    mood_count = 0
+    sleep_count = 0
+    journal_count = 0
+    current_streak = 0
+    if os.path.exists("mood_log.csv"):
+        df_b = pd.read_csv("mood_log.csv", names=["Date", "Mood", "Note"])
+        mood_count = len(df_b)
+        if not df_b.empty:
+            df_b["Date"] = pd.to_datetime(df_b["Date"]).dt.date
+            unique_days = sorted(df_b["Date"].unique(), reverse=True)
+            today = datetime.now().date()
+            for i, day in enumerate(unique_days):
+                expected = today - pd.Timedelta(days=i)
+                if day == expected:
+                    current_streak += 1
+                else:
+                    break
+    if os.path.exists("sleep_log.csv"):
+        df_s = pd.read_csv("sleep_log.csv", names=["Date", "Hours", "Quality", "Note"])
+        sleep_count = len(df_s)
+    if os.path.exists("journal_log.csv"):
+        df_j = pd.read_csv("journal_log.csv", names=["Date", "Title", "Entry"])
+        journal_count = len(df_j)
+    earned = []
+    not_earned = []
+    for badge in BADGES:
+        if badge["condition"](mood_count, sleep_count, journal_count, current_streak):
+            earned.append(badge)
+        else:
+            not_earned.append(badge)
+    st.markdown(f"### You have earned **{len(earned)}** out of **{len(BADGES)}** badges! 🎉")
+    st.divider()
+    if earned:
+        st.markdown("#### ✅ Earned Badges")
+        cols = st.columns(3)
+        for i, badge in enumerate(earned):
+            with cols[i % 3]:
+                st.markdown(f"""
+                <div style="background-color:#16213E; border:2px solid #02C39A;
+                border-radius:12px; padding:15px; text-align:center; margin:5px;">
+                    <div style="font-size:2rem;">{badge['name'].split()[-1]}</div>
+                    <div style="color:#02C39A; font-weight:bold;">{badge['name']}</div>
+                    <div style="color:#8FA3B1; font-size:0.8rem;">{badge['desc']}</div>
+                </div>
+                """, unsafe_allow_html=True)
+    st.divider()
+    if not_earned:
+        st.markdown("#### 🔒 Badges to Earn")
+        for badge in not_earned:
+            st.markdown(f"🔒 **{badge['name']}** — {badge['desc']}")
