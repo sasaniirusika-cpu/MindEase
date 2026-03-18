@@ -165,11 +165,11 @@ BADGES = [
     {"id": "streak_30", "name": "MindEase Champion 👑", "desc": "Logged mood 30 days in a row", "condition": lambda mood, sleep, journal, streak: streak >= 30},
 ]
 
-tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12, tab13, tab14 = st.tabs([
+tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12, tab13, tab14, tab15 = st.tabs([
     "💬 Chat", "😊 Mood", "😴 Sleep", "📝 Journal",
-    "🌬️ Breathe", "🎯 Affirmations", "📊 Weekly Report",
+    "🧘 Meditation", "🎯 Affirmations", "📈 Progress",
     "🧠 Assessment", "🎵 Music", "📅 Streak", "🏆 Wellness",
-    "🎨 Mood Color", "🌍 Quotes", "🏅 Badges"
+    "🎨 Mood Color", "🌍 Quotes", "🏅 Badges", "🌙 Night Check In"
 ])
 
 with tab1:
@@ -303,52 +303,127 @@ with tab4:
 
 with tab5:
     st.divider()
-    st.markdown("### Guided Breathing Exercise")
-    st.caption("This exercise will help you calm down and relax.")
+    st.markdown("### 🧘 Meditation and Breathing")
+    st.caption("Choose between a guided meditation or a breathing exercise.")
     st.divider()
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        breathe_placeholder = st.empty()
-    st.divider()
-    rounds = st.slider("How many rounds?", 1, 5, 3)
-    if st.button("Start Breathing Exercise 🌬️"):
-        for i in range(rounds):
-            st.markdown(f"**Round {i+1} of {rounds}**")
+
+    exercise_type = st.radio("What do you want to do?", ["🌬️ Breathing Exercise", "🧘 Guided Meditation"], horizontal=True)
+
+    if exercise_type == "🌬️ Breathing Exercise":
+        st.divider()
+        st.markdown("#### Guided Breathing Exercise")
+        st.caption("Follow the circle to breathe in, hold, and breathe out.")
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            breathe_placeholder = st.empty()
+        st.divider()
+        rounds = st.slider("How many rounds?", 1, 5, 3)
+        if st.button("Start Breathing Exercise 🌬️"):
+            for i in range(rounds):
+                st.markdown(f"**Round {i+1} of {rounds}**")
+                breathe_placeholder.markdown("""
+                <div style="width:200px; height:200px; border-radius:50%;
+                background: radial-gradient(circle, #02C39A, #028090);
+                display:flex; align-items:center; justify-content:center;
+                margin:auto; color:white; font-size:1.5rem; font-weight:bold;">
+                Breathe In</div>
+                """, unsafe_allow_html=True)
+                st.toast("Breathe IN... 🌬️")
+                time.sleep(4)
+                breathe_placeholder.markdown("""
+                <div style="width:200px; height:200px; border-radius:50%;
+                background: radial-gradient(circle, #9B72CF, #028090);
+                display:flex; align-items:center; justify-content:center;
+                margin:auto; color:white; font-size:1.5rem; font-weight:bold;">
+                Hold</div>
+                """, unsafe_allow_html=True)
+                st.toast("HOLD... ⏸️")
+                time.sleep(4)
+                breathe_placeholder.markdown("""
+                <div style="width:200px; height:200px; border-radius:50%;
+                background: radial-gradient(circle, #028090, #1A1A2E);
+                display:flex; align-items:center; justify-content:center;
+                margin:auto; color:white; font-size:1.5rem; font-weight:bold;">
+                Breathe Out</div>
+                """, unsafe_allow_html=True)
+                st.toast("Breathe OUT... 😮‍💨")
+                time.sleep(6)
             breathe_placeholder.markdown("""
             <div style="width:200px; height:200px; border-radius:50%;
             background: radial-gradient(circle, #02C39A, #028090);
             display:flex; align-items:center; justify-content:center;
-            margin:auto; color:white; font-size:1.5rem; font-weight:bold;">
-            Breathe In</div>
+            margin:auto; color:white; font-size:1.2rem; font-weight:bold;">
+            Done! 🌿</div>
             """, unsafe_allow_html=True)
-            st.toast("Breathe IN... 🌬️")
-            time.sleep(4)
-            breathe_placeholder.markdown("""
-            <div style="width:200px; height:200px; border-radius:50%;
-            background: radial-gradient(circle, #9B72CF, #028090);
-            display:flex; align-items:center; justify-content:center;
-            margin:auto; color:white; font-size:1.5rem; font-weight:bold;">
-            Hold</div>
-            """, unsafe_allow_html=True)
-            st.toast("HOLD... ⏸️")
-            time.sleep(4)
-            breathe_placeholder.markdown("""
-            <div style="width:200px; height:200px; border-radius:50%;
-            background: radial-gradient(circle, #028090, #1A1A2E);
-            display:flex; align-items:center; justify-content:center;
-            margin:auto; color:white; font-size:1.5rem; font-weight:bold;">
-            Breathe Out</div>
-            """, unsafe_allow_html=True)
-            st.toast("Breathe OUT... 😮‍💨")
-            time.sleep(6)
-        breathe_placeholder.markdown("""
-        <div style="width:200px; height:200px; border-radius:50%;
-        background: radial-gradient(circle, #02C39A, #028090);
-        display:flex; align-items:center; justify-content:center;
-        margin:auto; color:white; font-size:1.2rem; font-weight:bold;">
-        Done! 🌿</div>
-        """, unsafe_allow_html=True)
-        st.success("Great job! You completed the breathing exercise. Feel better? 🌿")
+            st.success("Great job! You completed the breathing exercise. Feel better? 🌿")
+
+    else:
+        st.divider()
+        st.markdown("#### Guided Meditation")
+        st.caption("Choose a meditation type and follow the steps.")
+        meditation_type = st.selectbox("Choose your meditation", [
+            "🌿 5 Minute Calm — for general relaxation",
+            "😴 Sleep Meditation — to help you fall asleep",
+            "😰 Anxiety Relief — to calm stress and worry",
+            "💙 Self Love — to feel better about yourself",
+            "🎯 Focus Meditation — to improve concentration",
+        ])
+
+        meditations = {
+            "🌿 5 Minute Calm — for general relaxation": [
+                ("Find a comfortable position", "Sit or lie down comfortably. Close your eyes gently. Let your body relax completely. 🌿", 10),
+                ("Focus on your breath", "Take a slow deep breath in through your nose for 4 counts. Hold for 2. Breathe out slowly for 6 counts. 🌬️", 15),
+                ("Relax your body", "Starting from your toes, slowly relax each part of your body. Feel the tension melting away. 😌", 20),
+                ("Visualize a peaceful place", "Imagine yourself in a beautiful peaceful place — a garden, a beach, or anywhere that makes you feel safe and calm. 🌸", 30),
+                ("Return gently", "Slowly bring your awareness back to the room. Wiggle your fingers and toes. Open your eyes when you are ready. ✨", 10),
+            ],
+            "😴 Sleep Meditation — to help you fall asleep": [
+                ("Lie down comfortably", "Get into your sleeping position. Pull your blanket over you. Let your body sink into the bed. 😴", 10),
+                ("Slow your breathing", "Breathe in for 4 counts. Hold for 7. Breathe out for 8 counts. This slows your heart rate naturally. 🌙", 20),
+                ("Release the day", "Think of one good thing that happened today, no matter how small. Let everything else go. 🌿", 20),
+                ("Body scan", "Feel your feet relax. Then legs. Then stomach. Then chest. Then arms. Then face. Everything is soft and heavy. 💤", 30),
+                ("Drift to sleep", "You are safe. You are calm. You are allowed to rest. Let your mind go quiet and drift gently to sleep. 🌙", 15),
+            ],
+            "😰 Anxiety Relief — to calm stress and worry": [
+                ("Acknowledge your feelings", "It is okay to feel anxious. Your feelings are valid. You are safe right now in this moment. 💙", 10),
+                ("Grounding exercise", "Name 5 things you can see. 4 things you can touch. 3 things you can hear. 2 things you can smell. 1 thing you can taste. 🌿", 30),
+                ("Breathing to calm down", "Breathe in for 4 counts. Hold for 4. Breathe out for 4. Hold for 4. Repeat this box breathing pattern. 🌬️", 20),
+                ("Positive self talk", "Say to yourself — I am safe. I am okay. This feeling will pass. I have gotten through hard things before. 💪", 15),
+                ("Return to calm", "Feel your body relaxing. The anxiety is passing. You are stronger than your worries. 🌸", 15),
+            ],
+            "💙 Self Love — to feel better about yourself": [
+                ("Settle in", "Sit comfortably with your hand on your heart. Close your eyes. Take three slow deep breaths. 💙", 10),
+                ("Acknowledge yourself", "Think of one thing you did well recently — no matter how small. You deserve to recognize it. 🌟", 15),
+                ("Send yourself kindness", "Imagine a warm golden light in your chest. With every breath it grows bigger and warmer. This is love for yourself. 💛", 20),
+                ("Affirmation", "Silently say to yourself — I am enough. I am worthy. I deserve kindness and love. I am doing my best. 🌸", 20),
+                ("Close with gratitude", "Thank yourself for taking this time. You matter. Open your eyes slowly when you are ready. 🌿", 10),
+            ],
+            "🎯 Focus Meditation — to improve concentration": [
+                ("Prepare your space", "Sit up straight. Put away distractions. Take three deep breaths to signal to your brain it is time to focus. 🎯", 10),
+                ("Single point focus", "Pick one object in front of you and stare at it gently. When your mind wanders, bring it back without judgment. 👁️", 20),
+                ("Breathing anchor", "Use your breath as an anchor. Every time a thought comes, notice it and return to your breath. 🌬️", 20),
+                ("Visualize success", "Picture yourself completing the task you need to focus on. See yourself doing it calmly and well. 🌟", 15),
+                ("Ready to focus", "Open your eyes slowly. You are calm, clear, and ready to focus. Start your task now with full attention. 🎯", 10),
+            ],
+        }
+
+        selected_meditation = meditations[meditation_type]
+
+        if st.button("Start Meditation 🧘"):
+            for step_num, (title, instruction, duration) in enumerate(selected_meditation):
+                st.markdown(f"""
+                <div style="background-color:#16213E; border-left:5px solid #02C39A;
+                padding:20px; border-radius:12px; margin:10px 0;">
+                    <div style="color:#02C39A; font-weight:bold; font-size:1rem;">
+                        Step {step_num + 1} — {title}
+                    </div>
+                    <div style="color:#F0F4F8; font-size:1rem; margin-top:8px; line-height:1.6;">
+                        {instruction}
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+                time.sleep(duration)
+            st.success("You completed the meditation! Take a moment to appreciate yourself. 🌿💙")
 
 with tab6:
     st.divider()
@@ -371,47 +446,130 @@ with tab6:
 
 with tab7:
     st.divider()
-    st.markdown("### 📊 Your Weekly Mood Report")
-    st.caption("Summary of how you felt this week.")
+    st.markdown("### 📈 Your Progress Report")
+    st.caption("See how you have been doing across all areas of your wellness.")
+    st.divider()
+
+    report_period = st.radio("Show report for:", ["Last 7 Days", "Last 30 Days"], horizontal=True)
+    days = 7 if report_period == "Last 7 Days" else 30
+
+    st.markdown(f"#### Mood Report — {report_period}")
     if os.path.exists("mood_log.csv"):
         df = pd.read_csv("mood_log.csv", names=["Date", "Mood", "Note"])
         if not df.empty:
             df["Date"] = pd.to_datetime(df["Date"])
-            last_7 = df[df["Date"] >= pd.Timestamp.now() - pd.Timedelta(days=7)]
-            if last_7.empty:
-                st.info("No mood logs in the last 7 days. Start logging your mood!")
-            else:
-                st.markdown("#### Mood Count This Week")
-                mood_counts = last_7["Mood"].value_counts().reset_index()
+            filtered = df[df["Date"] >= pd.Timestamp.now() - pd.Timedelta(days=days)]
+            if not filtered.empty:
+                mood_counts = filtered["Mood"].value_counts().reset_index()
                 mood_counts.columns = ["Mood", "Count"]
                 st.bar_chart(mood_counts.set_index("Mood"))
-                st.divider()
-                st.markdown("#### Weekly Summary")
-                total = len(last_7)
-                happy = len(last_7[last_7["Mood"] == "😊 Happy"])
-                sad = len(last_7[last_7["Mood"] == "😔 Sad"])
-                stressed = len(last_7[last_7["Mood"] == "😰 Stressed"])
-                col1, col2, col3 = st.columns(3)
+                total = len(filtered)
+                happy = len(filtered[filtered["Mood"] == "😊 Happy"])
+                sad = len(filtered[filtered["Mood"] == "😔 Sad"])
+                stressed = len(filtered[filtered["Mood"] == "😰 Stressed"])
+                col1, col2, col3, col4 = st.columns(4)
                 with col1:
                     st.metric("Total Logs", total)
                 with col2:
-                    st.metric("Happy Days", happy)
+                    st.metric("😊 Happy", happy)
                 with col3:
-                    st.metric("Stressed Days", stressed)
-                st.divider()
-                st.markdown("#### AI says...")
-                if happy > stressed and happy > sad:
-                    st.success("You had a mostly happy week! Keep doing what makes you feel good! 🌿😊")
-                elif stressed > happy:
-                    st.warning("You felt stressed a lot this week. Remember to take breaks and breathe! 🌬️")
-                elif sad > happy:
-                    st.warning("You felt sad quite a bit this week. Talk to someone you trust or use the chat! 💙")
-                else:
-                    st.info("You had a mixed week. That is completely normal! Keep going! 🌿")
+                    st.metric("😔 Sad", sad)
+                with col4:
+                    st.metric("😰 Stressed", stressed)
+            else:
+                st.info(f"No mood logs in the last {days} days.")
         else:
-            st.info("No mood logs yet. Start logging your mood in the Mood tab!")
+            st.info("No mood logs yet.")
     else:
-        st.info("No mood logs yet. Start logging your mood in the Mood tab!")
+        st.info("No mood logs yet.")
+
+    st.divider()
+    st.markdown(f"#### Sleep Report — {report_period}")
+    if os.path.exists("sleep_log.csv"):
+        df_sleep = pd.read_csv("sleep_log.csv", names=["Date", "Hours", "Quality", "Note"])
+        if not df_sleep.empty:
+            df_sleep["Date"] = pd.to_datetime(df_sleep["Date"])
+            filtered_sleep = df_sleep[df_sleep["Date"] >= pd.Timestamp.now() - pd.Timedelta(days=days)]
+            if not filtered_sleep.empty:
+                avg_sleep = filtered_sleep["Hours"].mean()
+                st.metric("Average Sleep Hours", f"{avg_sleep:.1f} hours")
+                st.line_chart(filtered_sleep.set_index("Date")["Hours"])
+                if avg_sleep >= 8:
+                    st.success("Great sleep average! You are sleeping really well! 😴🌟")
+                elif avg_sleep >= 6:
+                    st.info("Decent sleep. Try to aim for 8 hours for better wellness! 🌙")
+                else:
+                    st.warning("You are not sleeping enough. Try to rest more! 😴")
+            else:
+                st.info(f"No sleep logs in the last {days} days.")
+        else:
+            st.info("No sleep logs yet.")
+    else:
+        st.info("No sleep logs yet.")
+
+    st.divider()
+    st.markdown(f"#### Journal Report — {report_period}")
+    if os.path.exists("journal_log.csv"):
+        df_journal = pd.read_csv("journal_log.csv", names=["Date", "Title", "Entry"])
+        if not df_journal.empty:
+            df_journal["Date"] = pd.to_datetime(df_journal["Date"])
+            filtered_journal = df_journal[df_journal["Date"] >= pd.Timestamp.now() - pd.Timedelta(days=days)]
+            st.metric("Journal Entries Written", len(filtered_journal))
+            if len(filtered_journal) >= 5:
+                st.success("Amazing journaling habit! Writing is healing! 📝🌟")
+            elif len(filtered_journal) >= 1:
+                st.info("Good start! Try to journal every day for best results! 📝")
+            else:
+                st.warning("No journal entries this period. Start writing today! 📝")
+        else:
+            st.info("No journal entries yet.")
+    else:
+        st.info("No journal entries yet.")
+
+    st.divider()
+    st.markdown("#### Overall AI Summary")
+    if st.button("Get AI Summary of My Progress 🧠"):
+        mood_summary = ""
+        sleep_summary = ""
+        journal_summary = ""
+        if os.path.exists("mood_log.csv"):
+            df_m = pd.read_csv("mood_log.csv", names=["Date", "Mood", "Note"])
+            if not df_m.empty:
+                mood_summary = df_m["Mood"].value_counts().to_string()
+        if os.path.exists("sleep_log.csv"):
+            df_s = pd.read_csv("sleep_log.csv", names=["Date", "Hours", "Quality", "Note"])
+            if not df_s.empty:
+                sleep_summary = f"Average sleep: {df_s['Hours'].mean():.1f} hours"
+        if os.path.exists("journal_log.csv"):
+            df_j = pd.read_csv("journal_log.csv", names=["Date", "Title", "Entry"])
+            journal_summary = f"Total journal entries: {len(df_j)}"
+        with st.spinner("MindEase is reviewing your progress..."):
+            try:
+                client = Groq(api_key=api_key)
+                summary_prompt = f"""Based on this wellness data give a warm, encouraging and personal progress summary:
+                Mood data: {mood_summary}
+                Sleep data: {sleep_summary}
+                Journal data: {journal_summary}
+                Write 3 to 4 sentences. Be warm, honest, and encouraging like a caring friend.
+                Highlight what they are doing well and gently suggest one area to improve."""
+                summary_response = client.chat.completions.create(
+                    model="llama-3.3-70b-versatile",
+                    messages=[
+                        {"role": "system", "content": "You are MindEase, a warm caring friend reviewing someone's wellness progress."},
+                        {"role": "user", "content": summary_prompt}
+                    ]
+                )
+                summary = summary_response.choices[0].message.content
+                st.markdown(f"""
+                <div style="background-color:#16213E; border-left:5px solid #02C39A;
+                padding:20px; border-radius:12px; margin:10px 0;">
+                    <div style="color:#F0F4F8; font-size:1rem; line-height:1.7;">
+                        🌿 {summary}
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+            except Exception as e:
+                st.error(f"Something went wrong: {str(e)}")
 
 with tab8:
     st.divider()
@@ -452,7 +610,7 @@ with tab8:
             color = "#F4A261"
             emoji = "😐"
             reason = "You are experiencing some stress or emotional difficulty. This is completely normal. With some self care you can feel much better."
-            suggestions = ["Try the breathing exercise. 🌬️", "Write in your journal every day. 📝", "Log your mood daily. 😊", "Talk to a friend or family member.", "Try to get at least 7 to 8 hours of sleep."]
+            suggestions = ["Try the meditation exercise. 🧘", "Write in your journal every day. 📝", "Log your mood daily. 😊", "Talk to a friend or family member.", "Try to get at least 7 to 8 hours of sleep."]
             videos = HAPPY_VIDEOS[:3]
         else:
             level = "High"
@@ -651,7 +809,7 @@ with tab11:
 with tab12:
     st.divider()
     st.markdown("### 🎨 Your Mood Color Palette")
-    st.caption("See what color represents how you feel today!")
+    st.caption("See what color represents how you feel today and get a personal message!")
     st.divider()
     mood_choice = st.radio("How are you feeling right now?", list(MOOD_COLORS.keys()), horizontal=True)
     mood_data = MOOD_COLORS[mood_choice]
@@ -671,6 +829,35 @@ with tab12:
     </div>
     """, unsafe_allow_html=True)
     st.divider()
+    st.markdown("### 💬 Personal Message from MindEase")
+    if st.button("Get My Personal Message 🌿"):
+        with st.spinner("MindEase is thinking of something just for you..."):
+            try:
+                client = Groq(api_key=api_key)
+                color_prompt = f"""The user is feeling {mood_choice} right now. Their mood color is {mood_data['label']}.
+                Write a very short, warm, personal and caring message for them — like a close friend would say.
+                Make it feel genuine, comforting and uplifting.
+                Keep it to 3 to 4 sentences only.
+                Do not use bullet points. Just talk naturally and warmly."""
+                color_response = client.chat.completions.create(
+                    model="llama-3.3-70b-versatile",
+                    messages=[
+                        {"role": "system", "content": "You are MindEase, a warm and caring best friend."},
+                        {"role": "user", "content": color_prompt}
+                    ]
+                )
+                personal_message = color_response.choices[0].message.content
+                st.markdown(f"""
+                <div style="background-color:#16213E; border-left:5px solid {mood_data['color']};
+                padding:20px; border-radius:12px; margin:10px 0;">
+                    <div style="font-size:1.1rem; color:#F0F4F8; line-height:1.7;">
+                        🌿 {personal_message}
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+            except Exception as e:
+                st.error(f"Something went wrong: {str(e)}")
+    st.divider()
     st.markdown("### All Mood Colors 🎨")
     cols = st.columns(5)
     for i, (mood_key, data) in enumerate(MOOD_COLORS.items()):
@@ -685,28 +872,43 @@ with tab12:
 
 with tab13:
     st.divider()
-    st.markdown("### 🌍 Inspirational Quotes")
-    st.caption("A new quote every time to inspire and uplift you.")
+    st.markdown("### 🌍 AI Generated Quotes")
+    st.caption("Tell MindEase how you feel and get a unique quote just for you!")
     st.divider()
-    if "quote" not in st.session_state:
-        st.session_state.quote = random.choice(QUOTES)
-    quote_text, quote_author = st.session_state.quote
-    st.markdown(f"""
-    <div style="background-color:#16213E; border-left:5px solid #02C39A;
-    padding:30px; border-radius:12px; margin:20px 0;">
-        <div style="font-size:1.4rem; color:#F0F4F8; font-style:italic; line-height:1.6;">
-            "{quote_text}"
-        </div>
-        <div style="font-size:1rem; color:#02C39A; margin-top:15px; font-weight:bold;">
-            — {quote_author}
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    if st.button("Give me a new quote 🔄"):
-        st.session_state.quote = random.choice(QUOTES)
-        st.rerun()
+    feeling = st.text_input("How are you feeling right now?", placeholder="I am feeling stressed about exams...")
+    if st.button("Generate My Quote 🌟"):
+        if feeling.strip() == "":
+            st.warning("Please tell me how you are feeling first!")
+        else:
+            with st.spinner("MindEase is creating a quote just for you..."):
+                try:
+                    client = Groq(api_key=api_key)
+                    quote_prompt = f"""The user is feeling: {feeling}
+                    Create one unique, beautiful, and deeply meaningful short quote that speaks directly to how they feel.
+                    The quote should feel personal, warm, and uplifting.
+                    Write only the quote and the author name below it.
+                    If you make up the quote yourself write MindEase as the author.
+                    Keep it short — one or two sentences maximum."""
+                    quote_response = client.chat.completions.create(
+                        model="llama-3.3-70b-versatile",
+                        messages=[
+                            {"role": "system", "content": "You are MindEase, a warm and caring best friend who creates meaningful quotes."},
+                            {"role": "user", "content": quote_prompt}
+                        ]
+                    )
+                    generated_quote = quote_response.choices[0].message.content
+                    st.markdown(f"""
+                    <div style="background-color:#16213E; border-left:5px solid #02C39A;
+                    padding:30px; border-radius:12px; margin:20px 0;">
+                        <div style="font-size:1.4rem; color:#F0F4F8; font-style:italic; line-height:1.6;">
+                            {generated_quote}
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                except Exception as e:
+                    st.error(f"Something went wrong: {str(e)}")
     st.divider()
-    st.markdown("### All Quotes 🌟")
+    st.markdown("### 🌟 Classic Quotes")
     for q, a in QUOTES:
         with st.expander(f"💬 {q[:50]}..."):
             st.markdown(f"*\"{q}\"*")
@@ -767,3 +969,81 @@ with tab14:
         st.markdown("#### 🔒 Badges to Earn")
         for badge in not_earned:
             st.markdown(f"🔒 **{badge['name']}** — {badge['desc']}")
+
+with tab15:
+    st.divider()
+    st.markdown("### 🌙 Night Check In")
+    st.caption("End your day peacefully with a gentle evening check in.")
+    st.divider()
+
+    hour = datetime.now().hour
+    if 6 <= hour < 18:
+        st.info("🌤️ This is your evening check in. Come back tonight before bed for the best experience! 🌙")
+
+    st.markdown("#### How was your day today?")
+    day_rating = st.slider("Rate your day", 1, 10, 5)
+    day_highlight = st.text_input("What was the best part of your day?", placeholder="Something good that happened today...")
+    day_challenge = st.text_input("What was the hardest part of your day?", placeholder="Something that was difficult today...")
+    grateful_for = st.text_area("Write 3 things you are grateful for today", placeholder="1. \n2. \n3. ", height=100)
+    tomorrow_goal = st.text_input("What is one small goal for tomorrow?", placeholder="Something small and achievable...")
+
+    if st.button("Save My Night Check In 🌙"):
+        if day_highlight.strip() == "" and grateful_for.strip() == "":
+            st.warning("Please fill in at least some fields before saving!")
+        else:
+            now = datetime.now().strftime("%Y-%m-%d %H:%M")
+            with open("night_checkin.csv", "a", newline="", encoding="utf-8") as f:
+                writer = csv.writer(f)
+                writer.writerow([now, day_rating, day_highlight, day_challenge, grateful_for, tomorrow_goal])
+            st.success("Night check in saved! Sleep well and take care. 🌙🌿")
+
+            with st.spinner("MindEase is preparing your goodnight message..."):
+                try:
+                    client = Groq(api_key=api_key)
+                    night_prompt = f"""The user just completed their night check in.
+                    Day rating: {day_rating} out of 10
+                    Best part of day: {day_highlight}
+                    Hardest part: {day_challenge}
+                    Grateful for: {grateful_for}
+                    Tomorrow goal: {tomorrow_goal}
+                    Write a warm, short, personal goodnight message — like a caring close friend would say.
+                    Acknowledge their day, celebrate the good, gently comfort the hard parts, and wish them a peaceful rest.
+                    Keep it to 3 to 4 sentences. Warm and genuine."""
+                    night_response = client.chat.completions.create(
+                        model="llama-3.3-70b-versatile",
+                        messages=[
+                            {"role": "system", "content": "You are MindEase, a warm caring best friend sending a goodnight message."},
+                            {"role": "user", "content": night_prompt}
+                        ]
+                    )
+                    goodnight_message = night_response.choices[0].message.content
+                    st.markdown(f"""
+                    <div style="background-color:#16213E; border-left:5px solid #9B72CF;
+                    padding:20px; border-radius:12px; margin:10px 0;">
+                        <div style="font-size:1.1rem; color:#F0F4F8; line-height:1.7;">
+                            🌙 {goodnight_message}
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                except Exception as e:
+                    st.error(f"Something went wrong: {str(e)}")
+
+    st.divider()
+    st.markdown("### Your Past Night Check Ins")
+    if os.path.exists("night_checkin.csv"):
+        df_night = pd.read_csv("night_checkin.csv", names=["Date", "Rating", "Highlight", "Challenge", "Grateful", "Goal"])
+        if not df_night.empty:
+            if st.button("🗑️ Delete All Night Check Ins"):
+                os.remove("night_checkin.csv")
+                st.success("Night check ins deleted!")
+                st.rerun()
+            for _, row in df_night.iloc[::-1].iterrows():
+                with st.expander(f"🌙 {row['Date']} — Day rated {row['Rating']}/10"):
+                    st.markdown(f"**Best part:** {row['Highlight']}")
+                    st.markdown(f"**Hardest part:** {row['Challenge']}")
+                    st.markdown(f"**Grateful for:** {row['Grateful']}")
+                    st.markdown(f"**Tomorrow goal:** {row['Goal']}")
+        else:
+            st.info("No night check ins yet. Come back tonight! 🌙")
+    else:
+        st.info("No night check ins yet. Come back tonight! 🌙")
