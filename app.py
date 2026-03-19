@@ -384,7 +384,7 @@ with st.sidebar:
     if st.button("⏹ Stop Music", key="music_stop", use_container_width=True):
         st.session_state.music_playing = False
         st.session_state.selected_music = None
-        st.rerun()rerun()
+        st.rerun()
 
     if st.session_state.music_playing and st.session_state.selected_music:
         url = MUSIC_OPTIONS[st.session_state.selected_music]
