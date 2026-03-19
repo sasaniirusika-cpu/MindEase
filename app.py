@@ -377,14 +377,14 @@ with st.sidebar:
     st.divider()
     st.markdown("**🎵 Music Player**")
     selected_music = st.selectbox("Choose", list(MUSIC_OPTIONS.keys()), label_visibility="collapsed")
-   if st.button("▶️ Play Music", key="music_play", use_container_width=True):
+    if st.button("▶️ Play Music", key="music_play", use_container_width=True):
         st.session_state.music_playing = True
         st.session_state.selected_music = selected_music
         st.rerun()
     if st.button("⏹ Stop Music", key="music_stop", use_container_width=True):
         st.session_state.music_playing = False
         st.session_state.selected_music = None
-        st.rerun()
+        st.rerun()rerun()
 
     if st.session_state.music_playing and st.session_state.selected_music:
         url = MUSIC_OPTIONS[st.session_state.selected_music]
