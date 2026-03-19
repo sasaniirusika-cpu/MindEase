@@ -151,7 +151,7 @@ div[data-testid="stChatInput"] button {
 
 
 
-/* ── Nav buttons: plain style, no gradient ── */
+/* ── Nav buttons: plain style with SVG icon via ::before ── */
 section[data-testid="stSidebar"] [data-testid^="stButton-nav_"] > button {
     background: transparent !important;
     color: inherit !important;
@@ -164,14 +164,57 @@ section[data-testid="stSidebar"] [data-testid^="stButton-nav_"] > button {
     box-shadow: none !important;
     transform: none !important;
     transition: background 0.2s ease !important;
-    padding: 0.4rem 0.85rem !important;
+    padding: 0.4rem 0.85rem 0.4rem 2.2rem !important;
     margin: 0.04rem 0 !important;
+    position: relative !important;
+}
+section[data-testid="stSidebar"] [data-testid^="stButton-nav_"] > button::before {
+    content: "" !important;
+    position: absolute !important;
+    left: 0.75rem !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    width: 16px !important;
+    height: 16px !important;
+    background-size: contain !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    opacity: 0.85 !important;
 }
 section[data-testid="stSidebar"] [data-testid^="stButton-nav_"] > button:hover {
     background: rgba(2,195,154,0.1) !important;
     border-color: rgba(2,195,154,0.3) !important;
     transform: none !important;
     box-shadow: none !important;
+}
+
+/* Individual SVG icons per nav button */
+section[data-testid="stSidebar"] [data-testid="stButton-nav_💬 Chat"] > button::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2302C39A' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 16H5.83l-.83.83V4h15v14z'/%3E%3C/svg%3E") !important;
+}
+section[data-testid="stSidebar"] [data-testid="stButton-nav_😊 Mood"] > button::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2302C39A' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M8.5 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm7 0a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm-3.5 8c2.33 0 4.31-1.46 5.11-3.5H6.89C7.69 16.54 9.67 18 12 18z'/%3E%3C/svg%3E") !important;
+}
+section[data-testid="stSidebar"] [data-testid="stButton-nav_📝 Journal"] > button::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2302C39A' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zM8 15h8v2H8zm0-4h8v2H8zm0-4h5v2H8z'/%3E%3C/svg%3E") !important;
+}
+section[data-testid="stSidebar"] [data-testid="stButton-nav_🌅 Daily Wellness"] > button::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2302C39A' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='4'/%3E%3Cpath d='M12 2v2m0 16v2M4.22 4.22l1.42 1.42m12.72 12.72 1.42 1.42M2 12h2m16 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42'/%3E%3C/svg%3E") !important;
+}
+section[data-testid="stSidebar"] [data-testid="stButton-nav_🧘 Meditation"] > button::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2302C39A' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M11 8h2v5h-2zm0 7h2v2h-2z'/%3E%3C/svg%3E") !important;
+}
+section[data-testid="stSidebar"] [data-testid="stButton-nav_🎯 Affirmations"] > button::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2302C39A' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M16.59 7.58 10 14.17l-2.59-2.58L6 13l4 4 8-8z'/%3E%3C/svg%3E") !important;
+}
+section[data-testid="stSidebar"] [data-testid="stButton-nav_🧠 Assessment"] > button::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2302C39A' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='18' height='18' rx='1'/%3E%3Cpath d='M7 10h2v7H7zm4-3h2v10h-2zm4 6h2v4h-2z'/%3E%3C/svg%3E") !important;
+}
+section[data-testid="stSidebar"] [data-testid="stButton-nav_🏆 Achievements"] > button::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2302C39A' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 1 3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z'/%3E%3C/svg%3E") !important;
+}
+section[data-testid="stSidebar"] [data-testid="stButton-nav_📈 Progress"] > button::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2302C39A' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.5 18.49 9.5 12.48l4 4L22 6.92'/%3E%3C/svg%3E") !important;
 }
 
 /* ── Music Play/Stop + New Chat + Delete: green gradient ── */
