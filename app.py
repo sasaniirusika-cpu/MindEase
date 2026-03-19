@@ -174,9 +174,27 @@ section[data-testid="stSidebar"] [data-testid^="stButton-nav_"] > button:hover {
     box-shadow: none !important;
 }
 
-/* ── Music Play/Stop + New Chat + Delete: keep green gradient ── */
+/* ── Music Play/Stop: invisible overlay on SVG div ── */
 section[data-testid="stSidebar"] [data-testid="stButton-music_play"] > button,
-section[data-testid="stSidebar"] [data-testid="stButton-music_stop"] > button,
+section[data-testid="stSidebar"] [data-testid="stButton-music_stop"] > button {
+    opacity: 0 !important;
+    position: absolute !important;
+    top: -40px !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 38px !important;
+    cursor: pointer !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    transform: none !important;
+    z-index: 10 !important;
+    font-size: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* ── New Chat + Delete: keep green gradient ── */
 section[data-testid="stSidebar"] [data-testid="stButton-new_chat"] > button,
 section[data-testid="stSidebar"] [data-testid="stButton-delete_history"] > button {
     background: linear-gradient(135deg, #028090, #02C39A) !important;
@@ -188,8 +206,6 @@ section[data-testid="stSidebar"] [data-testid="stButton-delete_history"] > butto
     transform: none !important;
     width: 100% !important;
 }
-section[data-testid="stSidebar"] [data-testid="stButton-music_play"] > button:hover,
-section[data-testid="stSidebar"] [data-testid="stButton-music_stop"] > button:hover,
 section[data-testid="stSidebar"] [data-testid="stButton-new_chat"] > button:hover,
 section[data-testid="stSidebar"] [data-testid="stButton-delete_history"] > button:hover {
     transform: translateY(-2px) !important;
@@ -382,15 +398,39 @@ with st.sidebar:
     st.markdown("**🎵 Music Player**")
     selected_music = st.selectbox("Choose", list(MUSIC_OPTIONS.keys()), label_visibility="collapsed")
 
-    # ── Music Play / Stop buttons — always visible ──
+    # ── Music Play / Stop buttons — SVG icon style ──
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("▶️ Play", key="music_play", use_container_width=True):
+        st.markdown('''
+        <div style="position:relative; height:38px; margin:0.04rem 0; pointer-events:none;">
+            <div style="display:flex; align-items:center; justify-content:center; gap:6px;
+            background:linear-gradient(135deg,#028090,#02C39A); border-radius:9px;
+            position:absolute; top:0; left:0; right:0; bottom:0; z-index:1; cursor:pointer;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="white">
+                    <path d="M8 5v14l11-7z"/>
+                </svg>
+                <span style="font-size:0.85rem; font-weight:600; color:white;">Play</span>
+            </div>
+        </div>
+        ''', unsafe_allow_html=True)
+        if st.button("Play", key="music_play", use_container_width=True):
             st.session_state.music_playing = True
             st.session_state.selected_music = selected_music
             st.rerun()
     with col2:
-        if st.button("⏹ Stop", key="music_stop", use_container_width=True):
+        st.markdown('''
+        <div style="position:relative; height:38px; margin:0.04rem 0; pointer-events:none;">
+            <div style="display:flex; align-items:center; justify-content:center; gap:6px;
+            background:linear-gradient(135deg,#028090,#02C39A); border-radius:9px;
+            position:absolute; top:0; left:0; right:0; bottom:0; z-index:1; cursor:pointer;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="white">
+                    <path d="M6 6h12v12H6z"/>
+                </svg>
+                <span style="font-size:0.85rem; font-weight:600; color:white;">Stop</span>
+            </div>
+        </div>
+        ''', unsafe_allow_html=True)
+        if st.button("Stop", key="music_stop", use_container_width=True):
             st.session_state.music_playing = False
             st.session_state.selected_music = None
             st.rerun()
