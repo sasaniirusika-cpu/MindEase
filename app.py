@@ -159,24 +159,13 @@ section[data-testid="stSidebar"] .stRadio > div {
     gap: 0 !important;
 }
 
-section[data-testid="stSidebar"] .stRadio label {
-    background: transparent !important;
-    border-radius: 10px !important;
-    padding: 0.6rem 1rem !important;
-    margin: 0.15rem 0 !important;
-    cursor: pointer !important;
-    font-weight: 500 !important;
-    font-size: 0.95rem !important;
-    transition: all 0.2s ease !important;
-    display: block !important;
+section[data-testid="stSidebar"] .stButton > button {
+    opacity: 0 !important;
+    position: absolute !important;
+    height: 38px !important;
+    margin-top: -42px !important;
     width: 100% !important;
-    border: 1px solid transparent !important;
-}
-
-section[data-testid="stSidebar"] .stRadio label:hover {
-    background: rgba(2, 195, 154, 0.12) !important;
-    border-color: rgba(2, 195, 154, 0.25) !important;
-    padding-left: 1.3rem !important;
+    cursor: pointer !important;
 }
 
 section[data-testid="stSidebar"] .stRadio label[data-selected="true"],
@@ -552,17 +541,23 @@ st.sidebar.markdown("**Menu**")
 for key, label, icon_path in nav_items:
     is_active = st.session_state.page == key
     active_class = "nav-item-active" if is_active else ""
-    col1, col2 = st.sidebar.columns([0.15, 0.85])
-    with col1:
-        st.markdown(f"""
-       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#02C39A" stroke-width="1.5" xmlns="http://www.w3.org/2000/svg" style="margin-top:8px;">
+    is_active = st.session_state.page == key
+    active_style = "background:rgba(2,195,154,0.15); border-color:rgba(2,195,154,0.4);" if is_active else ""
+    st.sidebar.markdown(f"""
+    <div onclick="" style="display:flex; align-items:center; gap:8px; padding:0.45rem 0.9rem;
+    border-radius:9px; border:1px solid transparent; margin:0.08rem 0;
+    cursor:pointer; {active_style} transition: all 0.2s ease;">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#02C39A"
+        stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+        xmlns="http://www.w3.org/2000/svg">
             <path d="{icon_path}"/>
         </svg>
-        """, unsafe_allow_html=True)
-    with col2:
-        if st.button(label, key=f"nav_{key}", use_container_width=True):
-            st.session_state.page = key
-            st.rerun()
+        <span style="font-size:0.9rem; font-weight:500;">{label}</span>
+    </div>
+    """, unsafe_allow_html=True)
+    if st.sidebar.button(label, key=f"nav_{key}", use_container_width=True):
+        st.session_state.page = key
+        st.rerun()
 page = st.session_state.page
 # ══ PAGE 1 — CHAT ══════════════════════════════════════════════
 if page == "💬 Chat":
