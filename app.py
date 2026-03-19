@@ -153,14 +153,17 @@ div[data-testid="stChatInput"] button {
 section[data-testid="stSidebar"] .stButton > button {
     opacity: 0 !important;
     position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
     height: 36px !important;
-    margin-top: -40px !important;
-    width: 85% !important;
+    margin-top: -38px !important;
+    width: 100% !important;
     cursor: pointer !important;
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
     transform: none !important;
+    z-index: 10 !important;
 }
 
 /* Show specific buttons visibly */
@@ -473,15 +476,17 @@ with st.sidebar:
         is_active = st.session_state.page == key
         active_style = "background:rgba(2,195,154,0.15); border:1px solid rgba(2,195,154,0.4);" if is_active else "border:1px solid transparent;"
         st.markdown(f"""
-        <div style="display:flex; align-items:center; gap:8px; padding:0.42rem 0.85rem;
-        border-radius:9px; margin:0.06rem 0; cursor:pointer; {active_style}
-        transition: all 0.2s ease;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-            stroke="#02C39A" stroke-width="1.8" stroke-linecap="round"
-            stroke-linejoin="round">
-                <path d="{icon_path}"/>
-            </svg>
-            <span style="font-size:0.88rem; font-weight:500;">{label}</span>
+        <div style="position:relative; margin:0.06rem 0;">
+            <div style="display:flex; align-items:center; gap:8px; padding:0.42rem 0.85rem;
+            border-radius:9px; cursor:pointer; {active_style}
+            transition: all 0.2s ease; pointer-events:none;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="#02C39A" stroke-width="1.8" stroke-linecap="round"
+                stroke-linejoin="round">
+                    <path d="{icon_path}"/>
+                </svg>
+                <span style="font-size:0.88rem; font-weight:500;">{label}</span>
+            </div>
         </div>
         """, unsafe_allow_html=True)
         if st.button(label, key=f"nav_{key}", use_container_width=True):
