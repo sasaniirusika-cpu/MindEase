@@ -12,7 +12,6 @@ st.set_page_config(page_title="MindEase", page_icon="🌿", layout="wide")
 
 st.markdown("""
 <style>
-/* ── Theme-aware base ── */
 :root {
     --primary: #02C39A;
     --primary-dark: #028090;
@@ -20,7 +19,6 @@ st.markdown("""
     --primary-border: rgba(2, 195, 154, 0.35);
 }
 
-/* Cards that work on both themes */
 .mcard {
     background: var(--primary-light);
     border: 1px solid var(--primary-border);
@@ -55,18 +53,8 @@ st.markdown("""
     box-shadow: 0 6px 24px rgba(2,195,154,0.25);
 }
 
-.main-header h1 {
-    color: white !important;
-    font-size: 2.2rem;
-    font-weight: 800;
-    margin: 0;
-}
-
-.main-header p {
-    color: rgba(255,255,255,0.88) !important;
-    margin: 0.3rem 0 0 0;
-    font-size: 1rem;
-}
+.main-header h1 { color: white !important; font-size: 2.2rem; font-weight: 800; margin: 0; }
+.main-header p { color: rgba(255,255,255,0.88) !important; margin: 0.3rem 0 0 0; font-size: 1rem; }
 
 .affirmation-box {
     background: linear-gradient(135deg, rgba(2,195,154,0.18), rgba(2,128,144,0.12));
@@ -132,11 +120,9 @@ st.markdown("""
     border-radius: 10px;
     padding: 0.6rem 0.9rem;
     margin: 0.3rem 0;
-    cursor: pointer;
     font-size: 0.88rem;
 }
 
-/* Chat input styling */
 div[data-testid="stChatInput"] {
     border-radius: 24px !important;
     border: 2px solid var(--primary-border) !important;
@@ -150,67 +136,6 @@ div[data-testid="stChatInput"] button {
     border-radius: 50% !important;
 }
 
-/* ── Sidebar navigation styling ── */
-div[data-testid="stSidebarNav"] {display: none;}
-
-.st-emotion-cache-pkbazv {display: none;}
-
-section[data-testid="stSidebar"] .stRadio > div {
-    gap: 0 !important;
-}
-
-section[data-testid="stSidebar"] .stButton > button {
-    opacity: 0 !important;
-    position: absolute !important;
-    height: 38px !important;
-    margin-top: -42px !important;
-    width: 100% !important;
-    cursor: pointer !important;
-}
-
-section[data-testid="stSidebar"] .stButton > button[kind="secondary"],
-section[data-testid="stSidebar"] [data-testid="stButton-music_play"] > button,
-section[data-testid="stSidebar"] [data-testid="stButton-music_stop"] > button,
-section[data-testid="stSidebar"] [data-testid="stButton-save_profile"] > button {
-    opacity: 1 !important;
-    position: relative !important;
-    height: auto !important;
-    margin-top: 0 !important;
-    background: linear-gradient(135deg, #028090, #02C39A) !important;
-    color: white !important;
-    border: none !important;
-    border-radius: 8px !important;
-}
-
-section[data-testid="stSidebar"] .stRadio label[data-selected="true"],
-section[data-testid="stSidebar"] .stRadio input:checked + div {
-    background: linear-gradient(135deg, rgba(2,128,144,0.3), rgba(2,195,154,0.2)) !important;
-    border-color: rgba(2, 195, 154, 0.5) !important;
-    padding-left: 1.3rem !important;
-}
-
-section[data-testid="stSidebar"] .stRadio input[type="radio"] {
-    display: none !important;
-}
-
-section[data-testid="stSidebar"] .stRadio div[data-testid="stMarkdownContainer"] p {
-    font-size: 0.95rem !important;
-    margin: 0 !important;
-}
-    gap: 4px;
-    flex-wrap: wrap;
-}
-.stTabs [data-baseweb="tab"] {
-    border-radius: 8px !important;
-    font-weight: 500 !important;
-    padding: 0.4rem 0.9rem !important;
-}
-.stTabs [aria-selected="true"] {
-    background: linear-gradient(135deg, #028090, #02C39A) !important;
-    color: white !important;
-}
-
-/* Main buttons */
 .stButton > button {
     background: linear-gradient(135deg, #028090, #02C39A) !important;
     color: white !important;
@@ -224,47 +149,45 @@ section[data-testid="stSidebar"] .stRadio div[data-testid="stMarkdownContainer"]
     box-shadow: 0 4px 14px rgba(2,195,154,0.38) !important;
 }
 
-/* Sidebar navigation buttons */
+/* Nav buttons — invisible overlay on top of styled div */
 section[data-testid="stSidebar"] .stButton > button {
+    opacity: 0 !important;
+    position: absolute !important;
+    height: 36px !important;
+    margin-top: -40px !important;
+    width: 85% !important;
+    cursor: pointer !important;
     background: transparent !important;
-    color: inherit !important;
-    border: 1px solid transparent !important;
-    border-radius: 10px !important;
-    padding: 0.55rem 1rem !important;
-    margin: 0.1rem 0 !important;
-    text-align: left !important;
-    font-weight: 500 !important;
-    font-size: 0.95rem !important;
+    border: none !important;
     box-shadow: none !important;
-    transition: all 0.2s ease !important;
-    justify-content: flex-start !important;
-}
-
-section[data-testid="stSidebar"] .stButton > button:hover {
-    background: rgba(2, 195, 154, 0.12) !important;
-    border-color: rgba(2, 195, 154, 0.3) !important;
     transform: none !important;
-    box-shadow: none !important;
-    padding-left: 1.3rem !important;
 }
 
-/* Floating music player */
-.music-player {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: linear-gradient(135deg, #028090, #02C39A);
-    padding: 0.6rem 1.5rem;
-    z-index: 9999;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    box-shadow: 0 -4px 20px rgba(2,195,154,0.3);
+/* Keep music, chat and profile buttons visible */
+section[data-testid="stSidebar"] [data-testid="stButton-music_play"] > button,
+section[data-testid="stSidebar"] [data-testid="stButton-music_stop"] > button,
+section[data-testid="stSidebar"] [data-testid="stButton-new_chat"] > button,
+section[data-testid="stSidebar"] [data-testid="stButton-delete_history"] > button,
+section[data-testid="stSidebar"] [data-testid="stButton-save_profile"] > button {
+    opacity: 1 !important;
+    position: relative !important;
+    height: auto !important;
+    margin-top: 0 !important;
+    background: linear-gradient(135deg, #028090, #02C39A) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 8px !important;
+    font-weight: 500 !important;
+    transform: none !important;
 }
 
-.main-content-padding {
-    padding-bottom: 80px;
+section[data-testid="stSidebar"] [data-testid="stButton-music_play"] > button:hover,
+section[data-testid="stSidebar"] [data-testid="stButton-music_stop"] > button:hover,
+section[data-testid="stSidebar"] [data-testid="stButton-new_chat"] > button:hover,
+section[data-testid="stSidebar"] [data-testid="stButton-delete_history"] > button:hover,
+section[data-testid="stSidebar"] [data-testid="stButton-save_profile"] > button:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 3px 10px rgba(2,195,154,0.35) !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -280,13 +203,13 @@ for key, default in {
     "selected_music": None,
     "current_conversation": [],
     "conversations": [],
+    "page": "💬 Chat",
 }.items():
     if key not in st.session_state:
         st.session_state[key] = default
 
 api_key = st.secrets["GROQ_API_KEY"]
 
-# ── Constants ──────────────────────────────────────────────────
 AFFIRMATIONS = [
     "You are stronger than you think. 💪",
     "Every day is a new beginning. 🌅",
@@ -320,11 +243,11 @@ HAPPY_VIDEOS = [
 ]
 
 MOOD_COLORS = {
-    "😊 Happy":   {"color": "#FFD700", "bg": "rgba(255,215,0,0.12)",   "label": "Golden Joy",   "message": "You are glowing today! Keep that beautiful energy! 🌟"},
-    "😐 Okay":    {"color": "#87CEEB", "bg": "rgba(135,206,235,0.12)", "label": "Calm Blue",    "message": "A steady calm day. That is perfectly fine! 🌤️"},
-    "😔 Sad":     {"color": "#6495ED", "bg": "rgba(100,149,237,0.12)", "label": "Deep Blue",    "message": "It is okay to feel sad. Be gentle with yourself today. 💙"},
-    "😰 Stressed":{"color": "#FF6B6B", "bg": "rgba(255,107,107,0.12)", "label": "Warm Red",     "message": "Take a deep breath. You can get through this! 🌬️"},
-    "😡 Angry":   {"color": "#FF4500", "bg": "rgba(255,69,0,0.12)",    "label": "Fiery Orange", "message": "Your feelings are valid. Try the breathing exercise. 🌿"},
+    "😊 Happy":    {"color": "#FFD700", "bg": "rgba(255,215,0,0.12)",   "label": "Golden Joy",   "message": "You are glowing today! Keep that beautiful energy! 🌟"},
+    "😐 Okay":     {"color": "#87CEEB", "bg": "rgba(135,206,235,0.12)", "label": "Calm Blue",    "message": "A steady calm day. That is perfectly fine! 🌤️"},
+    "😔 Sad":      {"color": "#6495ED", "bg": "rgba(100,149,237,0.12)", "label": "Deep Blue",    "message": "It is okay to feel sad. Be gentle with yourself today. 💙"},
+    "😰 Stressed": {"color": "#FF6B6B", "bg": "rgba(255,107,107,0.12)", "label": "Warm Red",     "message": "Take a deep breath. You can get through this! 🌬️"},
+    "😡 Angry":    {"color": "#FF4500", "bg": "rgba(255,69,0,0.12)",    "label": "Fiery Orange", "message": "Your feelings are valid. Try the breathing exercise. 🌿"},
 }
 
 MUSIC_OPTIONS = {
@@ -339,15 +262,15 @@ MUSIC_OPTIONS = {
 }
 
 BADGES = [
-    {"name": "First Step 🌱",       "desc": "Logged your first mood",          "fn": lambda m,s,j,st: m>=1},
-    {"name": "Mood Tracker 😊",     "desc": "Logged mood 5 times",             "fn": lambda m,s,j,st: m>=5},
-    {"name": "Consistent Soul 🌟",  "desc": "Logged mood 10 times",            "fn": lambda m,s,j,st: m>=10},
-    {"name": "Sleep Logger 😴",     "desc": "Logged your first sleep",         "fn": lambda m,s,j,st: s>=1},
-    {"name": "Dear Diary 📝",       "desc": "Wrote your first journal entry",  "fn": lambda m,s,j,st: j>=1},
-    {"name": "Storyteller ✍️",     "desc": "Wrote 5 journal entries",         "fn": lambda m,s,j,st: j>=5},
-    {"name": "3 Day Streak 🔥",     "desc": "Logged mood 3 days in a row",     "fn": lambda m,s,j,st: st>=3},
-    {"name": "Week Warrior 🏆",     "desc": "Logged mood 7 days in a row",     "fn": lambda m,s,j,st: st>=7},
-    {"name": "Champion 👑",         "desc": "Logged mood 30 days in a row",    "fn": lambda m,s,j,st: st>=30},
+    {"name": "First Step 🌱",      "desc": "Logged your first mood",         "fn": lambda m,s,j,st: m>=1},
+    {"name": "Mood Tracker 😊",    "desc": "Logged mood 5 times",            "fn": lambda m,s,j,st: m>=5},
+    {"name": "Consistent Soul 🌟", "desc": "Logged mood 10 times",           "fn": lambda m,s,j,st: m>=10},
+    {"name": "Sleep Logger 😴",    "desc": "Logged your first sleep",        "fn": lambda m,s,j,st: s>=1},
+    {"name": "Dear Diary 📝",      "desc": "Wrote your first journal entry", "fn": lambda m,s,j,st: j>=1},
+    {"name": "Storyteller ✍️",    "desc": "Wrote 5 journal entries",        "fn": lambda m,s,j,st: j>=5},
+    {"name": "3 Day Streak 🔥",    "desc": "Logged mood 3 days in a row",    "fn": lambda m,s,j,st: st>=3},
+    {"name": "Week Warrior 🏆",    "desc": "Logged mood 7 days in a row",    "fn": lambda m,s,j,st: st>=7},
+    {"name": "Champion 👑",        "desc": "Logged mood 30 days in a row",   "fn": lambda m,s,j,st: st>=30},
 ]
 
 name = st.session_state.user_name if st.session_state.user_name else "friend"
@@ -408,6 +331,19 @@ def get_streak():
             break
     return streak
 
+# ── Nav items ──────────────────────────────────────────────────
+NAV_ITEMS = [
+    ("💬 Chat",           "Chat",           "M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 16H5.83l-.83.83V4h15v14z"),
+    ("😊 Mood",           "Mood",           "M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"),
+    ("📝 Journal",        "Journal",        "M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zM8 15h8v2H8zm0-4h8v2H8zm0-4h5v2H8z"),
+    ("🌅 Daily Wellness", "Daily Wellness", "M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"),
+    ("🧘 Meditation",     "Meditation",     "M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9zm0 16c-3.86 0-7-3.14-7-7s3.14-7 7-7 7 3.14 7 7-3.14 7-7 7zm-1-11h2v6h-2zm0 8h2v2h-2z"),
+    ("🎯 Affirmations",   "Affirmations",   "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4 8-8-1.41-1.42z"),
+    ("🧠 Assessment",     "Assessment",     "M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 10h2v7H7zm4-3h2v10h-2zm4 6h2v4h-2z"),
+    ("🏆 Achievements",   "Achievements",   "M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 2.18l7 3.12V11c0 4.52-3.13 8.74-7 9.93-3.87-1.19-7-5.41-7-9.93V6.3l7-3.12z"),
+    ("📈 Progress",       "Progress",       "M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"),
+]
+
 # ── Sidebar ────────────────────────────────────────────────────
 with st.sidebar:
     st.markdown("""
@@ -420,13 +356,12 @@ with st.sidebar:
     st.divider()
 
     with st.expander("👤 My Profile", expanded=not st.session_state.profile_set):
-        uname = st.text_input("Name",  value=st.session_state.user_name, placeholder="Your name...")
-        uage  = st.text_input("Age",   value=st.session_state.user_age,  placeholder="Your age...")
-        if st.button("Save Profile ✅"):
+        uname = st.text_input("Name", value=st.session_state.user_name, placeholder="Your name...")
+        uage  = st.text_input("Age",  value=st.session_state.user_age,  placeholder="Your age...")
+        if st.button("Save Profile ✅", key="save_profile"):
             st.session_state.user_name = uname
             st.session_state.user_age  = uage
             st.session_state.profile_set = True
-            name = uname
             st.success(f"Welcome, {uname}! 🌿")
             st.rerun()
 
@@ -442,17 +377,17 @@ with st.sidebar:
     st.divider()
     st.markdown("**🎵 Music Player**")
     selected_music = st.selectbox("Choose", list(MUSIC_OPTIONS.keys()), label_visibility="collapsed")
-    col_play, col_stop = st.columns(2)
-with col_play:
-    if st.button("▶️ Play", key="music_play"):
-        st.session_state.music_playing = True
-        st.session_state.selected_music = selected_music
-        st.rerun()
-with col_stop:
-    if st.button("⏹ Stop", key="music_stop"):
-        st.session_state.music_playing = False
-        st.session_state.selected_music = None
-        st.rerun()
+    c1, c2 = st.columns(2)
+    with c1:
+        if st.button("▶️ Play", key="music_play", use_container_width=True):
+            st.session_state.music_playing = True
+            st.session_state.selected_music = selected_music
+            st.rerun()
+    with c2:
+        if st.button("⏹ Stop", key="music_stop", use_container_width=True):
+            st.session_state.music_playing = False
+            st.session_state.selected_music = None
+            st.rerun()
 
     if st.session_state.music_playing and st.session_state.selected_music:
         url = MUSIC_OPTIONS[st.session_state.selected_music]
@@ -462,13 +397,13 @@ with col_stop:
         frameborder="0" allow="autoplay; encrypted-media"></iframe>
         </div>
         <div style='font-size:0.78rem; opacity:0.65; margin-top:0.3rem;'>
-        🎵 Now playing: {st.session_state.selected_music}
+        🎵 {st.session_state.selected_music}
         </div>
         """, unsafe_allow_html=True)
 
     st.divider()
     st.markdown("**🕐 Chat History**")
-    if st.button("➕ New Chat"):
+    if st.button("➕ New Chat", key="new_chat", use_container_width=True):
         save_conversation()
         st.session_state.messages = []
         st.session_state.current_conversation = []
@@ -476,11 +411,11 @@ with col_stop:
 
     convs = load_conversations()
     if convs:
-        if st.button("🗑️ Delete All History"):
+        if st.button("🗑️ Delete History", key="delete_history", use_container_width=True):
             os.remove("conversations.json")
             st.success("History deleted!")
             st.rerun()
-        for conv in convs[:10]:
+        for conv in convs[:8]:
             st.markdown(f"""
             <div class='chat-history-item'>
                 <div style='font-weight:600; font-size:0.82rem;'>💬 {conv['date']}</div>
@@ -490,6 +425,29 @@ with col_stop:
     else:
         st.caption("No history yet. Start chatting!")
 
+    st.divider()
+    st.markdown("**Menu**")
+    for key, label, icon_path in NAV_ITEMS:
+        is_active = st.session_state.page == key
+        active_style = "background:rgba(2,195,154,0.15); border:1px solid rgba(2,195,154,0.4);" if is_active else "border:1px solid transparent;"
+        st.markdown(f"""
+        <div style="display:flex; align-items:center; gap:8px; padding:0.42rem 0.85rem;
+        border-radius:9px; margin:0.06rem 0; cursor:pointer; {active_style}
+        transition: all 0.2s ease;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="#02C39A" stroke-width="1.8" stroke-linecap="round"
+            stroke-linejoin="round">
+                <path d="{icon_path}"/>
+            </svg>
+            <span style="font-size:0.88rem; font-weight:500;">{label}</span>
+        </div>
+        """, unsafe_allow_html=True)
+        if st.button(label, key=f"nav_{key}", use_container_width=True):
+            st.session_state.page = key
+            st.rerun()
+
+page = st.session_state.page
+
 # ── Header ─────────────────────────────────────────────────────
 st.markdown(f"""
 <div class='main-header'>
@@ -498,81 +456,6 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# ── Pages ───────────────────────────────────────────────────────
-if "page" not in st.session_state:
-    st.session_state.page = "💬 Chat"
-
-if "page" not in st.session_state:
-    st.session_state.page = "💬 Chat"
-
-nav_items = [
-    ("💬 Chat",           "Chat",           "M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 16H5.83l-.83.83V4h15v14z"),
-    ("😊 Mood",           "Mood",           "M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"),
-    ("📝 Journal",        "Journal",        "M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zM8 15h8v2H8zm0-4h8v2H8zm0-4h5v2H8z"),
-    ("🌅 Daily Wellness", "Daily Wellness", "M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"),
-    ("🧘 Meditation",     "Meditation",     "M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9zm0 16c-3.86 0-7-3.14-7-7s3.14-7 7-7 7 3.14 7 7-3.14 7-7 7zm-1-11h2v6h-2zm0 8h2v2h-2z"),
-    ("🎯 Affirmations",   "Affirmations",   "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4 8-8-1.41-1.42z"),
-    ("🧠 Assessment",     "Assessment",     "M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 10h2v7H7zm4-3h2v10h-2zm4 6h2v4h-2z"),
-    ("🏆 Achievements",   "Achievements",   "M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 2.18l7 3.12V11c0 4.52-3.13 8.74-7 9.93-3.87-1.19-7-5.41-7-9.93V6.3l7-3.12z"),
-    ("📈 Progress",       "Progress",       "M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"),
-]
-
-st.sidebar.markdown("""
-<style>
-.nav-item {
-    display: flex;
-    align-items: center;
-    gap: 0.7rem;
-    padding: 0.55rem 0.9rem;
-    border-radius: 10px;
-    margin: 0.15rem 0;
-    cursor: pointer;
-    font-size: 0.92rem;
-    font-weight: 500;
-    border: 1px solid transparent;
-    transition: all 0.2s ease;
-    text-decoration: none;
-}
-.nav-item:hover {
-    background: rgba(2, 195, 154, 0.12);
-    border-color: rgba(2, 195, 154, 0.3);
-    padding-left: 1.2rem;
-}
-.nav-item-active {
-    background: linear-gradient(135deg, rgba(2,128,144,0.25), rgba(2,195,154,0.18));
-    border-color: rgba(2, 195, 154, 0.45);
-}
-.nav-icon {
-    width: 18px;
-    height: 18px;
-    fill: #02C39A;
-    flex-shrink: 0;
-}
-</style>
-""", unsafe_allow_html=True)
-
-st.sidebar.markdown("**Menu**")
-for key, label, icon_path in nav_items:
-    is_active = st.session_state.page == key
-    active_class = "nav-item-active" if is_active else ""
-    is_active = st.session_state.page == key
-    active_style = "background:rgba(2,195,154,0.15); border-color:rgba(2,195,154,0.4);" if is_active else ""
-    st.sidebar.markdown(f"""
-    <div onclick="" style="display:flex; align-items:center; gap:8px; padding:0.45rem 0.9rem;
-    border-radius:9px; border:1px solid transparent; margin:0.08rem 0;
-    cursor:pointer; {active_style} transition: all 0.2s ease;">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#02C39A"
-        stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
-        xmlns="http://www.w3.org/2000/svg">
-            <path d="{icon_path}"/>
-        </svg>
-        <span style="font-size:0.9rem; font-weight:500;">{label}</span>
-    </div>
-    """, unsafe_allow_html=True)
-    if st.sidebar.button(label, key=f"nav_{key}", use_container_width=True):
-        st.session_state.page = key
-        st.rerun()
-page = st.session_state.page
 # ══ PAGE 1 — CHAT ══════════════════════════════════════════════
 if page == "💬 Chat":
     if not st.session_state.user_name:
@@ -610,7 +493,7 @@ if page == "😊 Mood":
     st.markdown(f'<div class="section-title">😊 How are you feeling{", " + name if st.session_state.user_name else ""}?</div>', unsafe_allow_html=True)
     mood = st.radio("", ["😊 Happy","😐 Okay","😔 Sad","😰 Stressed","😡 Angry"], horizontal=True)
     note = st.text_input("Add a note (optional)", placeholder="What is making you feel this way?")
-    md   = MOOD_COLORS[mood]
+    md = MOOD_COLORS[mood]
     st.markdown(f"""
     <div style='text-align:center; background:{md["bg"]}; border:2px solid {md["color"]};
     border-radius:16px; padding:1.8rem; margin:0.8rem 0;'>
@@ -620,7 +503,7 @@ if page == "😊 Mood":
         <div style='font-size:0.95rem;'>{md["message"]}</div>
     </div>
     """, unsafe_allow_html=True)
-    c1,c2 = st.columns(2)
+    c1, c2 = st.columns(2)
     with c1:
         if st.button("💾 Save My Mood"):
             with open("mood_log.csv","a",newline="") as f:
@@ -666,7 +549,7 @@ if page == "📝 Journal":
         if not dfj.empty:
             if st.button("🗑️ Delete Journal Entries"):
                 os.remove("journal_log.csv"); st.rerun()
-            for _,row in dfj.iloc[::-1].iterrows():
+            for _, row in dfj.iloc[::-1].iterrows():
                 with st.expander(f"📝 {row['Date']} — {row['Title']}"):
                     st.write(row["Entry"])
         else:
@@ -680,7 +563,6 @@ if page == "🌅 Daily Wellness":
     is_morning = 5 <= hour < 12
     is_evening = 17 <= hour <= 23
 
-    # ── MORNING ──────────────────────────────────────────
     st.markdown('<div class="section-title">🌅 Morning Check In</div>', unsafe_allow_html=True)
     if is_morning:
         with st.spinner("Preparing your good morning message..."):
@@ -693,7 +575,6 @@ if page == "🌅 Daily Wellness":
         st.markdown(f'<div class="mcard">🌅 Good morning section is active from 5 AM to 12 PM. Come back tomorrow morning{", "+name if st.session_state.user_name else ""}! 🌿</div>', unsafe_allow_html=True)
 
     morning_mood = st.selectbox("😊 How are you feeling this morning?", ["😊 Happy","😐 Okay","😔 Sad","😰 Stressed","😡 Angry"])
-
     st.markdown('<div class="section-title">✅ Things To Do Today</div>', unsafe_allow_html=True)
     tasks_input = st.text_area("Add your tasks for today", placeholder="1. Study for exam\n2. Call mom\n3. Drink water", height=120)
 
@@ -711,8 +592,6 @@ if page == "🌅 Daily Wellness":
         st.success(f"Morning check in saved{', '+name if st.session_state.user_name else ''}! Have an amazing day! 🌅")
 
     st.divider()
-
-    # ── EVENING ───────────────────────────────────────────
     st.markdown('<div class="section-title">🌙 Evening Check In</div>', unsafe_allow_html=True)
     if is_evening:
         st.markdown(f'<div class="mcard">🌙 Good evening{", "+name if st.session_state.user_name else ""}! Time to wind down and reflect on your day. 🌿</div>', unsafe_allow_html=True)
@@ -738,12 +617,7 @@ if page == "🌅 Daily Wellness":
             st.warning("Please fill in at least some fields!")
         else:
             with open("evening_log.csv","a",newline="",encoding="utf-8") as f:
-                csv.writer(f).writerow([
-                    datetime.now().strftime("%Y-%m-%d %H:%M"),
-                    sleep_hours, sleep_quality, water_glasses,
-                    day_rating, day_highlight, day_challenge,
-                    grateful_for, tomorrow_goal
-                ])
+                csv.writer(f).writerow([datetime.now().strftime("%Y-%m-%d %H:%M"), sleep_hours, sleep_quality, water_glasses, day_rating, day_highlight, day_challenge, grateful_for, tomorrow_goal])
             with open("sleep_log.csv","a",newline="") as f:
                 csv.writer(f).writerow([datetime.now().strftime("%Y-%m-%d %H:%M"), sleep_hours, sleep_quality, ""])
             st.success("Evening check in saved! 🌙")
@@ -780,7 +654,7 @@ if page == "🌅 Daily Wellness":
         if not dfe.empty:
             if st.button("🗑️ Delete Evening Logs"):
                 os.remove("evening_log.csv"); st.rerun()
-            for _,row in dfe.iloc[::-1].iterrows():
+            for _, row in dfe.iloc[::-1].iterrows():
                 with st.expander(f"🌙 {row['Date']} — Day {row['Rating']}/10"):
                     st.markdown(f"**😴 Sleep:** {row['Sleep']} hrs ({row['Quality']})")
                     st.markdown(f"**💧 Water:** {row['Water']} glasses")
@@ -796,7 +670,7 @@ if page == "🧘 Meditation":
     st.markdown('<div class="section-title">🧘 Meditation and Breathing</div>', unsafe_allow_html=True)
     ex_type = st.radio("What do you want to do?", ["🌬️ Breathing Exercise","🧘 Guided Meditation"], horizontal=True)
     if ex_type == "🌬️ Breathing Exercise":
-        col1,col2,col3 = st.columns([1,2,1])
+        col1, col2, col3 = st.columns([1,2,1])
         with col2:
             bp = st.empty()
         rounds = st.slider("Rounds", 1, 5, 3)
@@ -853,7 +727,7 @@ if page == "🎯 Affirmations":
         else:
             st.warning("Please tell me how you are feeling!")
     st.markdown('<div class="section-title">Classic Quotes</div>', unsafe_allow_html=True)
-    for q,a in QUOTES:
+    for q, a in QUOTES:
         with st.expander(f"💬 {q[:45]}..."):
             st.markdown(f'*"{q}"*')
             st.markdown(f"**— {a}**")
@@ -863,14 +737,14 @@ if page == "🧠 Assessment":
     st.markdown('<div class="section-title">🧠 Mental Health Assessment</div>', unsafe_allow_html=True)
     st.caption("Answer 8 honest questions. This is NOT a medical diagnosis — just a self check tool.")
     qs = [
-        ("How often do you feel sad or hopeless?",          ["Never","Sometimes","Often","Always"]),
-        ("How often do you feel worried or anxious?",        ["Never","Sometimes","Often","Always"]),
-        ("How well are you sleeping?",                       ["Very Well","Okay","Poorly","Very Poorly"]),
-        ("How often do you feel lonely?",                    ["Never","Sometimes","Often","Always"]),
+        ("How often do you feel sad or hopeless?",           ["Never","Sometimes","Often","Always"]),
+        ("How often do you feel worried or anxious?",         ["Never","Sometimes","Often","Always"]),
+        ("How well are you sleeping?",                        ["Very Well","Okay","Poorly","Very Poorly"]),
+        ("How often do you feel lonely?",                     ["Never","Sometimes","Often","Always"]),
         ("How often do you lose interest in enjoyable things?",["Never","Sometimes","Often","Always"]),
-        ("How often do you feel tired or low energy?",       ["Never","Sometimes","Often","Always"]),
-        ("How often do you feel angry or irritated?",        ["Never","Sometimes","Often","Always"]),
-        ("How often do you feel overwhelmed?",               ["Never","Sometimes","Often","Always"]),
+        ("How often do you feel tired or low energy?",        ["Never","Sometimes","Often","Always"]),
+        ("How often do you feel angry or irritated?",         ["Never","Sometimes","Often","Always"]),
+        ("How often do you feel overwhelmed?",                ["Never","Sometimes","Often","Always"]),
     ]
     score_map = {"Never":0,"Very Well":0,"Sometimes":1,"Okay":1,"Often":2,"Poorly":2,"Always":3,"Very Poorly":3}
     answers = [st.selectbox(f"{i+1}. {q}", opts) for i,(q,opts) in enumerate(qs)]
@@ -897,7 +771,7 @@ if page == "🧠 Assessment":
         for t in tips:
             st.markdown(f"🌿 {t}")
         st.markdown("**Videos to help you feel better 🎥**")
-        for title,url in vids:
+        for title, url in vids:
             st.markdown(f"**{title}**")
             st.markdown(f'<iframe width="100%" height="200" src="{url}" frameborder="0" allowfullscreen></iframe>', unsafe_allow_html=True)
         st.caption("Not a medical diagnosis. Please see a doctor if struggling.")
@@ -914,7 +788,7 @@ if page == "🏆 Achievements":
         journal_count = len(pd.read_csv("journal_log.csv", names=["Date","Title","Entry"]))
     streak = get_streak()
 
-    c1,c2,c3 = st.columns(3)
+    c1, c2, c3 = st.columns(3)
     with c1:
         st.markdown(f'<div class="score-box"><div style="font-size:3rem;">🔥</div><div style="font-size:2.5rem;font-weight:800;color:var(--primary);">{streak}</div><div style="opacity:0.6;">Day Streak</div></div>', unsafe_allow_html=True)
     with c2:
@@ -943,8 +817,8 @@ if page == "🏆 Achievements":
         ("📝 Journal Score", min(journal_count*5,25), 25),
         ("📅 Streak Score",  min(streak*2,20), 20),
     ]
-    for lbl,s,mx in breakdown_items:
-        col_a,col_b = st.columns([4,1])
+    for lbl, s, mx in breakdown_items:
+        col_a, col_b = st.columns([4,1])
         with col_a:
             st.progress(s/mx if mx>0 else 0)
         with col_b:
@@ -957,7 +831,7 @@ if page == "🏆 Achievements":
     if earned:
         st.markdown("**✅ Earned**")
         cols = st.columns(3)
-        for i,b in enumerate(earned):
+        for i, b in enumerate(earned):
             with cols[i%3]:
                 st.markdown(f'<div class="badge-earned"><div style="font-size:1.6rem;">{b["name"].split()[-1]}</div><div style="color:var(--primary);font-weight:600;font-size:0.85rem;">{b["name"]}</div><div style="opacity:0.6;font-size:0.75rem;">{b["desc"]}</div></div>', unsafe_allow_html=True)
     if unearned:
