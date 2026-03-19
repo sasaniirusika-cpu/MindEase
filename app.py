@@ -151,23 +151,27 @@ div[data-testid="stChatInput"] button {
 
 
 
-/* ── Nav buttons: fully invisible overlay on SVG div ── */
+/* ── Nav buttons: plain style, no gradient ── */
 section[data-testid="stSidebar"] [data-testid^="stButton-nav_"] > button {
-    opacity: 0 !important;
-    position: absolute !important;
-    top: -34px !important;
-    left: 0 !important;
-    width: 100% !important;
-    height: 34px !important;
-    cursor: pointer !important;
     background: transparent !important;
-    border: none !important;
+    color: inherit !important;
+    border: 1px solid transparent !important;
+    border-radius: 9px !important;
+    font-size: 0.88rem !important;
+    font-weight: 500 !important;
+    text-align: left !important;
+    justify-content: flex-start !important;
     box-shadow: none !important;
     transform: none !important;
-    z-index: 10 !important;
-    font-size: 0 !important;
-    padding: 0 !important;
-    margin: 0 !important;
+    transition: background 0.2s ease !important;
+    padding: 0.4rem 0.85rem !important;
+    margin: 0.04rem 0 !important;
+}
+section[data-testid="stSidebar"] [data-testid^="stButton-nav_"] > button:hover {
+    background: rgba(2,195,154,0.1) !important;
+    border-color: rgba(2,195,154,0.3) !important;
+    transform: none !important;
+    box-shadow: none !important;
 }
 
 /* ── Music Play/Stop + New Chat + Delete: keep green gradient ── */
@@ -432,24 +436,18 @@ with st.sidebar:
     st.divider()
     st.markdown("**Menu**")
     for key, label, icon_path in NAV_ITEMS:
-        is_active = st.session_state.page == key
-        active_style = "background:rgba(2,195,154,0.15); border:1px solid rgba(2,195,154,0.4);" if is_active else "border:1px solid transparent;"
-        st.markdown(f'''
-        <div style="position:relative; margin:0.04rem 0; height:34px; pointer-events:none;">
-            <div style="display:flex; align-items:center; gap:8px; padding:0.4rem 0.85rem;
-            border-radius:9px; {active_style} transition:all 0.2s ease;
-            position:absolute; top:0; left:0; right:0; bottom:0; z-index:1;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                stroke="#02C39A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="{icon_path}"/>
-                </svg>
-                <span style="font-size:0.88rem; font-weight:500;">{label}</span>
-            </div>
-        </div>
-        ''', unsafe_allow_html=True)
         if st.button(label, key=f"nav_{key}", use_container_width=True):
             st.session_state.page = key
             st.rerun()
+    # Active page highlight
+    active_key = st.session_state.page
+    st.markdown(f"""<style>
+    section[data-testid="stSidebar"] [data-testid="stButton-nav_{active_key}"] > button {{
+        background: rgba(2,195,154,0.15) !important;
+        border-color: rgba(2,195,154,0.4) !important;
+        color: #02C39A !important;
+    }}
+    </style>""", unsafe_allow_html=True)
 page = st.session_state.page
 
 st.markdown(f"""
