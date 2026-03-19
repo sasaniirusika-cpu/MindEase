@@ -150,8 +150,50 @@ div[data-testid="stChatInput"] button {
     border-radius: 50% !important;
 }
 
-/* Tabs */
-.stTabs [data-baseweb="tab-list"] {
+/* ── Sidebar navigation styling ── */
+div[data-testid="stSidebarNav"] {display: none;}
+
+.st-emotion-cache-pkbazv {display: none;}
+
+section[data-testid="stSidebar"] .stRadio > div {
+    gap: 0 !important;
+}
+
+section[data-testid="stSidebar"] .stRadio label {
+    background: transparent !important;
+    border-radius: 10px !important;
+    padding: 0.6rem 1rem !important;
+    margin: 0.15rem 0 !important;
+    cursor: pointer !important;
+    font-weight: 500 !important;
+    font-size: 0.95rem !important;
+    transition: all 0.2s ease !important;
+    display: block !important;
+    width: 100% !important;
+    border: 1px solid transparent !important;
+}
+
+section[data-testid="stSidebar"] .stRadio label:hover {
+    background: rgba(2, 195, 154, 0.12) !important;
+    border-color: rgba(2, 195, 154, 0.25) !important;
+    padding-left: 1.3rem !important;
+}
+
+section[data-testid="stSidebar"] .stRadio label[data-selected="true"],
+section[data-testid="stSidebar"] .stRadio input:checked + div {
+    background: linear-gradient(135deg, rgba(2,128,144,0.3), rgba(2,195,154,0.2)) !important;
+    border-color: rgba(2, 195, 154, 0.5) !important;
+    padding-left: 1.3rem !important;
+}
+
+section[data-testid="stSidebar"] .stRadio input[type="radio"] {
+    display: none !important;
+}
+
+section[data-testid="stSidebar"] .stRadio div[data-testid="stMarkdownContainer"] p {
+    font-size: 0.95rem !important;
+    margin: 0 !important;
+}
     gap: 4px;
     flex-wrap: wrap;
 }
