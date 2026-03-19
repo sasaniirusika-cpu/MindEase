@@ -149,7 +149,7 @@ div[data-testid="stChatInput"] button {
     box-shadow: 0 4px 14px rgba(2,195,154,0.38) !important;
 }
 
-/* ── Nav buttons: invisible overlay on top of HTML div ── */
+/* ── Nav buttons: invisible overlay, sits on top of HTML div ── */
 section[data-testid="stSidebar"] [data-testid^="stButton-nav_"] > button {
     opacity: 0 !important;
     position: absolute !important;
@@ -157,13 +157,14 @@ section[data-testid="stSidebar"] [data-testid^="stButton-nav_"] > button {
     left: 0 !important;
     width: 100% !important;
     height: 36px !important;
-    margin-top: -38px !important;
+    margin-top: -40px !important;
     cursor: pointer !important;
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
     transform: none !important;
     z-index: 10 !important;
+    padding: 0 !important;
 }
 
 /* ── Music Play/Stop + New Chat + Delete: keep green gradient ── */
@@ -431,10 +432,10 @@ with st.sidebar:
         is_active = st.session_state.page == key
         active_style = "background:rgba(2,195,154,0.15); border:1px solid rgba(2,195,154,0.4);" if is_active else "border:1px solid transparent;"
         st.markdown(f'''
-        <div style="position:relative; height:36px; margin:0.06rem 0;">
+        <div style="position:relative; margin:0.06rem 0; height:36px;">
             <div style="display:flex; align-items:center; gap:8px; padding:0.42rem 0.85rem;
             border-radius:9px; {active_style} transition:all 0.2s ease;
-            position:absolute; top:0; left:0; right:0; bottom:0; pointer-events:none;">
+            position:absolute; top:0; left:0; right:0; bottom:0; pointer-events:none; z-index:1;">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
                 stroke="#02C39A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                     <path d="{icon_path}"/>
@@ -443,7 +444,7 @@ with st.sidebar:
             </div>
         </div>
         ''', unsafe_allow_html=True)
-        if st.button("", key=f"nav_{key}", use_container_width=True):
+        if st.button(label, key=f"nav_{key}", use_container_width=True):
             st.session_state.page = key
             st.rerun()
 
