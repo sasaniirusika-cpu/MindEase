@@ -207,7 +207,7 @@ section[data-testid="stSidebar"] .stRadio div[data-testid="stMarkdownContainer"]
     color: white !important;
 }
 
-/* Buttons */
+/* Main buttons */
 .stButton > button {
     background: linear-gradient(135deg, #028090, #02C39A) !important;
     color: white !important;
@@ -219,6 +219,30 @@ section[data-testid="stSidebar"] .stRadio div[data-testid="stMarkdownContainer"]
 .stButton > button:hover {
     transform: translateY(-2px) !important;
     box-shadow: 0 4px 14px rgba(2,195,154,0.38) !important;
+}
+
+/* Sidebar navigation buttons */
+section[data-testid="stSidebar"] .stButton > button {
+    background: transparent !important;
+    color: inherit !important;
+    border: 1px solid transparent !important;
+    border-radius: 10px !important;
+    padding: 0.55rem 1rem !important;
+    margin: 0.1rem 0 !important;
+    text-align: left !important;
+    font-weight: 500 !important;
+    font-size: 0.95rem !important;
+    box-shadow: none !important;
+    transition: all 0.2s ease !important;
+    justify-content: flex-start !important;
+}
+
+section[data-testid="stSidebar"] .stButton > button:hover {
+    background: rgba(2, 195, 154, 0.12) !important;
+    border-color: rgba(2, 195, 154, 0.3) !important;
+    transform: none !important;
+    box-shadow: none !important;
+    padding-left: 1.3rem !important;
 }
 
 /* Floating music player */
@@ -472,7 +496,10 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ── Pages ───────────────────────────────────────────────────────
-page = st.sidebar.radio("", [
+if "page" not in st.session_state:
+    st.session_state.page = "💬 Chat"
+
+pages = [
     "💬 Chat",
     "😊 Mood",
     "📝 Journal",
@@ -482,7 +509,15 @@ page = st.sidebar.radio("", [
     "🧠 Assessment",
     "🏆 Achievements",
     "📈 Progress"
-], label_visibility="collapsed")
+]
+
+st.sidebar.markdown("### Navigation")
+for p in pages:
+    if st.sidebar.button(p, key=f"nav_{p}", use_container_width=True):
+        st.session_state.page = p
+        st.rerun()
+
+page = st.session_state.page
 # ══ PAGE 1 — CHAT ══════════════════════════════════════════════
 if page == "💬 Chat":
     if not st.session_state.user_name:
