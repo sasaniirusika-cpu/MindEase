@@ -499,22 +499,69 @@ st.markdown(f"""
 if "page" not in st.session_state:
     st.session_state.page = "💬 Chat"
 
-pages = [
-    "💬 Chat",
-    "😊 Mood",
-    "📝 Journal",
-    "🌅 Daily Wellness",
-    "🧘 Meditation",
-    "🎯 Affirmations",
-    "🧠 Assessment",
-    "🏆 Achievements",
-    "📈 Progress"
+if "page" not in st.session_state:
+    st.session_state.page = "💬 Chat"
+
+nav_items = [
+    ("💬 Chat",          "Chat",          "M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"),
+    ("😊 Mood",          "Mood",          "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"),
+    ("📝 Journal",       "Journal",       "M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"),
+    ("🌅 Daily Wellness","Daily Wellness","M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1z"),
+    ("🧘 Meditation",    "Meditation",    "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"),
+    ("🎯 Affirmations",  "Affirmations",  "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"),
+    ("🧠 Assessment",    "Assessment",    "M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"),
+    ("🏆 Achievements",  "Achievements",  "M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 4l5 2.18V11c0 3.5-2.33 6.79-5 7.93C9.33 17.79 7 14.5 7 11V7.18L12 5z"),
+    ("📈 Progress",      "Progress",      "M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"),
 ]
 
-st.sidebar.markdown("### Navigation")
-for p in pages:
-    if st.sidebar.button(p, key=f"nav_{p}", use_container_width=True):
-        st.session_state.page = p
+st.sidebar.markdown("""
+<style>
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.55rem 0.9rem;
+    border-radius: 10px;
+    margin: 0.15rem 0;
+    cursor: pointer;
+    font-size: 0.92rem;
+    font-weight: 500;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+.nav-item:hover {
+    background: rgba(2, 195, 154, 0.12);
+    border-color: rgba(2, 195, 154, 0.3);
+    padding-left: 1.2rem;
+}
+.nav-item-active {
+    background: linear-gradient(135deg, rgba(2,128,144,0.25), rgba(2,195,154,0.18));
+    border-color: rgba(2, 195, 154, 0.45);
+}
+.nav-icon {
+    width: 18px;
+    height: 18px;
+    fill: #02C39A;
+    flex-shrink: 0;
+}
+</style>
+""", unsafe_allow_html=True)
+
+st.sidebar.markdown("**Menu**")
+for key, label, icon_path in nav_items:
+    is_active = st.session_state.page == key
+    active_class = "nav-item-active" if is_active else ""
+    st.sidebar.markdown(f"""
+    <div class="nav-item {active_class}">
+        <svg class="nav-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="{icon_path}"/>
+        </svg>
+        {label}
+    </div>
+    """, unsafe_allow_html=True)
+    if st.sidebar.button(label, key=f"nav_{key}", use_container_width=True, label_visibility="collapsed"):
+        st.session_state.page = key
         st.rerun()
 
 page = st.session_state.page
