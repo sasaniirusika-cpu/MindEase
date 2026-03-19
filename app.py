@@ -168,6 +168,20 @@ section[data-testid="stSidebar"] .stButton > button {
     cursor: pointer !important;
 }
 
+section[data-testid="stSidebar"] .stButton > button[kind="secondary"],
+section[data-testid="stSidebar"] [data-testid="stButton-music_play"] > button,
+section[data-testid="stSidebar"] [data-testid="stButton-music_stop"] > button,
+section[data-testid="stSidebar"] [data-testid="stButton-save_profile"] > button {
+    opacity: 1 !important;
+    position: relative !important;
+    height: auto !important;
+    margin-top: 0 !important;
+    background: linear-gradient(135deg, #028090, #02C39A) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 8px !important;
+}
+
 section[data-testid="stSidebar"] .stRadio label[data-selected="true"],
 section[data-testid="stSidebar"] .stRadio input:checked + div {
     background: linear-gradient(135deg, rgba(2,128,144,0.3), rgba(2,195,154,0.2)) !important;
@@ -429,16 +443,16 @@ with st.sidebar:
     st.markdown("**🎵 Music Player**")
     selected_music = st.selectbox("Choose", list(MUSIC_OPTIONS.keys()), label_visibility="collapsed")
     col_play, col_stop = st.columns(2)
-    with col_play:
-        if st.button("▶️ Play"):
-            st.session_state.music_playing = True
-            st.session_state.selected_music = selected_music
-            st.rerun()
-    with col_stop:
-        if st.button("⏹ Stop"):
-            st.session_state.music_playing = False
-            st.session_state.selected_music = None
-            st.rerun()
+with col_play:
+    if st.button("▶️ Play", key="music_play"):
+        st.session_state.music_playing = True
+        st.session_state.selected_music = selected_music
+        st.rerun()
+with col_stop:
+    if st.button("⏹ Stop", key="music_stop"):
+        st.session_state.music_playing = False
+        st.session_state.selected_music = None
+        st.rerun()
 
     if st.session_state.music_playing and st.session_state.selected_music:
         url = MUSIC_OPTIONS[st.session_state.selected_music]
