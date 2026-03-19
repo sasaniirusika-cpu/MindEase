@@ -552,18 +552,17 @@ st.sidebar.markdown("**Menu**")
 for key, label, icon_path in nav_items:
     is_active = st.session_state.page == key
     active_class = "nav-item-active" if is_active else ""
-    st.sidebar.markdown(f"""
-    <div class="nav-item {active_class}">
-        <svg class="nav-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    col1, col2 = st.sidebar.columns([0.15, 0.85])
+    with col1:
+        st.markdown(f"""
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#02C39A" xmlns="http://www.w3.org/2000/svg" style="margin-top:8px;">
             <path d="{icon_path}"/>
         </svg>
-        {label}
-    </div>
-    """, unsafe_allow_html=True)
-    if st.sidebar.button(label, key=f"nav_{key}", use_container_width=True, label_visibility="collapsed"):
-        st.session_state.page = key
-        st.rerun()
-
+        """, unsafe_allow_html=True)
+    with col2:
+        if st.button(label, key=f"nav_{key}", use_container_width=True):
+            st.session_state.page = key
+            st.rerun()
 page = st.session_state.page
 # ══ PAGE 1 — CHAT ══════════════════════════════════════════════
 if page == "💬 Chat":
