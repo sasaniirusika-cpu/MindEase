@@ -429,15 +429,20 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# ── Tabs ───────────────────────────────────────────────────────
-tab1,tab2,tab3,tab4,tab5,tab6,tab7,tab8,tab9 = st.tabs([
-    "💬 Chat","😊 Mood","📝 Journal","🌅 Daily Wellness",
-    "🧘 Meditation","🎯 Affirmations","🧠 Assessment",
-    "🏆 Achievements","📈 Progress"
-])
-
-# ══ TAB 1 — CHAT ══════════════════════════════════════════════
-with tab1:
+# ── Pages ───────────────────────────────────────────────────────
+page = st.sidebar.radio("", [
+    "💬 Chat",
+    "😊 Mood",
+    "📝 Journal",
+    "🌅 Daily Wellness",
+    "🧘 Meditation",
+    "🎯 Affirmations",
+    "🧠 Assessment",
+    "🏆 Achievements",
+    "📈 Progress"
+], label_visibility="collapsed")
+# ══ PAGE 1 — CHAT ══════════════════════════════════════════════
+if page == "💬 Chat":
     if not st.session_state.user_name:
         st.info("👤 Enter your name in the sidebar for a personalised experience!")
     chat_container = st.container(height=480)
@@ -468,8 +473,8 @@ with tab1:
                         st.error(f"Something went wrong: {e}")
         st.rerun()
 
-# ══ TAB 2 — MOOD ══════════════════════════════════════════════
-with tab2:
+# ══ PAGE 2 — MOOD ══════════════════════════════════════════════
+if page == "😊 Mood":
     st.markdown(f'<div class="section-title">😊 How are you feeling{", " + name if st.session_state.user_name else ""}?</div>', unsafe_allow_html=True)
     mood = st.radio("", ["😊 Happy","😐 Okay","😔 Sad","😰 Stressed","😡 Angry"], horizontal=True)
     note = st.text_input("Add a note (optional)", placeholder="What is making you feel this way?")
@@ -510,8 +515,8 @@ with tab2:
     else:
         st.info("No mood logs yet!")
 
-# ══ TAB 3 — JOURNAL ═══════════════════════════════════════════
-with tab3:
+# ══ PAGE 3 — JOURNAL ═══════════════════════════════════════════
+if page == "📝 Journal":
     st.markdown(f'<div class="section-title">📝 Journal{" — "+name if st.session_state.user_name else ""}</div>', unsafe_allow_html=True)
     st.caption("Your private space. Write anything you feel.")
     jtitle = st.text_input("Title", placeholder="My thoughts today...")
@@ -537,8 +542,8 @@ with tab3:
     else:
         st.info("No entries yet!")
 
-# ══ TAB 4 — DAILY WELLNESS ════════════════════════════════════
-with tab4:
+# ══ PAGE 4 — DAILY WELLNESS ════════════════════════════════════
+if page == "🌅 Daily Wellness":
     hour = datetime.now().hour
     is_morning = 5 <= hour < 12
     is_evening = 17 <= hour <= 23
@@ -654,8 +659,8 @@ with tab4:
     else:
         st.info("No evening check ins yet. Come back tonight! 🌙")
 
-# ══ TAB 5 — MEDITATION ════════════════════════════════════════
-with tab5:
+# ══ PAGE 5 — MEDITATION ════════════════════════════════════════
+if page == "🧘 Meditation":
     st.markdown('<div class="section-title">🧘 Meditation and Breathing</div>', unsafe_allow_html=True)
     ex_type = st.radio("What do you want to do?", ["🌬️ Breathing Exercise","🧘 Guided Meditation"], horizontal=True)
     if ex_type == "🌬️ Breathing Exercise":
@@ -691,8 +696,8 @@ with tab5:
                 time.sleep(secs)
             st.success(f"Meditation complete{', '+name if st.session_state.user_name else ''}! Well done! 🌿💙")
 
-# ══ TAB 6 — AFFIRMATIONS ══════════════════════════════════════
-with tab6:
+# ══ PAGE 6 — AFFIRMATIONS ══════════════════════════════════════
+if page == "🎯 Affirmations":
     st.markdown('<div class="section-title">🎯 Your Daily Affirmation</div>', unsafe_allow_html=True)
     if st.session_state.affirmation is None:
         st.session_state.affirmation = random.choice(AFFIRMATIONS)
@@ -721,8 +726,8 @@ with tab6:
             st.markdown(f'*"{q}"*')
             st.markdown(f"**— {a}**")
 
-# ══ TAB 7 — ASSESSMENT ════════════════════════════════════════
-with tab7:
+# ══ PAGE 7 — ASSESSMENT ════════════════════════════════════════
+if page == "🧠 Assessment":
     st.markdown('<div class="section-title">🧠 Mental Health Assessment</div>', unsafe_allow_html=True)
     st.caption("Answer 8 honest questions. This is NOT a medical diagnosis — just a self check tool.")
     qs = [
@@ -765,8 +770,8 @@ with tab7:
             st.markdown(f'<iframe width="100%" height="200" src="{url}" frameborder="0" allowfullscreen></iframe>', unsafe_allow_html=True)
         st.caption("Not a medical diagnosis. Please see a doctor if struggling.")
 
-# ══ TAB 8 — ACHIEVEMENTS ══════════════════════════════════════
-with tab8:
+# ══ PAGE 8 — ACHIEVEMENTS ══════════════════════════════════════
+if page == "🏆 Achievements":
     st.markdown('<div class="section-title">🏆 Your Achievements</div>', unsafe_allow_html=True)
     mood_count = sleep_count = journal_count = 0
     if os.path.exists("mood_log.csv"):
@@ -828,8 +833,8 @@ with tab8:
         for b in unearned:
             st.markdown(f'<div class="badge-locked">🔒 <strong>{b["name"]}</strong> — {b["desc"]}</div>', unsafe_allow_html=True)
 
-# ══ TAB 9 — PROGRESS ══════════════════════════════════════════
-with tab9:
+# ══ PAGE 9 — PROGRESS ══════════════════════════════════════════
+if page == "📈 Progress":
     st.markdown('<div class="section-title">📈 Progress Report</div>', unsafe_allow_html=True)
     period = st.radio("Show report for:", ["Last 7 Days","Last 30 Days"], horizontal=True)
     days = 7 if period=="Last 7 Days" else 30
