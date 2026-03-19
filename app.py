@@ -149,83 +149,48 @@ div[data-testid="stChatInput"] button {
     box-shadow: 0 4px 14px rgba(2,195,154,0.38) !important;
 }
 
-/* Hide ALL sidebar buttons by default — for nav overlay */
-section[data-testid="stSidebar"] .stButton > button {
-    opacity: 0 !important;
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    height: 36px !important;
-    margin-top: -38px !important;
-    width: 100% !important;
-    cursor: pointer !important;
+/* ── Nav buttons: transparent, plain, no gradient ── */
+section[data-testid="stSidebar"] [data-testid^="stButton-nav_"] > button {
     background: transparent !important;
-    border: none !important;
+    color: inherit !important;
+    border: 1px solid transparent !important;
+    border-radius: 9px !important;
+    font-weight: 500 !important;
+    font-size: 0.88rem !important;
+    text-align: left !important;
+    justify-content: flex-start !important;
     box-shadow: none !important;
     transform: none !important;
-    z-index: 10 !important;
+    transition: background 0.2s ease !important;
+    padding: 0.42rem 0.85rem !important;
 }
-
-/* Show specific buttons visibly */
-section[data-testid="stSidebar"] .stButton:has(button[data-testid="baseButton-secondary"]) > button,
-section[data-testid="stSidebar"] .stButton:has(button[kind="secondary"]) > button {
-    opacity: 1 !important;
-    position: relative !important;
-    height: auto !important;
-    margin-top: 0 !important;
-    background: linear-gradient(135deg, #028090, #02C39A) !important;
-    color: white !important;
-    border: none !important;
-    border-radius: 8px !important;
-    font-weight: 500 !important;
+section[data-testid="stSidebar"] [data-testid^="stButton-nav_"] > button:hover {
+    background: rgba(2,195,154,0.1) !important;
+    border-color: rgba(2,195,154,0.3) !important;
     transform: none !important;
+    box-shadow: none !important;
 }
 
-/* ── MUSIC + CHAT BUTTONS FIX — show these visibly ── */
-section[data-testid="stSidebar"] button[kind="primary"][data-testid="baseButton-primary"] {
-    opacity: 1 !important;
-    position: relative !important;
-    height: auto !important;
-    margin-top: 0 !important;
+/* ── Music Play/Stop + New Chat + Delete: keep green gradient ── */
+section[data-testid="stSidebar"] [data-testid="stButton-music_play"] > button,
+section[data-testid="stSidebar"] [data-testid="stButton-music_stop"] > button,
+section[data-testid="stSidebar"] [data-testid="stButton-new_chat"] > button,
+section[data-testid="stSidebar"] [data-testid="stButton-delete_history"] > button {
     background: linear-gradient(135deg, #028090, #02C39A) !important;
     color: white !important;
     border: none !important;
     border-radius: 8px !important;
     font-weight: 500 !important;
+    box-shadow: none !important;
     transform: none !important;
     width: 100% !important;
-    box-shadow: none !important;
-    cursor: pointer !important;
-    z-index: auto !important;
 }
-
-/* Target music_play, music_stop, new_chat, delete_history by key */
-section[data-testid="stSidebar"] [data-testid="stButton-music_play"] button,
-section[data-testid="stSidebar"] [data-testid="stButton-music_stop"] button,
-section[data-testid="stSidebar"] [data-testid="stButton-new_chat"] button,
-section[data-testid="stSidebar"] [data-testid="stButton-delete_history"] button {
-    opacity: 1 !important;
-    position: relative !important;
-    height: auto !important;
-    margin-top: 0 !important;
-    background: linear-gradient(135deg, #028090, #02C39A) !important;
-    color: white !important;
-    border: none !important;
-    border-radius: 8px !important;
-    font-weight: 500 !important;
-    transform: none !important;
-    width: 100% !important;
-    box-shadow: none !important;
-    cursor: pointer !important;
-    z-index: auto !important;
-}
-section[data-testid="stSidebar"] [data-testid="stButton-music_play"] button:hover,
-section[data-testid="stSidebar"] [data-testid="stButton-music_stop"] button:hover,
-section[data-testid="stSidebar"] [data-testid="stButton-new_chat"] button:hover,
-section[data-testid="stSidebar"] [data-testid="stButton-delete_history"] button:hover {
+section[data-testid="stSidebar"] [data-testid="stButton-music_play"] > button:hover,
+section[data-testid="stSidebar"] [data-testid="stButton-music_stop"] > button:hover,
+section[data-testid="stSidebar"] [data-testid="stButton-new_chat"] > button:hover,
+section[data-testid="stSidebar"] [data-testid="stButton-delete_history"] > button:hover {
     transform: translateY(-2px) !important;
     box-shadow: 0 4px 14px rgba(2,195,154,0.38) !important;
-    opacity: 1 !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -468,25 +433,21 @@ with st.sidebar:
     st.divider()
     st.markdown("**Menu**")
     for key, label, icon_path in NAV_ITEMS:
-        is_active = st.session_state.page == key
-        active_style = "background:rgba(2,195,154,0.15); border:1px solid rgba(2,195,154,0.4);" if is_active else "border:1px solid transparent;"
-        st.markdown(f"""
-        <div style="position:relative; margin:0.06rem 0;">
-            <div style="display:flex; align-items:center; gap:8px; padding:0.42rem 0.85rem;
-            border-radius:9px; cursor:pointer; {active_style}
-            transition: all 0.2s ease; pointer-events:none;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                stroke="#02C39A" stroke-width="1.8" stroke-linecap="round"
-                stroke-linejoin="round">
-                    <path d="{icon_path}"/>
-                </svg>
-                <span style="font-size:0.88rem; font-weight:500;">{label}</span>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
         if st.button(label, key=f"nav_{key}", use_container_width=True):
             st.session_state.page = key
             st.rerun()
+
+    # Highlight active nav button
+    active_idx = next((i for i, (k,_,__) in enumerate(NAV_ITEMS) if k == st.session_state.page), 0)
+    active_key = NAV_ITEMS[active_idx][0]
+    st.markdown(f'''
+    <style>
+    section[data-testid="stSidebar"] [data-testid="stButton-nav_{active_key}"] > button {{
+        background: rgba(2,195,154,0.15) !important;
+        border: 1px solid rgba(2,195,154,0.4) !important;
+    }}
+    </style>
+    ''', unsafe_allow_html=True)
 
 page = st.session_state.page
 
