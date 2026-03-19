@@ -181,8 +181,8 @@ section[data-testid="stSidebar"] .stButton:has(button[kind="secondary"]) > butto
     transform: none !important;
 }
 
-/* ── MUSIC BUTTONS FIX ── */
-section[data-testid="stSidebar"] .music-btn-wrapper .stButton > button {
+/* ── MUSIC + CHAT BUTTONS FIX — show these visibly ── */
+section[data-testid="stSidebar"] button[kind="primary"][data-testid="baseButton-primary"] {
     opacity: 1 !important;
     position: relative !important;
     height: auto !important;
@@ -196,15 +196,14 @@ section[data-testid="stSidebar"] .music-btn-wrapper .stButton > button {
     width: 100% !important;
     box-shadow: none !important;
     cursor: pointer !important;
-}
-section[data-testid="stSidebar"] .music-btn-wrapper .stButton > button:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 4px 14px rgba(2,195,154,0.38) !important;
-    opacity: 1 !important;
+    z-index: auto !important;
 }
 
-/* ── CHAT / DELETE BUTTONS FIX ── */
-section[data-testid="stSidebar"] .chat-btn-wrapper .stButton > button {
+/* Target music_play, music_stop, new_chat, delete_history by key */
+section[data-testid="stSidebar"] [data-testid="stButton-music_play"] button,
+section[data-testid="stSidebar"] [data-testid="stButton-music_stop"] button,
+section[data-testid="stSidebar"] [data-testid="stButton-new_chat"] button,
+section[data-testid="stSidebar"] [data-testid="stButton-delete_history"] button {
     opacity: 1 !important;
     position: relative !important;
     height: auto !important;
@@ -218,8 +217,12 @@ section[data-testid="stSidebar"] .chat-btn-wrapper .stButton > button {
     width: 100% !important;
     box-shadow: none !important;
     cursor: pointer !important;
+    z-index: auto !important;
 }
-section[data-testid="stSidebar"] .chat-btn-wrapper .stButton > button:hover {
+section[data-testid="stSidebar"] [data-testid="stButton-music_play"] button:hover,
+section[data-testid="stSidebar"] [data-testid="stButton-music_stop"] button:hover,
+section[data-testid="stSidebar"] [data-testid="stButton-new_chat"] button:hover,
+section[data-testid="stSidebar"] [data-testid="stButton-delete_history"] button:hover {
     transform: translateY(-2px) !important;
     box-shadow: 0 4px 14px rgba(2,195,154,0.38) !important;
     opacity: 1 !important;
@@ -414,19 +417,15 @@ with st.sidebar:
     # ── Music Play / Stop buttons — always visible ──
     col1, col2 = st.columns(2)
     with col1:
-        st.markdown('<div class="music-btn-wrapper">', unsafe_allow_html=True)
         if st.button("▶️ Play", key="music_play", use_container_width=True):
             st.session_state.music_playing = True
             st.session_state.selected_music = selected_music
             st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
     with col2:
-        st.markdown('<div class="music-btn-wrapper">', unsafe_allow_html=True)
         if st.button("⏹ Stop", key="music_stop", use_container_width=True):
             st.session_state.music_playing = False
             st.session_state.selected_music = None
             st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
 
     if st.session_state.music_playing and st.session_state.selected_music:
         url = MUSIC_OPTIONS[st.session_state.selected_music]
@@ -444,22 +443,18 @@ with st.sidebar:
     st.markdown("**🕐 Chat History**")
 
     # ── New Chat button — always visible ──
-    st.markdown('<div class="chat-btn-wrapper">', unsafe_allow_html=True)
     if st.button("➕ New Chat", key="new_chat", use_container_width=True):
         save_conversation()
         st.session_state.messages = []
         st.session_state.current_conversation = []
         st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
 
     convs = load_conversations()
     if convs:
-        st.markdown('<div class="chat-btn-wrapper">', unsafe_allow_html=True)
         if st.button("🗑️ Delete History", key="delete_history", use_container_width=True):
             os.remove("conversations.json")
             st.success("History deleted!")
             st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
         for conv in convs[:8]:
             st.markdown(f"""
             <div class='chat-history-item'>
