@@ -178,8 +178,8 @@ section[data-testid="stSidebar"] .stButton:has(button[kind="secondary"]) > butto
     transform: none !important;
 }
 
-/* Music buttons wrapper — force visible */
-.music-btn > div > button {
+/* ── MUSIC BUTTONS FIX ── */
+section[data-testid="stSidebar"] .music-btn-wrapper .stButton > button {
     opacity: 1 !important;
     position: relative !important;
     height: auto !important;
@@ -191,6 +191,35 @@ section[data-testid="stSidebar"] .stButton:has(button[kind="secondary"]) > butto
     font-weight: 500 !important;
     transform: none !important;
     width: 100% !important;
+    box-shadow: none !important;
+    cursor: pointer !important;
+}
+section[data-testid="stSidebar"] .music-btn-wrapper .stButton > button:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 14px rgba(2,195,154,0.38) !important;
+    opacity: 1 !important;
+}
+
+/* ── CHAT / DELETE BUTTONS FIX ── */
+section[data-testid="stSidebar"] .chat-btn-wrapper .stButton > button {
+    opacity: 1 !important;
+    position: relative !important;
+    height: auto !important;
+    margin-top: 0 !important;
+    background: linear-gradient(135deg, #028090, #02C39A) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 8px !important;
+    font-weight: 500 !important;
+    transform: none !important;
+    width: 100% !important;
+    box-shadow: none !important;
+    cursor: pointer !important;
+}
+section[data-testid="stSidebar"] .chat-btn-wrapper .stButton > button:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 14px rgba(2,195,154,0.38) !important;
+    opacity: 1 !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -379,38 +408,22 @@ with st.sidebar:
     st.markdown("**🎵 Music Player**")
     selected_music = st.selectbox("Choose", list(MUSIC_OPTIONS.keys()), label_visibility="collapsed")
 
-    # Music buttons using HTML to bypass CSS hiding
-    st.markdown("""
-    <style>
-    .music-buttons .stButton > button {
-        opacity: 1 !important;
-        position: relative !important;
-        height: auto !important;
-        margin-top: 0 !important;
-        background: linear-gradient(135deg, #028090, #02C39A) !important;
-        color: white !important;
-        border: none !important;
-        border-radius: 8px !important;
-        font-weight: 500 !important;
-        transform: none !important;
-        width: 100% !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-
-    st.markdown('<div class="music-buttons">', unsafe_allow_html=True)
+    # ── Music Play / Stop buttons — always visible ──
     col1, col2 = st.columns(2)
     with col1:
+        st.markdown('<div class="music-btn-wrapper">', unsafe_allow_html=True)
         if st.button("▶️ Play", key="music_play", use_container_width=True):
             st.session_state.music_playing = True
             st.session_state.selected_music = selected_music
             st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
     with col2:
+        st.markdown('<div class="music-btn-wrapper">', unsafe_allow_html=True)
         if st.button("⏹ Stop", key="music_stop", use_container_width=True):
             st.session_state.music_playing = False
             st.session_state.selected_music = None
             st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
     if st.session_state.music_playing and st.session_state.selected_music:
         url = MUSIC_OPTIONS[st.session_state.selected_music]
@@ -427,25 +440,8 @@ with st.sidebar:
     st.divider()
     st.markdown("**🕐 Chat History**")
 
-    st.markdown("""
-    <style>
-    .chat-buttons .stButton > button {
-        opacity: 1 !important;
-        position: relative !important;
-        height: auto !important;
-        margin-top: 0 !important;
-        background: linear-gradient(135deg, #028090, #02C39A) !important;
-        color: white !important;
-        border: none !important;
-        border-radius: 8px !important;
-        font-weight: 500 !important;
-        transform: none !important;
-        width: 100% !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-
-    st.markdown('<div class="chat-buttons">', unsafe_allow_html=True)
+    # ── New Chat button — always visible ──
+    st.markdown('<div class="chat-btn-wrapper">', unsafe_allow_html=True)
     if st.button("➕ New Chat", key="new_chat", use_container_width=True):
         save_conversation()
         st.session_state.messages = []
@@ -455,7 +451,7 @@ with st.sidebar:
 
     convs = load_conversations()
     if convs:
-        st.markdown('<div class="chat-buttons">', unsafe_allow_html=True)
+        st.markdown('<div class="chat-btn-wrapper">', unsafe_allow_html=True)
         if st.button("🗑️ Delete History", key="delete_history", use_container_width=True):
             os.remove("conversations.json")
             st.success("History deleted!")
