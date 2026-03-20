@@ -1,3 +1,4 @@
 streamlit
 groq
-streamlit-option-menu
+pandas
+supabase
