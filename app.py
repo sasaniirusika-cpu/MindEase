@@ -1,6 +1,6 @@
 import streamlit as st
 from groq import Groq
-import csv
+from supabase import create_client
 import os
 from datetime import datetime
 import pandas as pd
@@ -18,7 +18,6 @@ st.markdown("""
     --primary-light: rgba(2, 195, 154, 0.15);
     --primary-border: rgba(2, 195, 154, 0.35);
 }
-
 .mcard {
     background: var(--primary-light);
     border: 1px solid var(--primary-border);
@@ -26,7 +25,6 @@ st.markdown("""
     padding: 1.2rem 1.5rem;
     margin: 0.7rem 0;
 }
-
 .mcard-plain {
     background: rgba(128,128,128,0.08);
     border: 1px solid rgba(128,128,128,0.15);
@@ -34,7 +32,6 @@ st.markdown("""
     padding: 1.2rem 1.5rem;
     margin: 0.7rem 0;
 }
-
 .section-title {
     color: var(--primary);
     font-size: 1.15rem;
@@ -43,7 +40,6 @@ st.markdown("""
     padding-bottom: 0.35rem;
     border-bottom: 2px solid var(--primary-border);
 }
-
 .main-header {
     background: linear-gradient(135deg, #028090, #02C39A);
     padding: 1.8rem 2rem;
@@ -52,10 +48,8 @@ st.markdown("""
     text-align: center;
     box-shadow: 0 6px 24px rgba(2,195,154,0.25);
 }
-
 .main-header h1 { color: white !important; font-size: 2.2rem; font-weight: 800; margin: 0; }
 .main-header p { color: rgba(255,255,255,0.88) !important; margin: 0.3rem 0 0 0; font-size: 1rem; }
-
 .affirmation-box {
     background: linear-gradient(135deg, rgba(2,195,154,0.18), rgba(2,128,144,0.12));
     border: 1px solid var(--primary-border);
@@ -66,7 +60,6 @@ st.markdown("""
     line-height: 1.75;
     margin: 0.8rem 0;
 }
-
 .quote-box {
     border-left: 4px solid var(--primary);
     border-radius: 0 12px 12px 0;
@@ -77,7 +70,6 @@ st.markdown("""
     line-height: 1.75;
     background: rgba(128,128,128,0.07);
 }
-
 .result-box {
     border-radius: 14px;
     padding: 1.3rem;
@@ -86,7 +78,6 @@ st.markdown("""
     font-weight: 600;
     margin: 0.8rem 0;
 }
-
 .badge-earned {
     background: rgba(2,195,154,0.12);
     border: 2px solid var(--primary-border);
@@ -95,7 +86,6 @@ st.markdown("""
     text-align: center;
     margin: 0.3rem;
 }
-
 .badge-locked {
     background: rgba(128,128,128,0.06);
     border: 1px solid rgba(128,128,128,0.15);
@@ -104,7 +94,6 @@ st.markdown("""
     margin: 0.25rem 0;
     opacity: 0.65;
 }
-
 .score-box {
     text-align: center;
     border-radius: 20px;
@@ -113,7 +102,6 @@ st.markdown("""
     border: 2px solid var(--primary-border);
     background: rgba(128,128,128,0.06);
 }
-
 .chat-history-item {
     background: rgba(128,128,128,0.07);
     border: 1px solid rgba(128,128,128,0.15);
@@ -122,7 +110,6 @@ st.markdown("""
     margin: 0.3rem 0;
     font-size: 0.88rem;
 }
-
 div[data-testid="stChatInput"] {
     border-radius: 24px !important;
     border: 2px solid var(--primary-border) !important;
@@ -135,7 +122,6 @@ div[data-testid="stChatInput"] button {
     background: linear-gradient(135deg, #028090, #02C39A) !important;
     border-radius: 50% !important;
 }
-
 .stButton > button {
     background: linear-gradient(135deg, #028090, #02C39A) !important;
     color: white !important;
@@ -148,10 +134,6 @@ div[data-testid="stChatInput"] button {
     transform: translateY(-2px) !important;
     box-shadow: 0 4px 14px rgba(2,195,154,0.38) !important;
 }
-
-
-
-/* ── Nav buttons: plain style with SVG icon via ::before ── */
 section[data-testid="stSidebar"] [data-testid^="stButton-nav_"] > button {
     background: transparent !important;
     color: inherit !important;
@@ -168,56 +150,12 @@ section[data-testid="stSidebar"] [data-testid^="stButton-nav_"] > button {
     margin: 0.04rem 0 !important;
     position: relative !important;
 }
-section[data-testid="stSidebar"] [data-testid^="stButton-nav_"] > button::before {
-    content: "" !important;
-    position: absolute !important;
-    left: 0.75rem !important;
-    top: 50% !important;
-    transform: translateY(-50%) !important;
-    width: 16px !important;
-    height: 16px !important;
-    background-size: contain !important;
-    background-repeat: no-repeat !important;
-    background-position: center !important;
-    opacity: 0.85 !important;
-}
 section[data-testid="stSidebar"] [data-testid^="stButton-nav_"] > button:hover {
     background: rgba(2,195,154,0.1) !important;
     border-color: rgba(2,195,154,0.3) !important;
     transform: none !important;
     box-shadow: none !important;
 }
-
-/* Individual SVG icons per nav button */
-section[data-testid="stSidebar"] [data-testid="stButton-nav_💬 Chat"] > button::before {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2302C39A' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 16H5.83l-.83.83V4h15v14z'/%3E%3C/svg%3E") !important;
-}
-section[data-testid="stSidebar"] [data-testid="stButton-nav_😊 Mood"] > button::before {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2302C39A' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M8.5 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm7 0a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm-3.5 8c2.33 0 4.31-1.46 5.11-3.5H6.89C7.69 16.54 9.67 18 12 18z'/%3E%3C/svg%3E") !important;
-}
-section[data-testid="stSidebar"] [data-testid="stButton-nav_📝 Journal"] > button::before {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2302C39A' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zM8 15h8v2H8zm0-4h8v2H8zm0-4h5v2H8z'/%3E%3C/svg%3E") !important;
-}
-section[data-testid="stSidebar"] [data-testid="stButton-nav_🌅 Daily Wellness"] > button::before {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2302C39A' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='4'/%3E%3Cpath d='M12 2v2m0 16v2M4.22 4.22l1.42 1.42m12.72 12.72 1.42 1.42M2 12h2m16 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42'/%3E%3C/svg%3E") !important;
-}
-section[data-testid="stSidebar"] [data-testid="stButton-nav_🧘 Meditation"] > button::before {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2302C39A' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M11 8h2v5h-2zm0 7h2v2h-2z'/%3E%3C/svg%3E") !important;
-}
-section[data-testid="stSidebar"] [data-testid="stButton-nav_🎯 Affirmations"] > button::before {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2302C39A' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M16.59 7.58 10 14.17l-2.59-2.58L6 13l4 4 8-8z'/%3E%3C/svg%3E") !important;
-}
-section[data-testid="stSidebar"] [data-testid="stButton-nav_🧠 Assessment"] > button::before {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2302C39A' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='18' height='18' rx='1'/%3E%3Cpath d='M7 10h2v7H7zm4-3h2v10h-2zm4 6h2v4h-2z'/%3E%3C/svg%3E") !important;
-}
-section[data-testid="stSidebar"] [data-testid="stButton-nav_🏆 Achievements"] > button::before {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2302C39A' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 1 3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z'/%3E%3C/svg%3E") !important;
-}
-section[data-testid="stSidebar"] [data-testid="stButton-nav_📈 Progress"] > button::before {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2302C39A' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.5 18.49 9.5 12.48l4 4L22 6.92'/%3E%3C/svg%3E") !important;
-}
-
-/* ── Music Play/Stop + New Chat + Delete: green gradient ── */
 section[data-testid="stSidebar"] [data-testid="stButton-music_play"] > button,
 section[data-testid="stSidebar"] [data-testid="stButton-music_stop"] > button,
 section[data-testid="stSidebar"] [data-testid="stButton-new_chat"] > button,
@@ -234,32 +172,67 @@ section[data-testid="stSidebar"] [data-testid="stButton-delete_history"] > butto
     position: relative !important;
     font-size: 0.85rem !important;
 }
-section[data-testid="stSidebar"] [data-testid="stButton-music_play"] > button:hover,
-section[data-testid="stSidebar"] [data-testid="stButton-music_stop"] > button:hover,
-section[data-testid="stSidebar"] [data-testid="stButton-new_chat"] > button:hover,
-section[data-testid="stSidebar"] [data-testid="stButton-delete_history"] > button:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 4px 14px rgba(2,195,154,0.38) !important;
-}
 </style>
 """, unsafe_allow_html=True)
 
+# ── Session state ──────────────────────────────────────────────
 for key, default in {
     "messages": [],
     "affirmation": None,
     "user_name": "",
     "user_age": "",
+    "user_email": "",
     "profile_set": False,
     "music_playing": False,
     "selected_music": None,
     "current_conversation": [],
-    "conversations": [],
     "page": "💬 Chat",
 }.items():
     if key not in st.session_state:
         st.session_state[key] = default
 
+# ── Supabase + Groq ────────────────────────────────────────────
 api_key = st.secrets["GROQ_API_KEY"]
+supabase = create_client(st.secrets["SUPABASE_URL"], st.secrets["SUPABASE_KEY"])
+
+# ── Supabase helper functions ──────────────────────────────────
+def db_insert(table, data):
+    try:
+        supabase.table(table).insert(data).execute()
+        return True
+    except Exception as e:
+        st.error(f"Save failed: {e}")
+        return False
+
+def db_fetch(table, email):
+    try:
+        res = supabase.table(table).select("*").eq("user_email", email).order("created_at", desc=True).execute()
+        return res.data
+    except:
+        return []
+
+def db_delete_all(table, email):
+    try:
+        supabase.table(table).delete().eq("user_email", email).execute()
+        return True
+    except:
+        return False
+
+def get_streak(email):
+    try:
+        res = supabase.table("mood_logs").select("created_at").eq("user_email", email).execute()
+        if not res.data:
+            return 0
+        dates = sorted(set([r["created_at"][:10] for r in res.data]), reverse=True)
+        streak, today = 0, datetime.now().date()
+        for i, d in enumerate(dates):
+            if str(today - pd.Timedelta(days=i)) == d:
+                streak += 1
+            else:
+                break
+        return streak
+    except:
+        return 0
 
 AFFIRMATIONS = [
     "You are stronger than you think. 💪",
@@ -325,19 +298,20 @@ BADGES = [
 ]
 
 NAV_ITEMS = [
-    ("💬 Chat",           "Chat",           "M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 16H5.83l-.83.83V4h15v14z"),
-    ("😊 Mood",           "Mood",           "M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"),
-    ("📝 Journal",        "Journal",        "M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zM8 15h8v2H8zm0-4h8v2H8zm0-4h5v2H8z"),
-    ("🌅 Daily Wellness", "Daily Wellness", "M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"),
-    ("🧘 Meditation",     "Meditation",     "M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9zm0 16c-3.86 0-7-3.14-7-7s3.14-7 7-7 7 3.14 7 7-3.14 7-7 7zm-1-11h2v6h-2zm0 8h2v2h-2z"),
-    ("🎯 Affirmations",   "Affirmations",   "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4 8-8-1.41-1.42z"),
-    ("🧠 Assessment",     "Assessment",     "M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 10h2v7H7zm4-3h2v10h-2zm4 6h2v4h-2z"),
-    ("🏆 Achievements",   "Achievements",   "M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 2.18l7 3.12V11c0 4.52-3.13 8.74-7 9.93-3.87-1.19-7-5.41-7-9.93V6.3l7-3.12z"),
-    ("📈 Progress",       "Progress",       "M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"),
+    ("💬 Chat",           "Chat"),
+    ("😊 Mood",           "Mood"),
+    ("📝 Journal",        "Journal"),
+    ("🌅 Daily Wellness", "Daily Wellness"),
+    ("🧘 Meditation",     "Meditation"),
+    ("🎯 Affirmations",   "Affirmations"),
+    ("🧠 Assessment",     "Assessment"),
+    ("🏆 Achievements",   "Achievements"),
+    ("📈 Progress",       "Progress"),
 ]
 
-name = st.session_state.user_name if st.session_state.user_name else "friend"
-age  = st.session_state.user_age  if st.session_state.user_age  else ""
+name  = st.session_state.user_name  if st.session_state.user_name  else "friend"
+age   = st.session_state.user_age   if st.session_state.user_age   else ""
+email = st.session_state.user_email if st.session_state.user_email else "guest@mindease.app"
 
 SYSTEM_PROMPT = f"""You are MindEase, a very close and caring best friend.
 The user's name is {name}.{"They are " + age + " years old." if age else ""}
@@ -356,44 +330,6 @@ def groq_call(messages, system=SYSTEM_PROMPT):
         messages=[{"role": "system", "content": system}] + messages
     ).choices[0].message.content
 
-def save_conversation():
-    if st.session_state.current_conversation:
-        conv = {
-            "id": datetime.now().strftime("%Y%m%d%H%M%S"),
-            "date": datetime.now().strftime("%Y-%m-%d %H:%M"),
-            "preview": st.session_state.current_conversation[0]["content"][:40] + "...",
-            "messages": st.session_state.current_conversation
-        }
-        existing = []
-        if os.path.exists("conversations.json"):
-            with open("conversations.json", "r") as f:
-                existing = json.load(f)
-        existing.insert(0, conv)
-        with open("conversations.json", "w") as f:
-            json.dump(existing, f)
-
-def load_conversations():
-    if os.path.exists("conversations.json"):
-        with open("conversations.json", "r") as f:
-            return json.load(f)
-    return []
-
-def get_streak():
-    if not os.path.exists("mood_log.csv"):
-        return 0
-    df = pd.read_csv("mood_log.csv", names=["Date","Mood","Note"])
-    if df.empty:
-        return 0
-    df["Date"] = pd.to_datetime(df["Date"]).dt.date
-    days = sorted(df["Date"].unique(), reverse=True)
-    streak, today = 0, datetime.now().date()
-    for i, d in enumerate(days):
-        if d == today - pd.Timedelta(days=i):
-            streak += 1
-        else:
-            break
-    return streak
-
 # ── Sidebar ────────────────────────────────────────────────────
 with st.sidebar:
     st.markdown("""
@@ -406,14 +342,19 @@ with st.sidebar:
     st.divider()
 
     with st.expander("👤 My Profile", expanded=not st.session_state.profile_set):
-        uname = st.text_input("Name", value=st.session_state.user_name, placeholder="Your name...")
-        uage  = st.text_input("Age",  value=st.session_state.user_age,  placeholder="Your age...")
+        uname = st.text_input("Name",  value=st.session_state.user_name,  placeholder="Your name...")
+        uage  = st.text_input("Age",   value=st.session_state.user_age,   placeholder="Your age...")
+        uemail= st.text_input("Email", value=st.session_state.user_email, placeholder="your@email.com...")
         if st.button("Save Profile ✅", key="save_profile"):
-            st.session_state.user_name = uname
-            st.session_state.user_age  = uage
-            st.session_state.profile_set = True
-            st.success(f"Welcome, {uname}! 🌿")
-            st.rerun()
+            if uemail.strip() == "":
+                st.warning("Please enter your email — it is used to save your data!")
+            else:
+                st.session_state.user_name  = uname
+                st.session_state.user_age   = uage
+                st.session_state.user_email = uemail
+                st.session_state.profile_set = True
+                st.success(f"Welcome, {uname}! 🌿")
+                st.rerun()
 
     if st.session_state.profile_set:
         st.markdown(f"""
@@ -421,14 +362,13 @@ with st.sidebar:
             <div style='font-size:1.6rem;'>😊</div>
             <div style='font-weight:700;'>{st.session_state.user_name}</div>
             <div style='font-size:0.8rem; opacity:0.65;'>Age {st.session_state.user_age}</div>
+            <div style='font-size:0.75rem; opacity:0.5;'>{st.session_state.user_email}</div>
         </div>
         """, unsafe_allow_html=True)
 
     st.divider()
     st.markdown("**🎵 Music Player**")
     selected_music = st.selectbox("Choose", list(MUSIC_OPTIONS.keys()), label_visibility="collapsed")
-
-    # ── Music Play / Stop buttons ──
     col1, col2 = st.columns(2)
     with col1:
         if st.button("▶ Play", key="music_play", use_container_width=True):
@@ -455,25 +395,30 @@ with st.sidebar:
 
     st.divider()
     st.markdown("**🕐 Chat History**")
-
-    # ── New Chat button — always visible ──
     if st.button("➕ New Chat", key="new_chat", use_container_width=True):
-        save_conversation()
+        if st.session_state.current_conversation:
+            db_insert("chat_history", {
+                "user_email": email,
+                "preview": st.session_state.current_conversation[0]["content"][:40] + "...",
+                "conversation": st.session_state.current_conversation
+            })
         st.session_state.messages = []
         st.session_state.current_conversation = []
         st.rerun()
 
-    convs = load_conversations()
-    if convs:
+    chat_history = db_fetch("chat_history", email)
+    if chat_history:
         if st.button("🗑️ Delete History", key="delete_history", use_container_width=True):
-            os.remove("conversations.json")
+            db_delete_all("chat_history", email)
             st.success("History deleted!")
             st.rerun()
-        for conv in convs[:8]:
+        for conv in chat_history[:8]:
+            date = conv["created_at"][:16].replace("T", " ")
+            preview = conv.get("preview", "Chat")
             st.markdown(f"""
             <div class='chat-history-item'>
-                <div style='font-weight:600; font-size:0.82rem;'>💬 {conv['date']}</div>
-                <div style='opacity:0.7; font-size:0.78rem;'>{conv['preview']}</div>
+                <div style='font-weight:600; font-size:0.82rem;'>💬 {date}</div>
+                <div style='opacity:0.7; font-size:0.78rem;'>{preview}</div>
             </div>
             """, unsafe_allow_html=True)
     else:
@@ -481,11 +426,10 @@ with st.sidebar:
 
     st.divider()
     st.markdown("**Menu**")
-    for key, label, icon_path in NAV_ITEMS:
+    for key, label in NAV_ITEMS:
         if st.button(label, key=f"nav_{key}", use_container_width=True):
             st.session_state.page = key
             st.rerun()
-    # Active page highlight
     active_key = st.session_state.page
     st.markdown(f"""<style>
     section[data-testid="stSidebar"] [data-testid="stButton-nav_{active_key}"] > button {{
@@ -494,6 +438,7 @@ with st.sidebar:
         color: #02C39A !important;
     }}
     </style>""", unsafe_allow_html=True)
+
 page = st.session_state.page
 
 st.markdown(f"""
@@ -503,9 +448,11 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
+if not st.session_state.profile_set:
+    st.info("👤 Please enter your name, age and email in the sidebar to get started and save your data!")
+
+# ══ PAGE 1 — CHAT ══════════════════════════════════════════════
 if page == "💬 Chat":
-    if not st.session_state.user_name:
-        st.info("👤 Enter your name in the sidebar for a personalised experience!")
     chat_container = st.container(height=480)
     with chat_container:
         if not st.session_state.messages:
@@ -534,6 +481,7 @@ if page == "💬 Chat":
                         st.error(f"Something went wrong: {e}")
         st.rerun()
 
+# ══ PAGE 2 — MOOD ══════════════════════════════════════════════
 if page == "😊 Mood":
     st.markdown(f'<div class="section-title">😊 How are you feeling{", " + name if st.session_state.user_name else ""}?</div>', unsafe_allow_html=True)
     mood = st.radio("", ["😊 Happy","😐 Okay","😔 Sad","😰 Stressed","😡 Angry"], horizontal=True)
@@ -551,9 +499,8 @@ if page == "😊 Mood":
     c1, c2 = st.columns(2)
     with c1:
         if st.button("💾 Save My Mood"):
-            with open("mood_log.csv","a",newline="") as f:
-                csv.writer(f).writerow([datetime.now().strftime("%Y-%m-%d %H:%M"), mood, note])
-            st.success(f"Mood saved{', '+name if st.session_state.user_name else ''}! 🌿")
+            if db_insert("mood_logs", {"user_email": email, "mood": mood, "note": note}):
+                st.success(f"Mood saved{', '+name if st.session_state.user_name else ''}! 🌿")
     with c2:
         if st.button("💬 Get Personal Message"):
             with st.spinner("Thinking..."):
@@ -563,18 +510,21 @@ if page == "😊 Mood":
                 except Exception as e:
                     st.error(str(e))
     st.markdown('<div class="section-title">📊 Mood History</div>', unsafe_allow_html=True)
-    if os.path.exists("mood_log.csv"):
-        df = pd.read_csv("mood_log.csv", names=["Date","Mood","Note"])
-        if not df.empty:
-            if st.button("🗑️ Delete Mood Logs"):
-                os.remove("mood_log.csv"); st.rerun()
-            st.dataframe(df, use_container_width=True)
-            mc = df["Mood"].value_counts().reset_index()
-            mc.columns = ["Mood","Count"]
-            st.bar_chart(mc.set_index("Mood"))
+    mood_data = db_fetch("mood_logs", email)
+    if mood_data:
+        if st.button("🗑️ Delete Mood Logs"):
+            db_delete_all("mood_logs", email)
+            st.success("Deleted!")
+            st.rerun()
+        df = pd.DataFrame(mood_data)
+        st.dataframe(df[["created_at","mood","note"]], use_container_width=True)
+        mc = df["mood"].value_counts().reset_index()
+        mc.columns = ["Mood","Count"]
+        st.bar_chart(mc.set_index("Mood"))
     else:
         st.info("No mood logs yet!")
 
+# ══ PAGE 3 — JOURNAL ═══════════════════════════════════════════
 if page == "📝 Journal":
     st.markdown(f'<div class="section-title">📝 Journal{" — "+name if st.session_state.user_name else ""}</div>', unsafe_allow_html=True)
     st.caption("Your private space. Write anything you feel.")
@@ -582,25 +532,25 @@ if page == "📝 Journal":
     jentry = st.text_area("Write here...", height=200, placeholder="Today I felt...")
     if st.button("💾 Save Journal Entry"):
         if jentry.strip():
-            with open("journal_log.csv","a",newline="") as f:
-                csv.writer(f).writerow([datetime.now().strftime("%Y-%m-%d %H:%M"), jtitle, jentry])
-            st.success("Journal entry saved! 🌿")
+            if db_insert("journal_logs", {"user_email": email, "title": jtitle, "entry": jentry}):
+                st.success("Journal entry saved! 🌿")
         else:
             st.warning("Please write something first!")
     st.markdown('<div class="section-title">📖 Past Entries</div>', unsafe_allow_html=True)
-    if os.path.exists("journal_log.csv"):
-        dfj = pd.read_csv("journal_log.csv", names=["Date","Title","Entry"])
-        if not dfj.empty:
-            if st.button("🗑️ Delete Journal Entries"):
-                os.remove("journal_log.csv"); st.rerun()
-            for _, row in dfj.iloc[::-1].iterrows():
-                with st.expander(f"📝 {row['Date']} — {row['Title']}"):
-                    st.write(row["Entry"])
-        else:
-            st.info("No entries yet!")
+    journal_data = db_fetch("journal_logs", email)
+    if journal_data:
+        if st.button("🗑️ Delete Journal Entries"):
+            db_delete_all("journal_logs", email)
+            st.success("Deleted!")
+            st.rerun()
+        for row in journal_data:
+            date = row["created_at"][:16].replace("T"," ")
+            with st.expander(f"📝 {date} — {row['title']}"):
+                st.write(row["entry"])
     else:
         st.info("No entries yet!")
 
+# ══ PAGE 4 — DAILY WELLNESS ════════════════════════════════════
 if page == "🌅 Daily Wellness":
     hour = datetime.now().hour
     is_morning = 5 <= hour < 12
@@ -630,9 +580,8 @@ if page == "🌅 Daily Wellness":
                 st.error(str(e))
 
     if st.button("💾 Save Morning Check In"):
-        with open("morning_log.csv","a",newline="",encoding="utf-8") as f:
-            csv.writer(f).writerow([datetime.now().strftime("%Y-%m-%d %H:%M"), morning_mood, tasks_input])
-        st.success(f"Morning check in saved{', '+name if st.session_state.user_name else ''}! Have an amazing day! 🌅")
+        if db_insert("morning_logs", {"user_email": email, "mood": morning_mood, "tasks": tasks_input}):
+            st.success(f"Morning check in saved{', '+name if st.session_state.user_name else ''}! Have an amazing day! 🌅")
 
     st.divider()
     st.markdown('<div class="section-title">🌙 Evening Check In</div>', unsafe_allow_html=True)
@@ -659,10 +608,23 @@ if page == "🌅 Daily Wellness":
         if day_highlight.strip() == "" and grateful_for.strip() == "":
             st.warning("Please fill in at least some fields!")
         else:
-            with open("evening_log.csv","a",newline="",encoding="utf-8") as f:
-                csv.writer(f).writerow([datetime.now().strftime("%Y-%m-%d %H:%M"), sleep_hours, sleep_quality, water_glasses, day_rating, day_highlight, day_challenge, grateful_for, tomorrow_goal])
-            with open("sleep_log.csv","a",newline="") as f:
-                csv.writer(f).writerow([datetime.now().strftime("%Y-%m-%d %H:%M"), sleep_hours, sleep_quality, ""])
+            db_insert("evening_logs", {
+                "user_email": email,
+                "sleep_hours": sleep_hours,
+                "sleep_quality": sleep_quality,
+                "water_glasses": water_glasses,
+                "day_rating": day_rating,
+                "highlight": day_highlight,
+                "challenge": day_challenge,
+                "grateful": grateful_for,
+                "goal": tomorrow_goal
+            })
+            db_insert("sleep_logs", {
+                "user_email": email,
+                "hours": sleep_hours,
+                "quality": sleep_quality,
+                "note": ""
+            })
             st.success("Evening check in saved! 🌙")
             with st.spinner("MindEase is preparing your goodnight message..."):
                 try:
@@ -690,22 +652,25 @@ if page == "🌅 Daily Wellness":
                     st.error(str(e))
 
     st.markdown('<div class="section-title">📖 Past Evening Check Ins</div>', unsafe_allow_html=True)
-    if os.path.exists("evening_log.csv"):
-        dfe = pd.read_csv("evening_log.csv", names=["Date","Sleep","Quality","Water","Rating","Highlight","Challenge","Grateful","Goal"])
-        if not dfe.empty:
-            if st.button("🗑️ Delete Evening Logs"):
-                os.remove("evening_log.csv"); st.rerun()
-            for _, row in dfe.iloc[::-1].iterrows():
-                with st.expander(f"🌙 {row['Date']} — Day {row['Rating']}/10"):
-                    st.markdown(f"**😴 Sleep:** {row['Sleep']} hrs ({row['Quality']})")
-                    st.markdown(f"**💧 Water:** {row['Water']} glasses")
-                    st.markdown(f"**🌟 Best part:** {row['Highlight']}")
-                    st.markdown(f"**💪 Hardest part:** {row['Challenge']}")
-                    st.markdown(f"**🙏 Grateful for:** {row['Grateful']}")
-                    st.markdown(f"**🎯 Tomorrow goal:** {row['Goal']}")
+    evening_data = db_fetch("evening_logs", email)
+    if evening_data:
+        if st.button("🗑️ Delete Evening Logs"):
+            db_delete_all("evening_logs", email)
+            st.success("Deleted!")
+            st.rerun()
+        for row in evening_data:
+            date = row["created_at"][:16].replace("T"," ")
+            with st.expander(f"🌙 {date} — Day {row['day_rating']}/10"):
+                st.markdown(f"**😴 Sleep:** {row['sleep_hours']} hrs ({row['sleep_quality']})")
+                st.markdown(f"**💧 Water:** {row['water_glasses']} glasses")
+                st.markdown(f"**🌟 Best part:** {row['highlight']}")
+                st.markdown(f"**💪 Hardest part:** {row['challenge']}")
+                st.markdown(f"**🙏 Grateful for:** {row['grateful']}")
+                st.markdown(f"**🎯 Tomorrow goal:** {row['goal']}")
     else:
         st.info("No evening check ins yet. Come back tonight! 🌙")
 
+# ══ PAGE 5 — MEDITATION ════════════════════════════════════════
 if page == "🧘 Meditation":
     st.markdown('<div class="section-title">🧘 Meditation and Breathing</div>', unsafe_allow_html=True)
     ex_type = st.radio("What do you want to do?", ["🌬️ Breathing Exercise","🧘 Guided Meditation"], horizontal=True)
@@ -742,6 +707,7 @@ if page == "🧘 Meditation":
                 time.sleep(secs)
             st.success(f"Meditation complete{', '+name if st.session_state.user_name else ''}! Well done! 🌿💙")
 
+# ══ PAGE 6 — AFFIRMATIONS ══════════════════════════════════════
 if page == "🎯 Affirmations":
     st.markdown('<div class="section-title">🎯 Your Daily Affirmation</div>', unsafe_allow_html=True)
     if st.session_state.affirmation is None:
@@ -771,6 +737,7 @@ if page == "🎯 Affirmations":
             st.markdown(f'*"{q}"*')
             st.markdown(f"**— {a}**")
 
+# ══ PAGE 7 — ASSESSMENT ════════════════════════════════════════
 if page == "🧠 Assessment":
     st.markdown('<div class="section-title">🧠 Mental Health Assessment</div>', unsafe_allow_html=True)
     st.caption("Answer 8 honest questions. This is NOT a medical diagnosis — just a self check tool.")
@@ -814,30 +781,27 @@ if page == "🧠 Assessment":
             st.markdown(f'<iframe width="100%" height="200" src="{url}" frameborder="0" allowfullscreen></iframe>', unsafe_allow_html=True)
         st.caption("Not a medical diagnosis. Please see a doctor if struggling.")
 
+# ══ PAGE 8 — ACHIEVEMENTS ══════════════════════════════════════
 if page == "🏆 Achievements":
     st.markdown('<div class="section-title">🏆 Your Achievements</div>', unsafe_allow_html=True)
-    mood_count = sleep_count = journal_count = 0
-    if os.path.exists("mood_log.csv"):
-        mood_count = len(pd.read_csv("mood_log.csv", names=["Date","Mood","Note"]))
-    if os.path.exists("sleep_log.csv"):
-        sleep_count = len(pd.read_csv("sleep_log.csv", names=["Date","Hours","Quality","Note"]))
-    if os.path.exists("journal_log.csv"):
-        journal_count = len(pd.read_csv("journal_log.csv", names=["Date","Title","Entry"]))
-    streak = get_streak()
+    mood_count    = len(db_fetch("mood_logs", email))
+    sleep_count   = len(db_fetch("sleep_logs", email))
+    journal_count = len(db_fetch("journal_logs", email))
+    streak        = get_streak(email)
+
     c1, c2, c3 = st.columns(3)
     with c1:
         st.markdown(f'<div class="score-box"><div style="font-size:3rem;">🔥</div><div style="font-size:2.5rem;font-weight:800;color:var(--primary);">{streak}</div><div style="opacity:0.6;">Day Streak</div></div>', unsafe_allow_html=True)
     with c2:
         sc = 0
-        if os.path.exists("mood_log.csv"):
-            df_m = pd.read_csv("mood_log.csv", names=["Date","Mood","Note"])
-            if not df_m.empty:
-                sc += min(int(len(df_m[df_m["Mood"]=="😊 Happy"])/len(df_m)*30),30)
-        if os.path.exists("sleep_log.csv"):
-            df_s = pd.read_csv("sleep_log.csv", names=["Date","Hours","Quality","Note"])
-            if not df_s.empty:
-                avg = df_s["Hours"].mean()
-                sc += 25 if avg>=8 else 15 if avg>=6 else 5
+        mood_data = db_fetch("mood_logs", email)
+        if mood_data:
+            happy = sum(1 for r in mood_data if r["mood"]=="😊 Happy")
+            sc += min(int(happy/len(mood_data)*30),30)
+        sleep_data = db_fetch("sleep_logs", email)
+        if sleep_data:
+            avg = sum(r["hours"] for r in sleep_data)/len(sleep_data)
+            sc += 25 if avg>=8 else 15 if avg>=6 else 5
         sc += min(journal_count*5,25)
         sc += min(streak*2,20)
         sc_col = "#02C39A" if sc>=80 else "#F4A261" if sc>=60 else "#E9C46A" if sc>=40 else "#E63946"
@@ -845,20 +809,7 @@ if page == "🏆 Achievements":
     with c3:
         earned_count = sum(1 for b in BADGES if b["fn"](mood_count,sleep_count,journal_count,streak))
         st.markdown(f'<div class="score-box"><div style="font-size:3rem;">🏅</div><div style="font-size:2.5rem;font-weight:800;color:var(--primary);">{earned_count}/{len(BADGES)}</div><div style="opacity:0.6;">Badges Earned</div></div>', unsafe_allow_html=True)
-    st.markdown('<div class="section-title">Score Breakdown</div>', unsafe_allow_html=True)
-    breakdown_items = [
-        ("😊 Mood Score",   min(int(len(pd.read_csv("mood_log.csv",names=["Date","Mood","Note"])[pd.read_csv("mood_log.csv",names=["Date","Mood","Note"])["Mood"]=="😊 Happy"])/max(len(pd.read_csv("mood_log.csv",names=["Date","Mood","Note"])),1)*30),30) if os.path.exists("mood_log.csv") else 0, 30),
-        ("😴 Sleep Score",  (25 if pd.read_csv("sleep_log.csv",names=["Date","Hours","Quality","Note"])["Hours"].mean()>=8 else 15 if pd.read_csv("sleep_log.csv",names=["Date","Hours","Quality","Note"])["Hours"].mean()>=6 else 5) if os.path.exists("sleep_log.csv") and not pd.read_csv("sleep_log.csv",names=["Date","Hours","Quality","Note"]).empty else 0, 25),
-        ("📝 Journal Score", min(journal_count*5,25), 25),
-        ("📅 Streak Score",  min(streak*2,20), 20),
-    ]
-    for lbl, s, mx in breakdown_items:
-        col_a, col_b = st.columns([4,1])
-        with col_a:
-            st.progress(s/mx if mx>0 else 0)
-        with col_b:
-            st.markdown(f"**{s}/{mx}**")
-        st.caption(lbl)
+
     st.markdown('<div class="section-title">🏅 Badges</div>', unsafe_allow_html=True)
     earned   = [b for b in BADGES if b["fn"](mood_count,sleep_count,journal_count,streak)]
     unearned = [b for b in BADGES if not b["fn"](mood_count,sleep_count,journal_count,streak)]
@@ -873,61 +824,67 @@ if page == "🏆 Achievements":
         for b in unearned:
             st.markdown(f'<div class="badge-locked">🔒 <strong>{b["name"]}</strong> — {b["desc"]}</div>', unsafe_allow_html=True)
 
+# ══ PAGE 9 — PROGRESS ══════════════════════════════════════════
 if page == "📈 Progress":
     st.markdown('<div class="section-title">📈 Progress Report</div>', unsafe_allow_html=True)
     period = st.radio("Show report for:", ["Last 7 Days","Last 30 Days"], horizontal=True)
     days = 7 if period=="Last 7 Days" else 30
+    cutoff = (datetime.now() - pd.Timedelta(days=days)).isoformat()
+
     st.markdown(f'<div class="section-title">Mood — {period}</div>', unsafe_allow_html=True)
-    if os.path.exists("mood_log.csv"):
-        df = pd.read_csv("mood_log.csv", names=["Date","Mood","Note"])
-        df["Date"] = pd.to_datetime(df["Date"])
-        f = df[df["Date"] >= pd.Timestamp.now()-pd.Timedelta(days=days)]
-        if not f.empty:
-            mc = f["Mood"].value_counts().reset_index(); mc.columns=["Mood","Count"]
+    try:
+        mood_res = supabase.table("mood_logs").select("*").eq("user_email",email).gte("created_at",cutoff).execute()
+        if mood_res.data:
+            df = pd.DataFrame(mood_res.data)
+            mc = df["mood"].value_counts().reset_index(); mc.columns=["Mood","Count"]
             st.bar_chart(mc.set_index("Mood"))
             c1,c2,c3,c4 = st.columns(4)
-            with c1: st.metric("Total Logs", len(f))
-            with c2: st.metric("😊 Happy",   len(f[f["Mood"]=="😊 Happy"]))
-            with c3: st.metric("😔 Sad",      len(f[f["Mood"]=="😔 Sad"]))
-            with c4: st.metric("😰 Stressed", len(f[f["Mood"]=="😰 Stressed"]))
+            with c1: st.metric("Total Logs", len(df))
+            with c2: st.metric("😊 Happy",   len(df[df["mood"]=="😊 Happy"]))
+            with c3: st.metric("😔 Sad",      len(df[df["mood"]=="😔 Sad"]))
+            with c4: st.metric("😰 Stressed", len(df[df["mood"]=="😰 Stressed"]))
         else: st.info(f"No mood logs in the last {days} days.")
-    else: st.info("No mood logs yet.")
+    except: st.info("No mood logs yet.")
+
     st.markdown(f'<div class="section-title">Sleep — {period}</div>', unsafe_allow_html=True)
-    if os.path.exists("sleep_log.csv"):
-        ds = pd.read_csv("sleep_log.csv", names=["Date","Hours","Quality","Note"])
-        ds["Date"] = pd.to_datetime(ds["Date"])
-        fs = ds[ds["Date"] >= pd.Timestamp.now()-pd.Timedelta(days=days)]
-        if not fs.empty:
-            avg = fs["Hours"].mean()
+    try:
+        sleep_res = supabase.table("sleep_logs").select("*").eq("user_email",email).gte("created_at",cutoff).execute()
+        if sleep_res.data:
+            df_s = pd.DataFrame(sleep_res.data)
+            avg = df_s["hours"].mean()
             st.metric("Average Sleep", f"{avg:.1f} hrs")
-            st.line_chart(fs.set_index("Date")["Hours"])
+            st.line_chart(df_s.set_index("created_at")["hours"])
             if avg>=8: st.success("Great sleep average! 🌟")
             elif avg>=6: st.info("Decent. Aim for 8 hours! 🌙")
             else: st.warning("Not enough sleep. Rest more! 😴")
         else: st.info(f"No sleep logs in the last {days} days.")
-    else: st.info("No sleep logs yet.")
+    except: st.info("No sleep logs yet.")
+
     st.markdown(f'<div class="section-title">Journal — {period}</div>', unsafe_allow_html=True)
-    if os.path.exists("journal_log.csv"):
-        dj = pd.read_csv("journal_log.csv", names=["Date","Title","Entry"])
-        dj["Date"] = pd.to_datetime(dj["Date"])
-        fj = dj[dj["Date"] >= pd.Timestamp.now()-pd.Timedelta(days=days)]
-        st.metric("Entries Written", len(fj))
-        if len(fj)>=5: st.success("Amazing journaling habit! 📝🌟")
-        elif len(fj)>=1: st.info("Good start! Try daily journaling! 📝")
+    try:
+        journal_res = supabase.table("journal_logs").select("*").eq("user_email",email).gte("created_at",cutoff).execute()
+        count = len(journal_res.data) if journal_res.data else 0
+        st.metric("Entries Written", count)
+        if count>=5: st.success("Amazing journaling habit! 📝🌟")
+        elif count>=1: st.info("Good start! Try daily journaling! 📝")
         else: st.warning("No entries this period. Start writing! 📝")
-    else: st.info("No journal entries yet.")
+    except: st.info("No journal entries yet.")
+
     st.markdown('<div class="section-title">🤖 AI Progress Summary</div>', unsafe_allow_html=True)
     if st.button("Get My AI Summary 🧠"):
         mm = sl = jj = ""
-        if os.path.exists("mood_log.csv"):
-            df_m = pd.read_csv("mood_log.csv", names=["Date","Mood","Note"])
-            if not df_m.empty: mm = df_m["Mood"].value_counts().to_string()
-        if os.path.exists("sleep_log.csv"):
-            df_s = pd.read_csv("sleep_log.csv", names=["Date","Hours","Quality","Note"])
-            if not df_s.empty: sl = f"Average sleep: {df_s['Hours'].mean():.1f} hours"
-        if os.path.exists("journal_log.csv"):
-            df_j = pd.read_csv("journal_log.csv", names=["Date","Title","Entry"])
-            jj = f"Total entries: {len(df_j)}"
+        mood_all = db_fetch("mood_logs", email)
+        if mood_all:
+            counts = {}
+            for r in mood_all:
+                counts[r["mood"]] = counts.get(r["mood"],0)+1
+            mm = str(counts)
+        sleep_all = db_fetch("sleep_logs", email)
+        if sleep_all:
+            avg = sum(r["hours"] for r in sleep_all)/len(sleep_all)
+            sl = f"Average sleep: {avg:.1f} hours"
+        journal_all = db_fetch("journal_logs", email)
+        jj = f"Total entries: {len(journal_all)}"
         with st.spinner("Reviewing your progress..."):
             try:
                 summary = groq_call([{"role":"user","content":f"User: {name}. Mood data: {mm}. Sleep: {sl}. Journal: {jj}. Write 3-4 warm sentences using their name. Highlight what they do well and gently suggest one improvement."}])
