@@ -557,7 +557,9 @@ if page == "🌅 Daily Wellness":
     is_evening = 17 <= hour <= 23
 
     st.markdown('<div class="section-title">🌅 Morning Check In</div>', unsafe_allow_html=True)
-   if is_morning:
+
+    # ── CHANGED: fetch yesterday's goal and generate smart morning message ──
+    if is_morning:
         with st.spinner("Preparing your good morning message..."):
             try:
                 yesterday_goal = ""
@@ -567,40 +569,43 @@ if page == "🌅 Daily Wellness":
                         yesterday_goal = last_evening.data[0]["goal"]
                 except:
                     pass
-
-                morning_prompt = f"""Give {name} a warm and personal good morning message.
-                Include these 3 things naturally in your message:
-                1. A warm cheerful good morning greeting using their name {name}
-                2. Ask them how many hours they slept last night and remind them that good sleep helps them have a great day
-                3. {"Remind them that yesterday they set this goal for today: " + yesterday_goal + " — encourage them to work on it today!" if yesterday_goal else "Encourage them to set a small goal for today."}
-                Keep the whole message short — 3 to 4 sentences. Warm and friendly like a close friend."""
-
+                morning_prompt = f"""Write a warm personal good morning message for {name}.
+                Include these 3 things naturally in 3 to 4 sentences:
+                1. A cheerful good morning greeting using their name {name}.
+                2. Ask them how many hours they slept last night and mention that good sleep gives energy for the day.
+                3. {"Remind them that yesterday they set this goal for today: " + yesterday_goal + " — encourage them warmly to work on it today!" if yesterday_goal else "Encourage them to set one small goal for today."}
+                Be warm and friendly like a close friend. Keep it short."""
                 gm = groq_call([{"role":"user","content":morning_prompt}])
                 st.markdown(f'<div class="mcard">🌅 {gm}</div>', unsafe_allow_html=True)
             except:
-                st.markdown(f'<div class="mcard">🌅 Good morning{", "+name if st.session_state.user_name else ""}! Today is a new beginning. Make it count! 🌿</div>', unsafe_allow_html=True)  else:
-   
+                st.markdown(f'<div class="mcard">🌅 Good morning{", "+name if st.session_state.user_name else ""}! Today is a new beginning. Make it count! 🌿</div>', unsafe_allow_html=True)
+    else:
+        st.markdown(f'<div class="mcard">🌅 Good morning section is active from 5 AM to 12 PM. Come back tomorrow morning{", "+name if st.session_state.user_name else ""}! 🌿</div>', unsafe_allow_html=True)
+
     morning_mood = st.selectbox("😊 How are you feeling this morning?", ["😊 Happy","😐 Okay","😔 Sad","😰 Stressed","😡 Angry"])
+
+    # ── CHANGED: sleep tracker moved to morning ──
     sleep_hours_morning = st.slider("😴 How many hours did you sleep last night?", 0, 12, 7)
     sleep_quality_morning = st.radio("How was your sleep?", ["😴 Very Good","🙂 Good","😐 Okay","😔 Poor","😫 Very Poor"], horizontal=True)
     if sleep_hours_morning < 6:
         st.warning("😴 You did not sleep enough last night. Try to rest more tonight!")
     elif sleep_hours_morning >= 8:
         st.success("😴 Great sleep last night! You should have good energy today!")
+
     st.markdown('<div class="section-title">✅ Things To Do Today</div>', unsafe_allow_html=True)
     tasks_input = st.text_area("Add your tasks for today", placeholder="1. Study for exam\n2. Call mom\n3. Drink water", height=120)
 
-   if st.button("✨ Get AI Suggestions for My Day"):
+    if st.button("✨ Get AI Suggestions for My Day"):
         with st.spinner("Thinking of suggestions..."):
             try:
-                suggestions = groq_call([{"role":"user","content":f"{name} is feeling {morning_mood} this morning. They slept {sleep_hours_morning} hours last night ({sleep_quality_morning}). Their tasks are: {tasks_input}. Suggest 3 extra small helpful things they can add to their day based on how they feel and how well they slept. Keep it short and friendly."}]) st.markdown(f'<div class="mcard">💡 {suggestions}</div>', unsafe_allow_html=True)
+                suggestions = groq_call([{"role":"user","content":f"{name} is feeling {morning_mood} this morning. They slept {sleep_hours_morning} hours last night ({sleep_quality_morning}). Their tasks are: {tasks_input}. Suggest 3 extra small helpful things they can add to their day based on how they feel and how well they slept. Keep it short and friendly."}])
+                st.markdown(f'<div class="mcard">💡 {suggestions}</div>', unsafe_allow_html=True)
             except Exception as e:
                 st.error(str(e))
 
-  if st.button("💾 Save Morning Check In"):
+    if st.button("💾 Save Morning Check In"):
         if db_insert("morning_logs", {"user_email": email, "mood": morning_mood, "tasks": tasks_input}):
-            if db_insert("sleep_logs", {"user_email": email, "hours": sleep_hours_morning, "quality": sleep_quality_morning, "note": ""}):
-                pass
+            db_insert("sleep_logs", {"user_email": email, "hours": sleep_hours_morning, "quality": sleep_quality_morning, "note": ""})
             st.success(f"Morning check in saved{', '+name if st.session_state.user_name else ''}! Have an amazing day! 🌅")
 
     st.divider()
@@ -610,6 +615,7 @@ if page == "🌅 Daily Wellness":
     else:
         st.markdown('<div class="mcard">🌙 Evening section is most useful from 5 PM to 11 PM. Fill it in before bed!</div>', unsafe_allow_html=True)
 
+    # ── CHANGED: sleep removed from evening ──
     water_glasses = st.slider("💧 How many glasses of water did you drink today?", 0, 15, 8)
     day_rating    = st.slider("⭐ How was your day overall?", 1, 10, 5)
     day_highlight = st.text_input("🌟 Best part of your day?", placeholder="Something good that happened...")
@@ -626,6 +632,7 @@ if page == "🌅 Daily Wellness":
         if day_highlight.strip() == "" and grateful_for.strip() == "":
             st.warning("Please fill in at least some fields!")
         else:
+            # ── CHANGED: sleep removed from evening save ──
             db_insert("evening_logs", {
                 "user_email": email,
                 "sleep_hours": 0,
@@ -640,6 +647,7 @@ if page == "🌅 Daily Wellness":
             st.success("Evening check in saved! 🌙")
             with st.spinner("MindEase is preparing your goodnight message..."):
                 try:
+                    # ── CHANGED: sleep removed from night prompt ──
                     night_prompt = f"""User name: {name}. Evening check in:
                     Water today: {water_glasses} glasses.
                     Day rating: {day_rating}/10.
@@ -672,7 +680,6 @@ if page == "🌅 Daily Wellness":
         for row in evening_data:
             date = row["created_at"][:16].replace("T"," ")
             with st.expander(f"🌙 {date} — Day {row['day_rating']}/10"):
-                st.markdown(f"**😴 Sleep:** {row['sleep_hours']} hrs ({row['sleep_quality']})")
                 st.markdown(f"**💧 Water:** {row['water_glasses']} glasses")
                 st.markdown(f"**🌟 Best part:** {row['highlight']}")
                 st.markdown(f"**💪 Hardest part:** {row['challenge']}")
