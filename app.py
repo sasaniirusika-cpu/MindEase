@@ -579,8 +579,7 @@ if page == "🌅 Daily Wellness":
                 st.markdown(f'<div class="mcard">🌅 {gm}</div>', unsafe_allow_html=True)
             except:
                 st.markdown(f'<div class="mcard">🌅 Good morning{", "+name if st.session_state.user_name else ""}! Today is a new beginning. Make it count! 🌿</div>', unsafe_allow_html=True)  else:
-        st.markdown(f'<div class="mcard">🌅 Good morning section is active from 5 AM to 12 PM. Come back tomorrow morning{", "+name if st.session_state.user_name else ""}! 🌿</div>', unsafe_allow_html=True)
-
+   
     morning_mood = st.selectbox("😊 How are you feeling this morning?", ["😊 Happy","😐 Okay","😔 Sad","😰 Stressed","😡 Angry"])
     sleep_hours_morning = st.slider("😴 How many hours did you sleep last night?", 0, 12, 7)
     sleep_quality_morning = st.radio("How was your sleep?", ["😴 Very Good","🙂 Good","😐 Okay","😔 Poor","😫 Very Poor"], horizontal=True)
