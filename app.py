@@ -195,6 +195,22 @@ for key, default in {
 api_key = st.secrets["GROQ_API_KEY"]
 supabase = create_client(st.secrets["SUPABASE_URL"], st.secrets["SUPABASE_KEY"])
 
+# ── Auto load profile from URL ─────────────────────────────────
+if not st.session_state.profile_set:
+    try:
+        params = st.query_params
+        if "email" in params:
+            saved_email = params["email"]
+            res = supabase.table("users").select("*").eq("email", saved_email).execute()
+            if res.data:
+                user = res.data[0]
+                st.session_state.user_name  = user["name"]
+                st.session_state.user_age   = user["age"]
+                st.session_state.user_email = user["email"]
+                st.session_state.profile_set = True
+    except:
+        pass
+
 # ── Supabase helper functions ──────────────────────────────────
 def db_insert(table, data):
     try:
@@ -342,9 +358,9 @@ with st.sidebar:
     st.divider()
 
     with st.expander("👤 My Profile", expanded=not st.session_state.profile_set):
-        uname = st.text_input("Name",  value=st.session_state.user_name,  placeholder="Your name...")
-        uage  = st.text_input("Age",   value=st.session_state.user_age,   placeholder="Your age...")
-        uemail= st.text_input("Email", value=st.session_state.user_email, placeholder="your@email.com...")
+        uname  = st.text_input("Name",  value=st.session_state.user_name,  placeholder="Your name...")
+        uage   = st.text_input("Age",   value=st.session_state.user_age,   placeholder="Your age...")
+        uemail = st.text_input("Email", value=st.session_state.user_email, placeholder="your@email.com...")
         if st.button("Save Profile ✅", key="save_profile"):
             if uemail.strip() == "":
                 st.warning("Please enter your email — it is used to save your data!")
@@ -353,6 +369,17 @@ with st.sidebar:
                 st.session_state.user_age   = uage
                 st.session_state.user_email = uemail
                 st.session_state.profile_set = True
+                # ── Save profile to Supabase ──
+                try:
+                    existing = supabase.table("users").select("*").eq("email", uemail).execute()
+                    if existing.data:
+                        supabase.table("users").update({"name": uname, "age": uage}).eq("email", uemail).execute()
+                    else:
+                        supabase.table("users").insert({"email": uemail, "name": uname, "age": uage}).execute()
+                except:
+                    pass
+                # ── Save email to URL so app remembers user ──
+                st.query_params["email"] = uemail
                 st.success(f"Welcome, {uname}! 🌿")
                 st.rerun()
 
@@ -557,8 +584,6 @@ if page == "🌅 Daily Wellness":
     is_evening = 17 <= hour <= 23
 
     st.markdown('<div class="section-title">🌅 Morning Check In</div>', unsafe_allow_html=True)
-
-    # ── CHANGED: fetch yesterday's goal and generate smart morning message ──
     if is_morning:
         with st.spinner("Preparing your good morning message..."):
             try:
@@ -583,8 +608,6 @@ if page == "🌅 Daily Wellness":
         st.markdown(f'<div class="mcard">🌅 Good morning section is active from 5 AM to 12 PM. Come back tomorrow morning{", "+name if st.session_state.user_name else ""}! 🌿</div>', unsafe_allow_html=True)
 
     morning_mood = st.selectbox("😊 How are you feeling this morning?", ["😊 Happy","😐 Okay","😔 Sad","😰 Stressed","😡 Angry"])
-
-    # ── CHANGED: sleep tracker moved to morning ──
     sleep_hours_morning = st.slider("😴 How many hours did you sleep last night?", 0, 12, 7)
     sleep_quality_morning = st.radio("How was your sleep?", ["😴 Very Good","🙂 Good","😐 Okay","😔 Poor","😫 Very Poor"], horizontal=True)
     if sleep_hours_morning < 6:
@@ -615,7 +638,6 @@ if page == "🌅 Daily Wellness":
     else:
         st.markdown('<div class="mcard">🌙 Evening section is most useful from 5 PM to 11 PM. Fill it in before bed!</div>', unsafe_allow_html=True)
 
-    # ── CHANGED: sleep removed from evening ──
     water_glasses = st.slider("💧 How many glasses of water did you drink today?", 0, 15, 8)
     day_rating    = st.slider("⭐ How was your day overall?", 1, 10, 5)
     day_highlight = st.text_input("🌟 Best part of your day?", placeholder="Something good that happened...")
@@ -632,7 +654,6 @@ if page == "🌅 Daily Wellness":
         if day_highlight.strip() == "" and grateful_for.strip() == "":
             st.warning("Please fill in at least some fields!")
         else:
-            # ── CHANGED: sleep removed from evening save ──
             db_insert("evening_logs", {
                 "user_email": email,
                 "sleep_hours": 0,
@@ -647,7 +668,6 @@ if page == "🌅 Daily Wellness":
             st.success("Evening check in saved! 🌙")
             with st.spinner("MindEase is preparing your goodnight message..."):
                 try:
-                    # ── CHANGED: sleep removed from night prompt ──
                     night_prompt = f"""User name: {name}. Evening check in:
                     Water today: {water_glasses} glasses.
                     Day rating: {day_rating}/10.
