@@ -1,12 +1,10 @@
 import streamlit as st
 from groq import Groq
 from supabase import create_client
-import os
 from datetime import datetime
 import pandas as pd
 import random
 import time
-import json
 
 st.set_page_config(page_title="MindEase", page_icon="🌿", layout="wide")
 
@@ -110,6 +108,14 @@ st.markdown("""
     margin: 0.3rem 0;
     font-size: 0.88rem;
 }
+.auth-box {
+    max-width: 420px;
+    margin: 2rem auto;
+    padding: 2.5rem;
+    border-radius: 20px;
+    border: 1px solid var(--primary-border);
+    background: var(--primary-light);
+}
 div[data-testid="stChatInput"] {
     border-radius: 24px !important;
     border: 2px solid var(--primary-border) !important;
@@ -159,7 +165,8 @@ section[data-testid="stSidebar"] [data-testid^="stButton-nav_"] > button:hover {
 section[data-testid="stSidebar"] [data-testid="stButton-music_play"] > button,
 section[data-testid="stSidebar"] [data-testid="stButton-music_stop"] > button,
 section[data-testid="stSidebar"] [data-testid="stButton-new_chat"] > button,
-section[data-testid="stSidebar"] [data-testid="stButton-delete_history"] > button {
+section[data-testid="stSidebar"] [data-testid="stButton-delete_history"] > button,
+section[data-testid="stSidebar"] [data-testid="stButton-logout"] > button {
     background: linear-gradient(135deg, #028090, #02C39A) !important;
     color: white !important;
     border: none !important;
@@ -180,13 +187,14 @@ for key, default in {
     "messages": [],
     "affirmation": None,
     "user_name": "",
-    "user_age": "",
     "user_email": "",
-    "profile_set": False,
+    "logged_in": False,
+    "auth_token": None,
     "music_playing": False,
     "selected_music": None,
     "current_conversation": [],
     "page": "💬 Chat",
+    "auth_mode": "login",
 }.items():
     if key not in st.session_state:
         st.session_state[key] = default
@@ -194,22 +202,6 @@ for key, default in {
 # ── Supabase + Groq ────────────────────────────────────────────
 api_key = st.secrets["GROQ_API_KEY"]
 supabase = create_client(st.secrets["SUPABASE_URL"], st.secrets["SUPABASE_KEY"])
-
-# ── Auto load profile from URL ─────────────────────────────────
-if not st.session_state.profile_set:
-    try:
-        params = st.query_params
-        if "email" in params:
-            saved_email = params["email"]
-            res = supabase.table("users").select("*").eq("email", saved_email).execute()
-            if res.data:
-                user = res.data[0]
-                st.session_state.user_name  = user["name"]
-                st.session_state.user_age   = user["age"]
-                st.session_state.user_email = user["email"]
-                st.session_state.profile_set = True
-    except:
-        pass
 
 # ── Supabase helper functions ──────────────────────────────────
 def db_insert(table, data):
@@ -249,6 +241,113 @@ def get_streak(email):
         return streak
     except:
         return 0
+
+# ── Auth functions ─────────────────────────────────────────────
+def sign_up(name, email, password):
+    try:
+        res = supabase.auth.sign_up({
+            "email": email,
+            "password": password,
+            "options": {"data": {"name": name}}
+        })
+        if res.user:
+            return True, "Account created successfully! 🌿"
+        return False, "Something went wrong. Please try again."
+    except Exception as e:
+        return False, str(e)
+
+def sign_in(email, password):
+    try:
+        res = supabase.auth.sign_in_with_password({
+            "email": email,
+            "password": password
+        })
+        if res.user:
+            name = res.user.user_metadata.get("name", email.split("@")[0])
+            return True, name, "Welcome back! 🌿"
+        return False, "", "Invalid email or password."
+    except Exception as e:
+        return False, "", "Invalid email or password. Please try again."
+
+def sign_out():
+    try:
+        supabase.auth.sign_out()
+    except:
+        pass
+    for key in ["logged_in", "auth_token", "user_name", "user_email", "messages", "current_conversation"]:
+        if key in st.session_state:
+            del st.session_state[key]
+    st.rerun()
+
+# ── Login / Signup Screen ──────────────────────────────────────
+if not st.session_state.logged_in:
+    st.markdown("""
+    <div style='text-align:center; padding:2rem 0 1rem;'>
+        <span style='font-size:3rem;'>🌿</span>
+        <h1 style='color:#02C39A; font-size:2.5rem; font-weight:800; margin:0.3rem 0;'>MindEase</h1>
+        <p style='opacity:0.6; font-size:1rem;'>Your personal AI companion for mental wellness</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        mode = st.radio("", ["Login", "Create Account"], horizontal=True, label_visibility="collapsed")
+        st.markdown("<br>", unsafe_allow_html=True)
+
+        if mode == "Create Account":
+            st.markdown("**Create your MindEase account**")
+            new_name  = st.text_input("Your Name", placeholder="Sasani...")
+            new_email = st.text_input("Email", placeholder="your@email.com...")
+            new_pass  = st.text_input("Password", type="password", placeholder="At least 6 characters...")
+            new_pass2 = st.text_input("Confirm Password", type="password", placeholder="Same password again...")
+
+            if st.button("Create Account 🌿", use_container_width=True):
+                if not new_name.strip():
+                    st.warning("Please enter your name!")
+                elif not new_email.strip():
+                    st.warning("Please enter your email!")
+                elif len(new_pass) < 6:
+                    st.warning("Password must be at least 6 characters!")
+                elif new_pass != new_pass2:
+                    st.warning("Passwords do not match!")
+                else:
+                    with st.spinner("Creating your account..."):
+                        success, msg = sign_up(new_name, new_email, new_pass)
+                        if success:
+                            st.success(msg)
+                            ok, uname, _ = sign_in(new_email, new_pass)
+                            if ok:
+                                st.session_state.logged_in   = True
+                                st.session_state.user_name   = uname
+                                st.session_state.user_email  = new_email
+                                st.rerun()
+                        else:
+                            st.error(msg)
+        else:
+            st.markdown("**Welcome back!**")
+            login_email = st.text_input("Email", placeholder="your@email.com...", key="login_email")
+            login_pass  = st.text_input("Password", type="password", placeholder="Your password...", key="login_pass")
+
+            if st.button("Login 🌿", use_container_width=True):
+                if not login_email.strip() or not login_pass.strip():
+                    st.warning("Please enter your email and password!")
+                else:
+                    with st.spinner("Logging in..."):
+                        success, uname, msg = sign_in(login_email, login_pass)
+                        if success:
+                            st.session_state.logged_in  = True
+                            st.session_state.user_name  = uname
+                            st.session_state.user_email = login_email
+                            st.success(msg)
+                            st.rerun()
+                        else:
+                            st.error(msg)
+
+    st.stop()
+
+# ── From here app only shows if logged in ─────────────────────
+name  = st.session_state.user_name  if st.session_state.user_name  else "friend"
+email = st.session_state.user_email if st.session_state.user_email else ""
 
 AFFIRMATIONS = [
     "You are stronger than you think. 💪",
@@ -325,19 +424,16 @@ NAV_ITEMS = [
     ("📈 Progress",       "Progress"),
 ]
 
-name  = st.session_state.user_name  if st.session_state.user_name  else "friend"
-age   = st.session_state.user_age   if st.session_state.user_age   else ""
-email = st.session_state.user_email if st.session_state.user_email else "guest@mindease.app"
-
 SYSTEM_PROMPT = f"""You are MindEase, a very close and caring best friend.
-The user's name is {name}.{"They are " + age + " years old." if age else ""}
+The user's name is {name}.
 Always call them by their name — {name}.
 Be warm, gentle, empathetic. Talk casually like a real close friend.
 Never sound robotic. Use simple language and gentle emojis 🌿 💙 😊.
 Always acknowledge feelings first. Ask one gentle question at a time.
 Keep responses short and warm like a text message from a close friend.
 If user mentions self-harm share: https://www.iasp.info/resources/Crisis_Centres/
-Never diagnose. Encourage professional help gently when needed."""
+Never diagnose. Encourage professional help gently when needed.
+IMPORTANT LANGUAGE RULE: If the user writes in Sinhala language, you MUST reply in Sinhala language. If the user writes in English, reply in English. Always match the language the user is writing in."""
 
 def groq_call(messages, system=SYSTEM_PROMPT):
     client = Groq(api_key=api_key)
@@ -357,41 +453,16 @@ with st.sidebar:
     """, unsafe_allow_html=True)
     st.divider()
 
-    with st.expander("👤 My Profile", expanded=not st.session_state.profile_set):
-        uname  = st.text_input("Name",  value=st.session_state.user_name,  placeholder="Your name...")
-        uage   = st.text_input("Age",   value=st.session_state.user_age,   placeholder="Your age...")
-        uemail = st.text_input("Email", value=st.session_state.user_email, placeholder="your@email.com...")
-        if st.button("Save Profile ✅", key="save_profile"):
-            if uemail.strip() == "":
-                st.warning("Please enter your email — it is used to save your data!")
-            else:
-                st.session_state.user_name  = uname
-                st.session_state.user_age   = uage
-                st.session_state.user_email = uemail
-                st.session_state.profile_set = True
-                # ── Save profile to Supabase ──
-                try:
-                    existing = supabase.table("users").select("*").eq("email", uemail).execute()
-                    if existing.data:
-                        supabase.table("users").update({"name": uname, "age": uage}).eq("email", uemail).execute()
-                    else:
-                        supabase.table("users").insert({"email": uemail, "name": uname, "age": uage}).execute()
-                except:
-                    pass
-                # ── Save email to URL so app remembers user ──
-                st.query_params["email"] = uemail
-                st.success(f"Welcome, {uname}! 🌿")
-                st.rerun()
+    st.markdown(f"""
+    <div class='mcard' style='text-align:center; padding:0.8rem;'>
+        <div style='font-size:1.6rem;'>😊</div>
+        <div style='font-weight:700;'>{name}</div>
+        <div style='font-size:0.75rem; opacity:0.5;'>{email}</div>
+    </div>
+    """, unsafe_allow_html=True)
 
-    if st.session_state.profile_set:
-        st.markdown(f"""
-        <div class='mcard' style='text-align:center; padding:0.8rem;'>
-            <div style='font-size:1.6rem;'>😊</div>
-            <div style='font-weight:700;'>{st.session_state.user_name}</div>
-            <div style='font-size:0.8rem; opacity:0.65;'>Age {st.session_state.user_age}</div>
-            <div style='font-size:0.75rem; opacity:0.5;'>{st.session_state.user_email}</div>
-        </div>
-        """, unsafe_allow_html=True)
+    if st.button("🚪 Logout", key="logout", use_container_width=True):
+        sign_out()
 
     st.divider()
     st.markdown("**🎵 Music Player**")
@@ -471,12 +542,9 @@ page = st.session_state.page
 st.markdown(f"""
 <div class='main-header'>
     <h1>🌿 MindEase</h1>
-    <p>{"Welcome back, " + name + "! So glad you are here. 💙" if st.session_state.user_name else "Your personal AI companion for mental wellness"}</p>
+    <p>Welcome back, {name}! So glad you are here. 💙</p>
 </div>
 """, unsafe_allow_html=True)
-
-if not st.session_state.profile_set:
-    st.info("👤 Please enter your name, age and email in the sidebar to get started and save your data!")
 
 # ══ PAGE 1 — CHAT ══════════════════════════════════════════════
 if page == "💬 Chat":
@@ -484,12 +552,11 @@ if page == "💬 Chat":
     with chat_container:
         if not st.session_state.messages:
             with st.chat_message("assistant", avatar="🌿"):
-                welcome = f"Hi {name}! 😊 I am MindEase, your personal wellness companion. How are you feeling today?" if st.session_state.user_name else "Hi there! 😊 I am MindEase. Enter your name in the sidebar and let us get started! How are you feeling?"
-                st.markdown(welcome)
+                st.markdown(f"Hi {name}! 😊 I am MindEase, your personal wellness companion. How are you feeling today?")
         for msg in st.session_state.messages:
             with st.chat_message(msg["role"], avatar="🌿" if msg["role"]=="assistant" else "🧑"):
                 st.markdown(msg["content"])
-    user_input = st.chat_input(f"Share how you are feeling, {name}..." if st.session_state.user_name else "Share how you are feeling...")
+    user_input = st.chat_input(f"Share how you are feeling, {name}...")
     if user_input:
         with chat_container:
             with st.chat_message("user", avatar="🧑"):
@@ -510,7 +577,7 @@ if page == "💬 Chat":
 
 # ══ PAGE 2 — MOOD ══════════════════════════════════════════════
 if page == "😊 Mood":
-    st.markdown(f'<div class="section-title">😊 How are you feeling{", " + name if st.session_state.user_name else ""}?</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="section-title">😊 How are you feeling, {name}?</div>', unsafe_allow_html=True)
     mood = st.radio("", ["😊 Happy","😐 Okay","😔 Sad","😰 Stressed","😡 Angry"], horizontal=True)
     note = st.text_input("Add a note (optional)", placeholder="What is making you feel this way?")
     md = MOOD_COLORS[mood]
@@ -527,7 +594,7 @@ if page == "😊 Mood":
     with c1:
         if st.button("💾 Save My Mood"):
             if db_insert("mood_logs", {"user_email": email, "mood": mood, "note": note}):
-                st.success(f"Mood saved{', '+name if st.session_state.user_name else ''}! 🌿")
+                st.success(f"Mood saved, {name}! 🌿")
     with c2:
         if st.button("💬 Get Personal Message"):
             with st.spinner("Thinking..."):
@@ -553,7 +620,7 @@ if page == "😊 Mood":
 
 # ══ PAGE 3 — JOURNAL ═══════════════════════════════════════════
 if page == "📝 Journal":
-    st.markdown(f'<div class="section-title">📝 Journal{" — "+name if st.session_state.user_name else ""}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="section-title">📝 Journal — {name}</div>', unsafe_allow_html=True)
     st.caption("Your private space. Write anything you feel.")
     jtitle = st.text_input("Title", placeholder="My thoughts today...")
     jentry = st.text_area("Write here...", height=200, placeholder="Today I felt...")
@@ -603,9 +670,9 @@ if page == "🌅 Daily Wellness":
                 gm = groq_call([{"role":"user","content":morning_prompt}])
                 st.markdown(f'<div class="mcard">🌅 {gm}</div>', unsafe_allow_html=True)
             except:
-                st.markdown(f'<div class="mcard">🌅 Good morning{", "+name if st.session_state.user_name else ""}! Today is a new beginning. Make it count! 🌿</div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="mcard">🌅 Good morning, {name}! Today is a new beginning. Make it count! 🌿</div>', unsafe_allow_html=True)
     else:
-        st.markdown(f'<div class="mcard">🌅 Good morning section is active from 5 AM to 12 PM. Come back tomorrow morning{", "+name if st.session_state.user_name else ""}! 🌿</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="mcard">🌅 Good morning section is active from 5 AM to 12 PM. Come back tomorrow morning, {name}! 🌿</div>', unsafe_allow_html=True)
 
     morning_mood = st.selectbox("😊 How are you feeling this morning?", ["😊 Happy","😐 Okay","😔 Sad","😰 Stressed","😡 Angry"])
     sleep_hours_morning = st.slider("😴 How many hours did you sleep last night?", 0, 12, 7)
@@ -621,7 +688,7 @@ if page == "🌅 Daily Wellness":
     if st.button("✨ Get AI Suggestions for My Day"):
         with st.spinner("Thinking of suggestions..."):
             try:
-                suggestions = groq_call([{"role":"user","content":f"{name} is feeling {morning_mood} this morning. They slept {sleep_hours_morning} hours last night ({sleep_quality_morning}). Their tasks are: {tasks_input}. Suggest 3 extra small helpful things they can add to their day based on how they feel and how well they slept. Keep it short and friendly."}])
+                suggestions = groq_call([{"role":"user","content":f"{name} is feeling {morning_mood} this morning. They slept {sleep_hours_morning} hours last night ({sleep_quality_morning}). Their tasks are: {tasks_input}. Suggest 3 extra small helpful things they can add to their day. Keep it short and friendly."}])
                 st.markdown(f'<div class="mcard">💡 {suggestions}</div>', unsafe_allow_html=True)
             except Exception as e:
                 st.error(str(e))
@@ -629,12 +696,12 @@ if page == "🌅 Daily Wellness":
     if st.button("💾 Save Morning Check In"):
         if db_insert("morning_logs", {"user_email": email, "mood": morning_mood, "tasks": tasks_input}):
             db_insert("sleep_logs", {"user_email": email, "hours": sleep_hours_morning, "quality": sleep_quality_morning, "note": ""})
-            st.success(f"Morning check in saved{', '+name if st.session_state.user_name else ''}! Have an amazing day! 🌅")
+            st.success(f"Morning check in saved, {name}! Have an amazing day! 🌅")
 
     st.divider()
     st.markdown('<div class="section-title">🌙 Evening Check In</div>', unsafe_allow_html=True)
     if is_evening:
-        st.markdown(f'<div class="mcard">🌙 Good evening{", "+name if st.session_state.user_name else ""}! Time to wind down and reflect on your day. 🌿</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="mcard">🌙 Good evening, {name}! Time to wind down and reflect on your day. 🌿</div>', unsafe_allow_html=True)
     else:
         st.markdown('<div class="mcard">🌙 Evening section is most useful from 5 PM to 11 PM. Fill it in before bed!</div>', unsafe_allow_html=True)
 
@@ -729,7 +796,7 @@ if page == "🧘 Meditation":
                     st.toast(toast_msg)
                     time.sleep(secs)
             bp.markdown('<div style="width:200px;height:200px;border-radius:50%;background:linear-gradient(135deg,#02C39A,#028090);display:flex;align-items:center;justify-content:center;margin:auto;color:white;font-size:1.2rem;font-weight:600;">Done! 🌿</div>', unsafe_allow_html=True)
-            st.success(f"Great job{', '+name if st.session_state.user_name else ''}! 🌿")
+            st.success(f"Great job, {name}! 🌿")
     else:
         med_type = st.selectbox("Choose", ["🌿 5 Minute Calm","😴 Sleep Meditation","😰 Anxiety Relief","💙 Self Love","🎯 Focus Meditation"])
         MEDS = {
@@ -743,7 +810,7 @@ if page == "🧘 Meditation":
             for i,(title,instruction,secs) in enumerate(MEDS[med_type]):
                 st.markdown(f'<div class="mcard"><strong style="color:var(--primary);">Step {i+1} — {title}</strong><br><br>{instruction}</div>', unsafe_allow_html=True)
                 time.sleep(secs)
-            st.success(f"Meditation complete{', '+name if st.session_state.user_name else ''}! Well done! 🌿💙")
+            st.success(f"Meditation complete, {name}! Well done! 🌿💙")
 
 # ══ PAGE 6 — AFFIRMATIONS ══════════════════════════════════════
 if page == "🎯 Affirmations":
@@ -808,7 +875,7 @@ if page == "🧠 Assessment":
             reason = "You may be going through a difficult time. You are not alone and help is available."
             tips = ["Talk to someone you trust. 💙","Use the Chat tab anytime. 💬","Helpline: https://www.iasp.info/resources/Crisis_Centres/","Try breathing exercises. 🌬️","Consider speaking to a professional."]
             vids = HAPPY_VIDEOS
-        st.markdown(f'<div class="result-box" style="background:{col}20;border:2px solid {col};">{em} {name+", your" if st.session_state.user_name else "Your"} wellness level is <strong>{lv}</strong></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="result-box" style="background:{col}20;border:2px solid {col};">{em} {name}, your wellness level is <strong>{lv}</strong></div>', unsafe_allow_html=True)
         st.markdown(f"**Why?** {reason}")
         st.markdown("**What to do now:**")
         for t in tips:
