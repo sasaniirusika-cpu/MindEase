@@ -108,33 +108,6 @@ st.markdown("""
     margin: 0.3rem 0;
     font-size: 0.88rem;
 }
-.auth-box {
-    max-width: 420px;
-    margin: 2rem auto;
-    padding: 2.5rem;
-    border-radius: 20px;
-    border: 1px solid var(--primary-border);
-    background: var(--primary-light);
-}
-.auth-tab-active {
-    border-bottom: 3px solid #02C39A !important;
-    color: #02C39A !important;
-    font-weight: 700 !important;
-    background: transparent !important;
-    box-shadow: none !important;
-    transform: none !important;
-    border-radius: 0 !important;
-}
-.auth-tab-inactive {
-    border-bottom: 3px solid transparent !important;
-    color: inherit !important;
-    font-weight: 500 !important;
-    background: transparent !important;
-    box-shadow: none !important;
-    transform: none !important;
-    border-radius: 0 !important;
-    opacity: 0.5 !important;
-}
 div[data-testid="stChatInput"] {
     border-radius: 24px !important;
     border: 2px solid var(--primary-border) !important;
@@ -199,51 +172,24 @@ section[data-testid="stSidebar"] [data-testid="stButton-logout"] > button {
     font-size: 0.85rem !important;
 }
 
-/* Auth tab buttons */
-[data-testid="stButton-tab_login"] > button {
+/* Switch link buttons */
+[data-testid="stButton-switch_to_login"] > button,
+[data-testid="stButton-switch_to_signup"] > button {
     background: transparent !important;
     color: #02C39A !important;
     border: none !important;
-    border-bottom: 3px solid #02C39A !important;
-    border-radius: 0 !important;
-    font-weight: 700 !important;
     box-shadow: none !important;
     transform: none !important;
-    font-size: 1rem !important;
-}
-[data-testid="stButton-tab_signup"] > button {
-    background: transparent !important;
-    color: inherit !important;
-    border: none !important;
-    border-bottom: 3px solid transparent !important;
-    border-radius: 0 !important;
+    font-size: 0.9rem !important;
     font-weight: 500 !important;
-    box-shadow: none !important;
-    transform: none !important;
-    opacity: 0.5 !important;
-    font-size: 1rem !important;
+    text-decoration: underline !important;
+    opacity: 0.85 !important;
 }
-[data-testid="stButton-tab_login_active"] > button {
-    background: transparent !important;
-    color: #02C39A !important;
-    border: none !important;
-    border-bottom: 3px solid #02C39A !important;
-    border-radius: 0 !important;
-    font-weight: 700 !important;
-    box-shadow: none !important;
+[data-testid="stButton-switch_to_login"] > button:hover,
+[data-testid="stButton-switch_to_signup"] > button:hover {
+    opacity: 1 !important;
     transform: none !important;
-    font-size: 1rem !important;
-}
-[data-testid="stButton-tab_signup_active"] > button {
-    background: transparent !important;
-    color: #02C39A !important;
-    border: none !important;
-    border-bottom: 3px solid #02C39A !important;
-    border-radius: 0 !important;
-    font-weight: 700 !important;
     box-shadow: none !important;
-    transform: none !important;
-    font-size: 1rem !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -357,25 +303,10 @@ if not st.session_state.logged_in:
 
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-
-        # ── Google style tabs ──
-        st.markdown('<div style="border-bottom:2px solid rgba(128,128,128,0.15); margin-bottom:1.5rem;">', unsafe_allow_html=True)
-        t1, t2 = st.columns(2)
-        with t1:
-            login_key = "tab_login_active" if st.session_state.auth_mode == "Login" else "tab_login"
-            if st.button("Login", key=login_key, use_container_width=True):
-                st.session_state.auth_mode = "Login"
-                st.rerun()
-        with t2:
-            signup_key = "tab_signup_active" if st.session_state.auth_mode == "Create Account" else "tab_signup"
-            if st.button("Create Account", key=signup_key, use_container_width=True):
-                st.session_state.auth_mode = "Create Account"
-                st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
-
         mode = st.session_state.auth_mode
 
         if mode == "Create Account":
+            st.markdown("**Create your MindEase account** 🌿")
             new_name  = st.text_input("Your Name", placeholder="Sasani...")
             new_email = st.text_input("Email", placeholder="your@email.com...")
             new_pass  = st.text_input("Password", type="password", placeholder="At least 6 characters...")
@@ -405,9 +336,12 @@ if not st.session_state.logged_in:
                             st.error(msg)
 
             st.markdown("<br>", unsafe_allow_html=True)
-            st.markdown(f'<div style="text-align:center; font-size:0.9rem; opacity:0.6;">Already have an account? <span style="color:#02C39A; cursor:pointer; font-weight:600;">Login above</span></div>', unsafe_allow_html=True)
+            if st.button("Already have an account? Login", key="switch_to_login", use_container_width=True):
+                st.session_state.auth_mode = "Login"
+                st.rerun()
 
         else:
+            st.markdown("**Welcome back!** 😊")
             login_email = st.text_input("Email", placeholder="your@email.com...", key="login_email")
             login_pass  = st.text_input("Password", type="password", placeholder="Your password...", key="login_pass")
 
@@ -427,7 +361,9 @@ if not st.session_state.logged_in:
                             st.error(msg)
 
             st.markdown("<br>", unsafe_allow_html=True)
-            st.markdown(f'<div style="text-align:center; font-size:0.9rem; opacity:0.6;">New to MindEase? <span style="color:#02C39A; cursor:pointer; font-weight:600;">Create Account above</span></div>', unsafe_allow_html=True)
+            if st.button("New to MindEase? Create Account", key="switch_to_signup", use_container_width=True):
+                st.session_state.auth_mode = "Create Account"
+                st.rerun()
 
     st.stop()
 
