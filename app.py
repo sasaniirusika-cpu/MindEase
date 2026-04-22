@@ -215,6 +215,16 @@ for key, default in {
 api_key = st.secrets["GROQ_API_KEY"]
 supabase = create_client(st.secrets["SUPABASE_URL"], st.secrets["SUPABASE_KEY"])
 
+# ── Auto restore session on refresh ───────────────────────────
+if not st.session_state.logged_in:
+    try:
+        session = supabase.auth.get_session()
+        if session and session.user:
+            st.session_state.logged_in  = True
+            st.session_state.user_name  = session.user.user_metadata.get("name", session.user.email.split("@")[0])
+            st.session_state.user_email = session.user.email
+    except:
+        pass
 # ── Supabase helper functions ──────────────────────────────────
 def db_insert(table, data):
     try:
