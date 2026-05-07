@@ -30,7 +30,6 @@ st.markdown("""
 
 * { font-family: 'Inter', sans-serif !important; }
 
-/* ── Base ── */
 .stApp {
     background: var(--bg-base) !important;
     color: var(--text-primary) !important;
@@ -40,12 +39,14 @@ st.markdown("""
     max-width: 900px !important;
 }
 
-/* ── Scrollbar ── */
+p, span, div, li, label, h1, h2, h3, h4, h5, h6 {
+    color: var(--text-primary);
+}
+
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--bg-base); }
 ::-webkit-scrollbar-thumb { background: var(--primary-border); border-radius: 3px; }
 
-/* ── Header ── */
 .main-header {
     background: linear-gradient(135deg, #0D1F2D 0%, #0A1628 50%, #0D2233 100%);
     border: 1px solid var(--primary-border);
@@ -81,7 +82,6 @@ st.markdown("""
     font-weight: 400 !important;
 }
 
-/* ── Cards ── */
 .mcard {
     background: var(--bg-card);
     border: 1px solid var(--border);
@@ -107,9 +107,8 @@ st.markdown("""
     margin: 0.6rem 0;
 }
 
-/* ── Section titles ── */
 .section-title {
-    color: var(--text-primary);
+    color: var(--text-secondary) !important;
     font-size: 0.7rem;
     font-weight: 600;
     letter-spacing: 1.5px;
@@ -117,10 +116,8 @@ st.markdown("""
     margin: 1.8rem 0 0.8rem 0;
     padding-bottom: 0.5rem;
     border-bottom: 1px solid var(--border);
-    opacity: 0.7;
 }
 
-/* ── Score boxes ── */
 .score-box {
     background: var(--bg-card);
     border: 1px solid var(--border);
@@ -136,7 +133,6 @@ st.markdown("""
     box-shadow: var(--shadow-teal);
 }
 
-/* ── Affirmation ── */
 .affirmation-box {
     background: linear-gradient(135deg, rgba(2,195,154,0.06), rgba(2,128,144,0.04));
     border: 1px solid var(--primary-border);
@@ -146,12 +142,11 @@ st.markdown("""
     font-size: 1.1rem;
     line-height: 1.8;
     margin: 0.8rem 0;
-    color: var(--text-primary);
+    color: var(--text-primary) !important;
     font-weight: 300;
     letter-spacing: 0.2px;
 }
 
-/* ── Quote ── */
 .quote-box {
     border-left: 3px solid var(--primary);
     background: var(--bg-card);
@@ -161,11 +156,10 @@ st.markdown("""
     font-style: italic;
     font-size: 1rem;
     line-height: 1.8;
-    color: var(--text-primary);
+    color: var(--text-primary) !important;
     font-weight: 300;
 }
 
-/* ── Result ── */
 .result-box {
     border-radius: 16px;
     padding: 1.25rem;
@@ -174,9 +168,9 @@ st.markdown("""
     font-weight: 600;
     margin: 0.8rem 0;
     letter-spacing: 0.2px;
+    color: var(--text-primary) !important;
 }
 
-/* ── Badges ── */
 .badge-earned {
     background: linear-gradient(135deg, rgba(2,195,154,0.1), rgba(2,128,144,0.06));
     border: 1px solid var(--primary-border);
@@ -196,7 +190,6 @@ st.markdown("""
     opacity: 0.4;
 }
 
-/* ── Chat history ── */
 .chat-history-item {
     background: var(--bg-card);
     border: 1px solid var(--border);
@@ -209,7 +202,6 @@ st.markdown("""
 }
 .chat-history-item:hover { border-color: var(--primary-border); }
 
-/* ── Chat input ── */
 div[data-testid="stChatInput"] {
     background: var(--bg-card) !important;
     border-radius: 14px !important;
@@ -228,7 +220,6 @@ div[data-testid="stChatInput"] button {
     border-radius: 10px !important;
 }
 
-/* ── Buttons ── */
 .stButton > button {
     background: linear-gradient(135deg, #028090, #02C39A) !important;
     color: white !important;
@@ -249,7 +240,6 @@ div[data-testid="stChatInput"] button {
     transform: translateY(0) !important;
 }
 
-/* ── Nav buttons ── */
 section[data-testid="stSidebar"] [data-testid^="stButton-nav_"] > button {
     background: transparent !important;
     color: var(--text-secondary) !important;
@@ -272,7 +262,6 @@ section[data-testid="stSidebar"] [data-testid^="stButton-nav_"] > button:hover {
     transform: none !important;
 }
 
-/* ── Sidebar action buttons ── */
 section[data-testid="stSidebar"] [data-testid="stButton-music_play"] > button,
 section[data-testid="stSidebar"] [data-testid="stButton-music_stop"] > button,
 section[data-testid="stSidebar"] [data-testid="stButton-new_chat"] > button,
@@ -298,7 +287,6 @@ section[data-testid="stSidebar"] [data-testid="stButton-logout"] > button:hover 
     transform: none !important;
 }
 
-/* ── Switch link buttons ── */
 [data-testid="stButton-switch_to_login"] > button,
 [data-testid="stButton-switch_to_signup"] > button {
     background: transparent !important;
@@ -312,7 +300,6 @@ section[data-testid="stSidebar"] [data-testid="stButton-logout"] > button:hover 
     opacity: 0.8 !important;
 }
 
-/* ── Sidebar ── */
 section[data-testid="stSidebar"] {
     background: #0D1520 !important;
     border-right: 1px solid var(--border) !important;
@@ -320,8 +307,20 @@ section[data-testid="stSidebar"] {
 section[data-testid="stSidebar"] > div {
     background: #0D1520 !important;
 }
+section[data-testid="stSidebar"] p,
+section[data-testid="stSidebar"] span,
+section[data-testid="stSidebar"] div,
+section[data-testid="stSidebar"] label {
+    color: var(--text-secondary);
+}
+button[kind="header"] {
+    background: #0D1520 !important;
+    color: var(--text-primary) !important;
+}
+button[kind="header"] svg {
+    fill: var(--text-primary) !important;
+}
 
-/* ── Inputs ── */
 .stTextInput > div > div > input,
 .stTextArea > div > div > textarea {
     background: var(--bg-input) !important;
@@ -335,16 +334,26 @@ section[data-testid="stSidebar"] > div {
     border-color: var(--primary) !important;
     box-shadow: 0 0 0 3px var(--primary-glow) !important;
 }
+.stTextInput > label, .stTextArea > label {
+    color: var(--text-secondary) !important;
+    font-size: 0.82rem !important;
+}
 
-/* ── Selectbox ── */
 .stSelectbox > div > div {
     background: var(--bg-input) !important;
     border: 1px solid var(--border) !important;
     border-radius: 10px !important;
     color: var(--text-primary) !important;
 }
+.stSelectbox > label {
+    color: var(--text-secondary) !important;
+    font-size: 0.82rem !important;
+}
 
-/* ── Slider ── */
+.stSlider > label {
+    color: var(--text-secondary) !important;
+    font-size: 0.82rem !important;
+}
 .stSlider [data-baseweb="slider"] div[role="slider"] {
     background: var(--primary) !important;
     box-shadow: 0 0 0 4px var(--primary-glow) !important;
@@ -353,13 +362,9 @@ section[data-testid="stSidebar"] > div {
     background: var(--primary) !important;
 }
 
-/* ── Radio ── */
+.stRadio > label { color: var(--text-secondary) !important; font-size: 0.82rem !important; }
 .stRadio label { color: var(--text-secondary) !important; font-size: 0.88rem !important; }
-.stRadio [data-baseweb="radio"] div:first-child {
-    border-color: var(--primary) !important;
-}
 
-/* ── Metrics ── */
 [data-testid="stMetricValue"] {
     color: var(--primary) !important;
     font-size: 1.6rem !important;
@@ -371,36 +376,70 @@ section[data-testid="stSidebar"] > div {
     letter-spacing: 0.5px !important;
 }
 
-/* ── Expander ── */
-.streamlit-expanderHeader {
+/* ── Expander FIXED ── */
+details {
     background: var(--bg-card) !important;
     border: 1px solid var(--border) !important;
-    border-radius: 10px !important;
-    color: var(--text-primary) !important;
-    font-size: 0.88rem !important;
+    border-radius: 12px !important;
+    margin: 0.3rem 0 !important;
+    overflow: hidden !important;
 }
-.streamlit-expanderContent {
+details summary {
+    background: var(--bg-card) !important;
+    color: var(--text-primary) !important;
+    padding: 0.8rem 1rem !important;
+    font-size: 0.88rem !important;
+    font-weight: 500 !important;
+    cursor: pointer !important;
+    list-style: none !important;
+}
+details summary::-webkit-details-marker { display: none !important; }
+details summary::after {
+    content: ' ›' !important;
+    font-size: 1.2rem !important;
+    color: var(--text-secondary) !important;
+    float: right !important;
+}
+details[open] summary::after {
+    content: ' ‹' !important;
+}
+details > div {
     background: var(--bg-card2) !important;
+    padding: 0.8rem 1rem 1rem !important;
+    border-top: 1px solid var(--border) !important;
+}
+details > div p,
+details > div span,
+details > div div,
+details > div strong,
+details > div em {
+    color: var(--text-primary) !important;
+}
+[data-testid="stExpander"] {
+    background: var(--bg-card) !important;
     border: 1px solid var(--border) !important;
-    border-top: none !important;
+    border-radius: 12px !important;
+    margin: 0.3rem 0 !important;
+}
+[data-testid="stExpander"] p,
+[data-testid="stExpander"] strong,
+[data-testid="stExpander"] span,
+[data-testid="stExpander"] div {
     color: var(--text-primary) !important;
 }
 
-/* ── Dataframe ── */
 .stDataFrame { border-radius: 12px !important; overflow: hidden !important; }
 
-/* ── Info / Warning / Success ── */
 .stAlert {
     border-radius: 12px !important;
     border: 1px solid var(--border) !important;
     background: var(--bg-card) !important;
     font-size: 0.88rem !important;
 }
+.stAlert p { color: var(--text-primary) !important; }
 
-/* ── Divider ── */
 hr { border-color: var(--border) !important; margin: 0.8rem 0 !important; }
 
-/* ── Chat messages ── */
 [data-testid="stChatMessage"] {
     background: var(--bg-card) !important;
     border: 1px solid var(--border) !important;
@@ -408,8 +447,10 @@ hr { border-color: var(--border) !important; margin: 0.8rem 0 !important; }
     padding: 0.9rem 1.1rem !important;
     margin: 0.3rem 0 !important;
 }
+[data-testid="stChatMessage"] p {
+    color: var(--text-primary) !important;
+}
 
-/* ── Mobile ── */
 @media (max-width: 768px) {
     .block-container { padding: 0.8rem 0.8rem 3rem !important; }
     .main-header { padding: 1.2rem 1rem !important; border-radius: 14px !important; }
@@ -904,7 +945,7 @@ if page == "📝 Journal":
         for row in journal_data:
             date = row["created_at"][:16].replace("T"," ")
             with st.expander(f"{date} — {row['title']}"):
-                st.write(row["entry"])
+                st.markdown(f"<p style='color:#F0F4FF;'>{row['entry']}</p>", unsafe_allow_html=True)
     else:
         st.markdown('<div class="mcard"><p style="color:#8899BB; font-size:0.88rem; margin:0;">No entries yet. Start writing above.</p></div>', unsafe_allow_html=True)
 
@@ -965,7 +1006,7 @@ if page == "🌅 Daily Wellness":
     st.divider()
     st.markdown('<div class="section-title">Evening Check In</div>', unsafe_allow_html=True)
     if is_evening:
-        st.markdown(f'<div class="mcard-accent"><p style="margin:0;">Good evening, {name}. Time to reflect on your day.</p></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="mcard-accent"><p style="margin:0; color:#F0F4FF;">Good evening, {name}. Time to reflect on your day.</p></div>', unsafe_allow_html=True)
     else:
         st.markdown('<div class="mcard"><p style="color:#8899BB; font-size:0.88rem; margin:0;">Evening section is most useful from 5 PM to 11 PM.</p></div>', unsafe_allow_html=True)
 
@@ -1013,11 +1054,11 @@ if page == "🌅 Daily Wellness":
                     Separate each part with a line break. Be warm, honest, caring."""
                     night_msg = groq_call([{"role":"user","content":night_prompt}])
                     parts = night_msg.split("\n\n") if "\n\n" in night_msg else night_msg.split("\n")
-                    st.markdown(f'<div class="mcard-accent"><strong style="color:#02C39A; font-size:0.72rem; letter-spacing:1px; text-transform:uppercase;">Goodnight</strong><br><br>{parts[0]}</div>', unsafe_allow_html=True)
+                    st.markdown(f'<div class="mcard-accent"><strong style="color:#02C39A; font-size:0.72rem; letter-spacing:1px; text-transform:uppercase;">Goodnight</strong><br><br><span style="color:#F0F4FF;">{parts[0]}</span></div>', unsafe_allow_html=True)
                     if len(parts) > 1:
-                        st.markdown(f'<div class="mcard-plain"><strong style="color:#8899BB; font-size:0.72rem; letter-spacing:1px; text-transform:uppercase;">Day Summary</strong><br><br>{parts[1]}</div>', unsafe_allow_html=True)
+                        st.markdown(f'<div class="mcard-plain"><strong style="color:#8899BB; font-size:0.72rem; letter-spacing:1px; text-transform:uppercase;">Day Summary</strong><br><br><span style="color:#F0F4FF;">{parts[1]}</span></div>', unsafe_allow_html=True)
                     if len(parts) > 2:
-                        st.markdown(f'<div class="mcard"><strong style="color:#02C39A; font-size:0.72rem; letter-spacing:1px; text-transform:uppercase;">Tomorrow</strong><br><br>{parts[2]}</div>', unsafe_allow_html=True)
+                        st.markdown(f'<div class="mcard"><strong style="color:#02C39A; font-size:0.72rem; letter-spacing:1px; text-transform:uppercase;">Tomorrow</strong><br><br><span style="color:#F0F4FF;">{parts[2]}</span></div>', unsafe_allow_html=True)
                 except Exception as e:
                     st.error(str(e))
 
@@ -1030,11 +1071,11 @@ if page == "🌅 Daily Wellness":
         for row in evening_data:
             date = row["created_at"][:16].replace("T"," ")
             with st.expander(f"{date} — Day {row['day_rating']}/10"):
-                st.markdown(f"**Water:** {row['water_glasses']} glasses")
-                st.markdown(f"**Best part:** {row['highlight']}")
-                st.markdown(f"**Challenge:** {row['challenge']}")
-                st.markdown(f"**Grateful for:** {row['grateful']}")
-                st.markdown(f"**Tomorrow goal:** {row['goal']}")
+                st.markdown(f"<p style='color:#F0F4FF; margin:0.2rem 0;'><strong style='color:#02C39A;'>Water:</strong> {row['water_glasses']} glasses</p>", unsafe_allow_html=True)
+                st.markdown(f"<p style='color:#F0F4FF; margin:0.2rem 0;'><strong style='color:#02C39A;'>Best part:</strong> {row['highlight']}</p>", unsafe_allow_html=True)
+                st.markdown(f"<p style='color:#F0F4FF; margin:0.2rem 0;'><strong style='color:#02C39A;'>Challenge:</strong> {row['challenge']}</p>", unsafe_allow_html=True)
+                st.markdown(f"<p style='color:#F0F4FF; margin:0.2rem 0;'><strong style='color:#02C39A;'>Grateful for:</strong> {row['grateful']}</p>", unsafe_allow_html=True)
+                st.markdown(f"<p style='color:#F0F4FF; margin:0.2rem 0;'><strong style='color:#02C39A;'>Tomorrow goal:</strong> {row['goal']}</p>", unsafe_allow_html=True)
     else:
         st.markdown('<div class="mcard"><p style="color:#8899BB; font-size:0.88rem; margin:0;">No check ins yet. Come back tonight.</p></div>', unsafe_allow_html=True)
 
@@ -1049,7 +1090,7 @@ if page == "🧘 Meditation":
         rounds = st.slider("Rounds", 1, 5, 3)
         if st.button("Begin", use_container_width=True):
             for i in range(rounds):
-                st.markdown(f"**Round {i+1} of {rounds}**")
+                st.markdown(f"<p style='color:#F0F4FF;'><strong>Round {i+1} of {rounds}</strong></p>", unsafe_allow_html=True)
                 for label, grad, toast_msg, secs in [
                     ("Breathe In","#02C39A,#028090","Breathe IN...",4),
                     ("Hold","#6B48C8,#028090","Hold...",4),
@@ -1094,7 +1135,7 @@ if page == "🎯 Affirmations":
             with st.spinner(""):
                 try:
                     q = groq_call([{"role":"user","content":f"I am {name} and I feel: {feeling}. Write one beautiful meaningful short quote for me. Then write the author below. If you made it up write MindEase as author. Maximum 2 sentences."}])
-                    st.markdown(f'<div class="quote-box">{q}</div>', unsafe_allow_html=True)
+                    st.markdown(f'<div class="quote-box"><span style="color:#F0F4FF;">{q}</span></div>', unsafe_allow_html=True)
                 except Exception as e:
                     st.error(str(e))
         else:
@@ -1102,7 +1143,7 @@ if page == "🎯 Affirmations":
     st.markdown('<div class="section-title">Classic Quotes</div>', unsafe_allow_html=True)
     for q, a in QUOTES:
         with st.expander(f"{q[:50]}..."):
-            st.markdown(f'<p style="font-style:italic; color:#F0F4FF; font-weight:300;">"{q}"</p>', unsafe_allow_html=True)
+            st.markdown(f'<p style="font-style:italic; color:#F0F4FF; font-weight:300; margin:0 0 0.5rem;">"{q}"</p>', unsafe_allow_html=True)
             st.markdown(f'<p style="color:#02C39A; font-size:0.82rem; margin:0;">— {a}</p>', unsafe_allow_html=True)
 
 # ══ PAGE 7 — ASSESSMENT ════════════════════════════════════════
@@ -1138,7 +1179,7 @@ if page == "🧠 Assessment":
             reason = "You may be going through a difficult time. You are not alone and help is available."
             tips = ["Talk to someone you trust.","Use the Chat section anytime.","Crisis helpline: iasp.info/resources/Crisis_Centres","Try breathing exercises.","Consider speaking to a professional."]
             vids = HAPPY_VIDEOS
-        st.markdown(f'<div class="result-box" style="background:{col}12;border:1px solid {col}44;">{name}, your wellness level is currently <strong style="color:{col};">{lv}</strong></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="result-box" style="background:{col}12;border:1px solid {col}44;"><span style="color:#F0F4FF;">{name}, your wellness level is currently </span><strong style="color:{col};">{lv}</strong></div>', unsafe_allow_html=True)
         st.markdown(f'<div class="mcard"><p style="color:#8899BB; font-size:0.88rem; margin:0;">{reason}</p></div>', unsafe_allow_html=True)
         st.markdown('<div class="section-title">Recommendations</div>', unsafe_allow_html=True)
         for t in tips:
@@ -1256,6 +1297,6 @@ if page == "📈 Progress":
         with st.spinner(""):
             try:
                 summary = groq_call([{"role":"user","content":f"User: {name}. Mood data: {mm}. Sleep: {sl}. Journal: {jj}. Write 3-4 warm sentences using their name. Highlight what they do well and gently suggest one improvement."}])
-                st.markdown(f'<div class="mcard-accent">{summary}</div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="mcard-accent"><span style="color:#F0F4FF;">{summary}</span></div>', unsafe_allow_html=True)
             except Exception as e:
                 st.error(str(e))
